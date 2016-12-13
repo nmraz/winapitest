@@ -11,6 +11,7 @@
 
 namespace logging {
 
+// logging.cpp depends on this order!
 enum class Level {
 	trace = 0,
 	info,

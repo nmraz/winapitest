@@ -6,36 +6,17 @@
 namespace {
 
 const char* loggingLevelToString(logging::Level level, bool useColorCodes) {
-	using logging::Level;
+	using LevelType = std::underlying_type_t<logging::Level>;
 
-	// TODO: find a cleaner way to implement this
-	if (useColorCodes) {
-		switch (level) {
-		case Level::trace:
-			return "\x1b[36mTRACE\x1b[0m";
-		case Level::info:
-			return "\x1b[34mINFO\x1b[0m";
-		case Level::warn:
-			return "\x1b[33mWARN\x1b[0m";
-		case Level::error:
-			return "\x1b[31mERROR\x1b[0m";
-		default:
-			return "UNKNOWN";
-		}
-	} else {
-		switch (level) {
-		case Level::trace:
-			return "TRACE";
-		case Level::info:
-			return "INFO";
-		case Level::warn:
-			return "WARN";
-		case Level::error:
-			return "ERROR";
-		default:
-			return "UNKNOWN";
-		}
-	}
+	// maps [Level level][bool color] to string
+	constexpr const char* table[][2] = {
+		{"TRACE", "\x1b[36mTRACE\x1b[0m"},
+		{"INFO" , "\x1b[34mINFO\x1b[0m" },
+		{"WARN" , "\x1b[33mWARN\x1b[0m" },
+		{"ERROR", "\x1b[31mERROR\x1b[0m"}
+	};
+
+	return table[static_cast<LevelType>(level)][useColorCodes];
 }
 
 std::mutex gLoggingLock;
