@@ -10,7 +10,7 @@ using namespace std::literals;
 using Millis = chrono::duration<double, std::milli>;
 
 int main() {
-	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace);
+	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, true);
 
 	base::TaskRunner runner;
 	base::TaskEventLoop loop;

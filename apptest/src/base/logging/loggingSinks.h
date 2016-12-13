@@ -11,7 +11,6 @@ public:
 	explicit FileSink(std::string_view name);
 
 	void write(const char* str) override;
-	bool shouldUseColor() const override { return false; }
 
 private:
 	std::ofstream mFile;
@@ -21,14 +20,12 @@ private:
 class StdoutSink : public Sink {
 public:
 	void write(const char* str) override;
-	bool shouldUseColor() const override { return true; }
 };
 
 
 class DebuggerSink : public Sink {
 public:
 	void write(const char* str) override;
-	bool shouldUseColor() const override { return false; }
 };
 
 }  // namespace logging

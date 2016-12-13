@@ -22,8 +22,9 @@ const char* loggingLevelToString(logging::Level level, bool useColorCodes) {
 
 std::mutex gLoggingLock;
 
-logging::Level gMinLoggingLevel;
 std::unique_ptr<logging::Sink> gLoggingSink;
+logging::Level gMinLoggingLevel;
+bool gColorizeLogging;
 
 }  // namespace
 
@@ -38,7 +39,7 @@ bool filterOut(Level level) {
 
 
 Message::Message(Level level, const char* file, int line) {
-	mStream << "[" << loggingLevelToString(level, gLoggingSink->shouldUseColor()) << "][" << file << "(" << line << ")] ";
+	mStream << "[" << loggingLevelToString(level, gColorizeLogging) << "][" << file << "(" << line << ")] ";
 }
 
 Message::~Message() {
@@ -51,9 +52,10 @@ Message::~Message() {
 
 }  // namespace impl
 
-void init(std::unique_ptr<Sink> sink, Level minLevel) {
+void init(std::unique_ptr<Sink> sink, Level minLevel, bool colorize) {
 	gLoggingSink = std::move(sink);
 	gMinLoggingLevel = minLevel;
+	gColorizeLogging = colorize;
 }
 
 }  // namespace logging
