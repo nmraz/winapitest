@@ -46,7 +46,7 @@ struct Sink {
 	virtual ~Sink() = default;
 
 	virtual void write(const char* str) = 0;
-	virtual bool shouldUseColor() const { return false; }
+	virtual bool shouldUseColor() const = 0;
 };
 
 void init(std::unique_ptr<Sink> sink, Level minLevel);
