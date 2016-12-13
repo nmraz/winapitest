@@ -5,7 +5,7 @@
 
 namespace {
 
-const char* loggingLevelToString(logging::Level level, bool useColorCodes) {
+const char* loggingLevelToString(logging::Level level, bool colorize) {
 	using LevelType = std::underlying_type_t<logging::Level>;
 
 	// maps [Level level][bool color] to string
@@ -17,7 +17,7 @@ const char* loggingLevelToString(logging::Level level, bool useColorCodes) {
 		{"ERROR", "\x1b[31mERROR\x1b[0m"}
 	};
 
-	return table[static_cast<LevelType>(level)][useColorCodes];
+	return table[static_cast<LevelType>(level)][colorize];
 }
 
 std::mutex gLoggingLock;
