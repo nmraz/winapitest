@@ -12,9 +12,11 @@ public:
 
 	~ScopedSlotHandle();
 
+	ScopedSlotHandle& operator=(ScopedSlotHandle rhs);
 	ScopedSlotHandle& operator=(SlotHandle handle);
 
 	void off();
+	SlotHandle release();
 
 private:
 	SlotHandle mSlot;

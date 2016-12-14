@@ -10,7 +10,12 @@ ScopedSlotHandle::~ScopedSlotHandle() {
 	mSlot.off();
 }
 
+ScopedSlotHandle& ScopedSlotHandle::operator=(ScopedSlotHandle rhs) {
+	return *this = std::move(rhs.mSlot);
+}
+
 ScopedSlotHandle& ScopedSlotHandle::operator=(SlotHandle handle) {
+	off();
 	mSlot = std::move(handle);
 
 	return *this;
@@ -18,6 +23,10 @@ ScopedSlotHandle& ScopedSlotHandle::operator=(SlotHandle handle) {
 
 void ScopedSlotHandle::off() {
 	mSlot.off();
+}
+
+SlotHandle ScopedSlotHandle::release() {
+	return std::move(mSlot);
 }
 
 }  // namespace base
