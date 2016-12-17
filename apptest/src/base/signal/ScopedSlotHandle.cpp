@@ -4,7 +4,8 @@
 namespace base {
 
 ScopedSlotHandle::ScopedSlotHandle(SlotHandle handle)
-	: mSlot(std::move(handle)) {}
+	: mSlot(std::move(handle)) {
+}
 
 ScopedSlotHandle::~ScopedSlotHandle() {
 	mSlot.off();
