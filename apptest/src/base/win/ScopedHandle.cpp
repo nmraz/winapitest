@@ -26,8 +26,7 @@ ScopedHandle::~ScopedHandle() {
 
 
 ScopedHandle& ScopedHandle::operator=(Handle handle) {
-	release();
-	mHandle = handle;
+	ScopedHandle(handle).swap(*this);
 
 	return *this;
 }
