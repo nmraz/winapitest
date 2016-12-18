@@ -17,7 +17,7 @@ int main() {
 	
 	base::Timer timer1, timer2;
 
-	chrono::time_point<chrono::steady_clock> startTime;
+	chrono::steady_clock::time_point startTime;
 
 	timer1.onFire([&] {
 		LOG(trace) << "timer1: elapsed time: "
