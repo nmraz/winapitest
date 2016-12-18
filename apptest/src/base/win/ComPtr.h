@@ -3,6 +3,7 @@
 #include "base/assert.h"
 #include <type_traits>
 #include <Unknwn.h>
+#include <utility>
 
 namespace base {
 namespace win {
@@ -102,9 +103,7 @@ ComPtr<T>& ComPtr<T>::operator=(ComPtr rhs) {
 
 template<typename T>
 void ComPtr<T>::swap(ComPtr& other) {
-	T* tmp = mPtr;
-	mPtr = other.mPtr;
-	other.mPtr = tmp;
+	std::swap(mPtr, other.mPtr);
 }
 
 

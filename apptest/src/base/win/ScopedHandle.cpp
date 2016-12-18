@@ -1,6 +1,7 @@
 #include "ScopedHandle.h"
 
 #include <Windows.h>
+#include <utility>
 
 namespace base {
 namespace win {
@@ -39,9 +40,7 @@ ScopedHandle& ScopedHandle::operator=(ScopedHandle rhs) {
 
 
 void ScopedHandle::swap(ScopedHandle& other) {
-	Handle tmp = mHandle;
-	mHandle = other.mHandle;
-	other.mHandle = tmp;
+	std::swap(mHandle, other.mHandle);
 }
 
 
