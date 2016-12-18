@@ -7,10 +7,6 @@ namespace base {
 class SlotHandle : public NonCopyable {
 public:
 	SlotHandle();
-
-	template<typename Signal>
-	SlotHandle(Signal* signal, int id);
-
 	SlotHandle(SlotHandle&& rhs) noexcept;
 
 	void off();
@@ -18,6 +14,9 @@ public:
 	SlotHandle& operator=(SlotHandle&& rhs);
 
 private:
+	template<typename Signal>
+	SlotHandle(Signal* signal, int id);
+
 	void* mSignal;
 	int mSlotId;
 	void (*mRemover)(void*, int);
