@@ -118,7 +118,7 @@ void ComPtr<T>::release() {
 
 template<typename T>
 T* ComPtr<T>::operator->() const {
-	ASSERT(mPtr) << "null pointer dereference";
+	ASSERT(mPtr) << "Null pointer dereference";
 	return mPtr;
 }
 
