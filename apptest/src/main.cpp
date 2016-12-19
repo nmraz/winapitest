@@ -21,13 +21,13 @@ int main() {
 
 	timer1.onFire([&] {
 		LOG(trace) << "timer1: elapsed time: "
-			<< chrono::duration_cast<Millis>(chrono::steady_clock::now() - startTime).count() << "ms";
+			<< Millis(chrono::steady_clock::now() - startTime).count() << "ms";
 		runner.postQuit();
 	});
 
 	timer2.onFire([&] {
 		LOG(trace) << "timer2: elapsed time: "
-			<< chrono::duration_cast<Millis>(chrono::steady_clock::now() - startTime).count() << "ms";
+			<< Millis(chrono::steady_clock::now() - startTime).count() << "ms";
 	});
 
 	runner.postTask([&] {
