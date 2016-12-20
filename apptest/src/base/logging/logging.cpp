@@ -10,7 +10,7 @@ const char* loggingLevelToString(logging::Level level, bool colorize) {
 
 	// maps [Level level][bool color] to string
 	// note: this depends on the order of the values defined in logging::Level
-	constexpr const char* table[][2] = {
+	static constexpr const char* table[][2] = {
 		{"TRACE", "\x1b[36mTRACE\x1b[0m"},
 		{"INFO" , "\x1b[34mINFO\x1b[0m" },
 		{"WARN" , "\x1b[33mWARN\x1b[0m" },
