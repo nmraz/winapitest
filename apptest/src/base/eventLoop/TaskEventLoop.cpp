@@ -7,7 +7,7 @@ namespace base {
 void TaskEventLoop::doRun(TaskRunner& runner) {
 	mShouldQuit = false;
 
-	for (;;) {
+	while (true) {
 		bool ranTask = runner.runPendingTask();
 		if (mShouldQuit) {
 			break;
