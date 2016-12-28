@@ -2,14 +2,14 @@
 
 #include "base/logging/logging.h"
 
-#define ASSERT_IMPL(cond) (cond) ? (void) 0 : (::base::impl::FailedAssertion(), false) ? (void) 0 : \
-	LOG(error) << "assertion `" #cond "` failed: "
+#define ASSERT_IMPL(COND) (COND) ? (void) 0 : (::base::impl::FailedAssertion(), false) ? (void) 0 : \
+	LOG(error) << "assertion `" #COND "` failed: "
 
 #ifndef NDEBUG
-#define ASSERT(cond) ASSERT_IMPL(cond)
+#define ASSERT(COND) ASSERT_IMPL(COND)
 #else
 // can't just make this empty, as we still need streaming support
-#define ASSERT(cond) ASSERT_IMPL(true)
+#define ASSERT(COND) ASSERT_IMPL(true)
 #endif
 
 namespace base {

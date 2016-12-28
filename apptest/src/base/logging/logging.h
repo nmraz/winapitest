@@ -3,10 +3,10 @@
 #include <memory>
 #include <sstream>
 
-#define LOG_FULL(level, file, line) ::logging::impl::filterOut(logging::Level::level) ? (void) 0 : \
-	::logging::impl::StreamVoidify() | ::logging::impl::Message(logging::Level::level, file, line).stream()
+#define LOG_FULL(LEVEL, FILE, LINE) ::logging::impl::filterOut(logging::Level::LEVEL) ? (void) 0 : \
+	::logging::impl::StreamVoidify() | ::logging::impl::Message(logging::Level::LEVEL, FILE, LINE).stream()
 
-#define LOG(level) LOG_FULL(level, __FILE__, __LINE__)
+#define LOG(LEVEL) LOG_FULL(LEVEL, __FILE__, __LINE__)
 
 
 namespace logging {
