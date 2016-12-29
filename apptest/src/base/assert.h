@@ -3,7 +3,7 @@
 #include "base/logging/logging.h"
 
 #define ASSERT_IMPL(COND) (COND) ? (void) 0 : (::base::impl::FailedAssertion(), false) ? (void) 0 : \
-	LOG(error) << "assertion `" #COND "` failed: "
+	LOG(error) << "Assertion failed in " << __func__ << "(): "
 
 #ifndef NDEBUG
 #define ASSERT(COND) ASSERT_IMPL(COND)
