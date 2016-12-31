@@ -52,6 +52,7 @@ void TaskRunnerHandle::postTaskWithResponse(Task::Callback callback, Task::Callb
 // PRIVATE
 
 TaskRunnerHandle::TaskRunnerHandle(std::shared_ptr<impl::TaskRunnerRef> ref)
-	: mRef(std::move(ref)) {}
+	: mRef(std::move(ref)) {
+}
 
 }  // namespace base
