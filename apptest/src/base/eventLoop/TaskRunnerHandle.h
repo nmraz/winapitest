@@ -17,8 +17,11 @@ class TaskRunnerHandle {
 public:
 	TaskRunnerHandle() = default;
 
-	bool postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
-	bool postTaskWithResponse(Task::Callback callback, Task::Callback response);
+	bool tryPostTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
+	bool tryPostTaskWithResponse(Task::Callback callback, Task::Callback response);
+
+	void postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
+	void postTaskWithResponse(Task::Callback callback, Task::Callback response);
 
 private:
 	TaskRunnerHandle(std::shared_ptr<impl::TaskRunnerRef> ref);
