@@ -11,50 +11,26 @@ namespace base {
 
 template<typename... Args>
 class Signal : public NonCopyMovable {
-	friend SlotHandle;
-
 public:
-	using Function = std::function<void(Args...)>;
+	using Slot = std::function<void(Args...)>;
 
-	Signal();
-
-	SlotHandle on(Function fn);
-
+	SlotHandle on(Slot fn);
 	void operator()(Args... args) const;
 
 private:
-	struct Slot {
-		Slot(Function fn, int id);
-
-		Function fn;
-		int id;
-	};
-
-	void removeSlot(int id);
+	friend SlotHandle;
+	void removeSlot(void* slot);
 
 	std::list<Slot> mSlots;
-	int mNextId;
 };
 
 
 template<typename... Args>
-Signal<Args...>::Slot::Slot(Function fn, int id)
-	: fn(std::move(fn))
-	, id(id) {
-}
+SlotHandle Signal<Args...>::on(Slot slot) {
+	mSlots.push_back(std::move(slot));
+	void* slotAddr = &*mSlots.rbegin();  // iterator => pointer
 
-
-template<typename... Args>
-Signal<Args...>::Signal()
-	: mNextId(0) {
-}
-
-
-template<typename... Args>
-SlotHandle Signal<Args...>::on(Function fn) {
-	int id = ++mNextId;
-	mSlots.emplace_back(std::move(fn), id);
-	return {this, id};
+	return {this, slotAddr};
 }
 
 
@@ -63,7 +39,7 @@ void Signal<Args...>::operator()(Args... args) const {
 	auto it = mSlots.begin();
 
 	while (it != mSlots.end()) {
-		(it++)->fn(args...);  // no forwarding to prevent some args from being moved
+		(*it++)(args...);  // it must be incremented *before* the slot is called
 	}
 }
 
@@ -71,10 +47,10 @@ void Signal<Args...>::operator()(Args... args) const {
 // PRIVATE
 
 template<typename... Args>
-void Signal<Args...>::removeSlot(int id) {
+void Signal<Args...>::removeSlot(void* slotAddr) {
 	mSlots.erase(std::find_if(mSlots.begin(), mSlots.end(),
-		[id](const auto& slot) {
-			return slot.id == id;
+		[slotAddr](const auto& slot) {
+			return &slot == slotAddr;
 		})
 	);
 }

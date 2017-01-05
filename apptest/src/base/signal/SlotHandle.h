@@ -15,11 +15,11 @@ public:
 
 private:
 	template<typename Signal>
-	SlotHandle(Signal* signal, int id);
+	SlotHandle(Signal* signal, void* slot);
 
 	void* mSignal;
-	int mSlotId;
-	void (*mRemover)(void*, int);
+	void* mSlot;
+	void (*mRemover)(void*, void*);
 
 	template<typename... Args>
 	friend class Signal;
@@ -27,10 +27,10 @@ private:
 
 
 template<typename Signal>
-SlotHandle::SlotHandle(Signal* signal, int id)
+SlotHandle::SlotHandle(Signal* signal, void* slot)
 	: mSignal(signal)
-	, mSlotId(id)
-	, mRemover([](void* signal, int slotId) { static_cast<Signal*>(signal)->removeSlot(slotId); }) {
+	, mSlot(slot)
+	, mRemover([](void* signal, void* slot) { static_cast<Signal*>(signal)->removeSlot(slot); }) {
 }
 
 }  // namespace base

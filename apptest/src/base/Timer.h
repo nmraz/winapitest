@@ -20,7 +20,7 @@ public:
 
 	bool isRunning() const;
 
-	SlotHandle onFire(FireSignal::Function fn);
+	SlotHandle onFire(FireSignal::Slot slot);
 
 private:
 	struct TimerTask;

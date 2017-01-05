@@ -40,8 +40,8 @@ bool Timer::isRunning() const {
 }
 
 
-SlotHandle Timer::onFire(FireSignal::Function fn) {
-	return mFireSignal.on(std::move(fn));
+SlotHandle Timer::onFire(FireSignal::Slot slot) {
+	return mFireSignal.on(std::move(slot));
 }
 
 

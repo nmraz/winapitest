@@ -2,7 +2,7 @@
 
 namespace {
 
-void noop(void*, int) {}
+void noop(void*, void*) {}
 
 }  // namespace
 
@@ -14,19 +14,19 @@ SlotHandle::SlotHandle()
 
 SlotHandle::SlotHandle(SlotHandle&& rhs) noexcept
 	: mSignal(rhs.mSignal)
-	, mSlotId(rhs.mSlotId)
+	, mSlot(rhs.mSlot)
 	, mRemover(rhs.mRemover) {
 	rhs.mRemover = noop;
 }
 
 void SlotHandle::off() {
-	mRemover(mSignal, mSlotId);
+	mRemover(mSignal, mSlot);
 	mRemover = noop;
 }
 
 SlotHandle& SlotHandle::operator=(SlotHandle&& rhs) {
 	mSignal = rhs.mSignal;
-	mSlotId = rhs.mSlotId;
+	mSlot = rhs.mSlot;
 	mRemover = rhs.mRemover;
 
 	rhs.mRemover = noop;
