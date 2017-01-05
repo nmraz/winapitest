@@ -8,7 +8,9 @@ namespace base {
 class ScopedSlotHandle : public NonCopyable {
 public:
 	ScopedSlotHandle() = default;
-	ScopedSlotHandle(SlotHandle handle);
+	ScopedSlotHandle(ScopedSlotHandle&&) = default;
+
+	explicit ScopedSlotHandle(SlotHandle handle);
 
 	~ScopedSlotHandle();
 
