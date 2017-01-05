@@ -23,7 +23,7 @@ public:
 	SlotHandle onFire(FireSignal::Slot slot);
 
 private:
-	struct TimerTask;
+	struct PostedTask;
 
 	void doSet(const Task::Delay& delay, bool repeat);
 	void fire();
@@ -32,7 +32,7 @@ private:
 	bool mRepeating;
 	Task::Delay mInterval;
 
-	std::shared_ptr<TimerTask> mCurrentTask;
+	std::shared_ptr<PostedTask> mCurrentTask;
 	FireSignal mFireSignal;
 };
 

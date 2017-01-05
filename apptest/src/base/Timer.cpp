@@ -6,8 +6,8 @@
 
 namespace base {
 
-struct Timer::TimerTask {
-	TimerTask(Timer* timer)
+struct Timer::PostedTask {
+	PostedTask(Timer* timer)
 		: mTimer(timer) {}
 
 	void cancel() { mTimer = nullptr; }
@@ -16,7 +16,7 @@ struct Timer::TimerTask {
 	Timer* mTimer;
 };
 
-void Timer::TimerTask::run() {
+void Timer::PostedTask::run() {
 	if (mTimer) {
 		mTimer->fire();
 	}
@@ -52,7 +52,7 @@ void Timer::doSet(const Task::Delay& interval, bool repeat) {
 
 	mRepeating = repeat;
 	mInterval = interval;
-	mCurrentTask = std::make_shared<TimerTask>(this);
+	mCurrentTask = std::make_shared<PostedTask>(this);
 
 	repostTask();
 }
@@ -72,7 +72,7 @@ void Timer::fire() {
 
 
 void Timer::repostTask() {
-	TaskRunner::current().postTask(std::bind(&TimerTask::run, mCurrentTask), mInterval);
+	TaskRunner::current().postTask(std::bind(&PostedTask::run, mCurrentTask), mInterval);
 }
 
 }  // namespace base
