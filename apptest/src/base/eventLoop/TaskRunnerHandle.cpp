@@ -34,8 +34,8 @@ bool TaskRunnerHandle::tryPostTask(Task::Callback callback, const Task::Delay& d
 	return true;
 }
 
-bool TaskRunnerHandle::tryPostTaskWithResponse(Task::Callback callback, Task::Callback response) {
-	return tryPostTask(makeResponseCaller(std::move(callback), std::move(response)));
+bool TaskRunnerHandle::tryPostTaskAndThen(Task::Callback callback, Task::Callback then) {
+	return tryPostTask(makeResponseCaller(std::move(callback), std::move(then)));
 }
 
 
@@ -44,8 +44,8 @@ void TaskRunnerHandle::postTask(Task::Callback callback, const Task::Delay& dela
 	ASSERT(posted) << "Can't post a task to an empty TaskRunnerHandle";
 }
 
-void TaskRunnerHandle::postTaskWithResponse(Task::Callback callback, Task::Callback response) {
-	postTask(makeResponseCaller(std::move(callback), std::move(response)));
+void TaskRunnerHandle::postTaskAndThen(Task::Callback callback, Task::Callback then) {
+	postTask(makeResponseCaller(std::move(callback), std::move(then)));
 }
 
 
