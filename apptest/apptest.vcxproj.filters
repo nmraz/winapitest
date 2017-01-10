@@ -66,6 +66,9 @@
     <ClCompile Include="src\base\eventLoop\TaskRunnerHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\base\CmdLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\eventLoop\EventLoop.h">
@@ -126,6 +129,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\eventLoop\TaskRunnerRef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\CmdLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

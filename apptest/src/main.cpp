@@ -1,4 +1,5 @@
-﻿#include "base/eventLoop/TaskRunner.h"
+﻿#include "base/CmdLine.h"
+#include "base/eventLoop/TaskRunner.h"
 #include "base/eventLoop/TaskEventLoop.h"
 #include "base/logging/logging.h"
 #include "base/logging/loggingSinks.h"
@@ -9,8 +10,10 @@ using namespace std::literals;
 
 using Millis = chrono::duration<double, std::milli>;
 
-int main() {
-	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, true);
+int wmain(int argc, wchar_t** argv) {
+	base::CmdLine cmdLine(argc, argv);
+
+	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, cmdLine.hasFlag("logging-colorize"));
 
 	base::TaskRunner runner;
 	base::TaskEventLoop loop;

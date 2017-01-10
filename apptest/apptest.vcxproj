@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\base\assert.cpp" />
+    <ClCompile Include="src\base\CmdLine.cpp" />
     <ClCompile Include="src\base\eventLoop\EventLoop.cpp" />
     <ClCompile Include="src\base\eventLoop\TaskRunner.cpp" />
     <ClCompile Include="src\base\eventLoop\Task.cpp" />
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\assert.h" />
+    <ClInclude Include="src\base\CmdLine.h" />
     <ClInclude Include="src\base\eventLoop\EventLoop.h" />
     <ClInclude Include="src\base\eventLoop\TaskRunner.h" />
     <ClInclude Include="src\base\eventLoop\Task.h" />
