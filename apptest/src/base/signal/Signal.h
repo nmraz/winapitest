@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/assert.h"
 #include "base/NonCopyable.h"
 #include "base/signal/SlotHandle.h"
 #include <algorithm>
@@ -48,11 +49,14 @@ void Signal<Args...>::operator()(Args... args) const {
 
 template<typename... Args>
 void Signal<Args...>::removeSlot(void* slotAddr) {
-	mSlots.erase(std::find_if(mSlots.begin(), mSlots.end(),
+	auto it = std::find_if(mSlots.begin(), mSlots.end(),
 		[slotAddr](const auto& slot) {
 			return &slot == slotAddr;
-		})
+		}
 	);
+
+	ASSERT(it != mSlots.end()) << "Cannot remove nonexistent slot";
+	mSlots.erase(it);
 }
 
 }  // namepsace base
