@@ -14,9 +14,31 @@ constexpr std::size_t switchSepLen = 2;
 constexpr const char* switchValDelim = "=";
 
 std::string quote(const std::string& str) {
-	std::ostringstream out;
-	out << std::quoted(str);
-	return out.str();
+	std::string out = "\"";
+
+	for (std::size_t i = 0; i < str.size(); i++) {
+		if (str[i] == '\\') {
+			std::size_t begin = i, end = i + 1;
+			while (end < str.size() && str[end] == '\\') {
+				++end;
+			}
+			std::size_t backslashes = end - begin;
+
+			if (str[end] == '"' || end == str.size()) {
+				backslashes *= 2;
+			}
+
+			out.append(backslashes, '\\');
+			i = end - 1;  // balance out read characters
+		} else if (str[i] == '"') {
+			out += "\\\"";
+		} else {
+			out += str[i];
+		}
+	}
+	out += '"';
+
+	return out;
 }
 
 }  // namespace
@@ -61,7 +83,9 @@ std::string CmdLine::getCmdLineString() const {
 		}
 		ret += ' ';
 	}
-	ret += switchSep;
+	if (mArgs.size()) {
+		ret += switchSep;
+	}
 	for (const auto& arg : mArgs) {
 		ret += ' ' + quote(arg);
 	}
@@ -86,7 +110,8 @@ void CmdLine::setProgram(std::string program) {
 void CmdLine::parse(int argc, const wchar_t* const* argv) {
 	bool allowSwitches = true;
 
-	for (int i = 0; i < argc; i++) {
+	mProgram = u16ToU8(argv[0]);
+	for (int i = 1; i < argc; i++) {
 		std::string arg = u16ToU8(argv[i]);
 
 		allowSwitches &= arg != switchSep;
