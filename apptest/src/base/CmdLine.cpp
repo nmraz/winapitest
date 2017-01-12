@@ -77,8 +77,11 @@ bool CmdLine::hasFlag(std::string_view name) const {
 
 
 std::string CmdLine::getCmdLineString() const {
-	std::string ret = mProgram + ' ';
+	std::string ret = mProgram;
 
+	if (mSwitches.size()) {
+		ret += ' ';
+	}
 	for (const auto& sw : mSwitches) {
 		ret += switchSep + sw.first;
 		if (sw.second.size()) {
@@ -86,6 +89,7 @@ std::string CmdLine::getCmdLineString() const {
 		}
 		ret += ' ';
 	}
+
 	if (mArgs.size()) {
 		ret += switchSep;
 	}
