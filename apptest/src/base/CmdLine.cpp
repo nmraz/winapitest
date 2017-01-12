@@ -14,8 +14,11 @@ constexpr std::size_t switchSepLen = 2;
 constexpr const char* switchValDelim = "=";
 
 std::string quote(const std::string& str) {
-	std::string out = "\"";
+	if (str.find_first_of(" \t\\\"") == std::string::npos) {  // no quoting necessary
+		return str;
+	}
 
+	std::string out = "\"";
 	for (std::size_t i = 0; i < str.size(); i++) {
 		if (str[i] == '\\') {
 			std::size_t begin = i, end = i + 1;

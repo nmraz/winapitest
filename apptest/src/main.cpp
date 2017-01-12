@@ -18,7 +18,7 @@ int wmain(int argc, wchar_t** argv) {
 	base::TaskRunner runner;
 	base::TaskEventLoop loop;
 	
-	base::Timer timer1, timer2;
+	base::Timer timer1, timer2; 
 
 	chrono::steady_clock::time_point startTime;
 
