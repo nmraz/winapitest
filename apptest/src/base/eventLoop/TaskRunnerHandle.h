@@ -2,8 +2,14 @@
 
 #include "base/eventLoop/Task.h"
 #include <memory>
+#include <stdexcept>
 
 namespace base {
+
+struct BadTaskRunnerHandle : std::runtime_error {
+	BadTaskRunnerHandle();
+};
+
 
 class TaskRunner;
 
@@ -16,9 +22,6 @@ class TaskRunnerHandle {
 
 public:
 	TaskRunnerHandle() = default;
-
-	bool tryPostTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
-	bool tryPostTaskAndThen(Task::Callback callback, Task::Callback then);
 
 	void postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
 	void postTaskAndThen(Task::Callback callback, Task::Callback then);

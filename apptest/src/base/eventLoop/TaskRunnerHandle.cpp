@@ -1,53 +1,40 @@
 #include "TaskRunnerHandle.h"
 
-#include "base/assert.h"
 #include "base/eventLoop/TaskRunner.h"
 #include "base/eventLoop/TaskRunnerRef.h"
 #include <utility>
 
 namespace base {
-namespace {
 
-auto makeResponseCaller(Task::Callback callback, Task::Callback response) {
-	return [callback = std::move(callback), response = std::move(response),
-		callerHandle = TaskRunner::current().handle()]() mutable {
-		callback();
-		callerHandle.postTask(std::move(response));
-	};
+BadTaskRunnerHandle::BadTaskRunnerHandle()
+	: std::runtime_error("Bad TaskRunnerHandle") {
+
 }
 
-}  // namespace
 
-bool TaskRunnerHandle::tryPostTask(Task::Callback callback, const Task::Delay& delay) {
+void TaskRunnerHandle::postTask(Task::Callback callback, const Task::Delay& delay) {
 	if (!mRef) {
-		return false;
+		throw BadTaskRunnerHandle();
 	}
 
 	std::shared_lock<std::shared_mutex> hold(mRef->lock);
 	TaskRunner* runner = mRef->runner;
 	
 	if (!runner) {
-		return false;
+		throw BadTaskRunnerHandle();
 	}
 
 	runner->postTask(std::move(callback), delay);
-	return true;
-}
-
-bool TaskRunnerHandle::tryPostTaskAndThen(Task::Callback callback, Task::Callback then) {
-	return tryPostTask(makeResponseCaller(std::move(callback), std::move(then)));
-}
-
-
-void TaskRunnerHandle::postTask(Task::Callback callback, const Task::Delay& delay) {
-	[[maybe_unused]] bool posted = tryPostTask(std::move(callback), delay);
-	ASSERT(posted) << "Can't post a task to an empty TaskRunnerHandle";
 }
 
 void TaskRunnerHandle::postTaskAndThen(Task::Callback callback, Task::Callback then) {
-	postTask(makeResponseCaller(std::move(callback), std::move(then)));
+	postTask([callback = std::move(callback), then = std::move(then),
+		callerHandle = TaskRunner::current().handle()]() mutable {
+			callback();
+			callerHandle.postTask(std::move(then));
+		}
+	);
 }
-
 
 // PRIVATE
 
