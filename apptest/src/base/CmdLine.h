@@ -10,16 +10,20 @@ namespace base {
 
 class CmdLine {
 public:
+	using Switches = std::map<std::string, std::string, std::less<>>;
+	using Args = std::vector<std::string>;
+
 	CmdLine() = default;
 	CmdLine(int argc, const wchar_t* const* argv);
 	explicit CmdLine(const wchar_t* cmdLine);
 
 	std::optional<std::string> getSwitch(std::string_view name) const;
-	const std::vector<std::string>& getArgs() const { return mArgs; }
-	std::string_view getProgram() const { return mProgram; }
-	
 	bool hasFlag(std::string_view name) const;
 
+	const Args& getArgs() const { return mArgs; }
+	const Switches& getSwitches() const { return mSwitches; }
+
+	std::string getProgram() const { return mProgram; }
 	std::string getCmdLineString() const;
 
 	void setSwitch(std::string name, std::string value = "");
@@ -30,9 +34,8 @@ private:
 	void parse(int argc, const wchar_t* const* argv);
 
 	std::string mProgram;
-
-	std::map<std::string, std::string, std::less<>> mSwitches;
-	std::vector<std::string> mArgs;
+	Switches mSwitches;
+	Args mArgs;
 };
 
 }  // namespace base
