@@ -13,7 +13,7 @@ public:
 	};
 
 	enum class WaitResult {
-		wasSignalled,
+		wasSignaled,
 		timedOut
 	};
 

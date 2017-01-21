@@ -31,10 +31,10 @@ void Waitable::wait() {
 // PRIVATE
 
 Waitable::WaitResult Waitable::doWaitFor(const std::chrono::milliseconds& waitTime) {
-	ASSERT(waitTime.count() >= 0) << "cannot wait for a negative delay";
+	ASSERT(waitTime.count() >= 0) << "Cannot wait for a negative delay";
 
 	return ::WaitForSingleObject(mNativeHandle.get(), static_cast<DWORD>(waitTime.count())) == WAIT_OBJECT_0 ? 
-		WaitResult::wasSignalled
+		WaitResult::wasSignaled
 		: WaitResult::timedOut;
 }
 
