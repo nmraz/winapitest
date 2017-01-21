@@ -12,7 +12,7 @@ BadTaskRunnerHandle::BadTaskRunnerHandle()
 }
 
 
-void TaskRunnerHandle::postTask(Task::Callback callback, const Task::Delay& delay) {
+void TaskRunnerHandle::postTask(Task::Callback callback) {
 	if (!mRef) {
 		throw BadTaskRunnerHandle();
 	}
@@ -24,7 +24,7 @@ void TaskRunnerHandle::postTask(Task::Callback callback, const Task::Delay& dela
 		throw BadTaskRunnerHandle();
 	}
 
-	runner->postTask(std::move(callback), delay);
+	runner->postTask(std::move(callback));
 }
 
 void TaskRunnerHandle::postTaskAndThen(Task::Callback callback, Task::Callback then) {

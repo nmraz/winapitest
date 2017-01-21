@@ -23,7 +23,7 @@ class TaskRunnerHandle {
 public:
 	TaskRunnerHandle() = default;
 
-	void postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
+	void postTask(Task::Callback callback);
 	void postTaskAndThen(Task::Callback callback, Task::Callback then);
 
 private:
