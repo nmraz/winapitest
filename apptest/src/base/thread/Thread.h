@@ -3,6 +3,7 @@
 #include "base/eventLoop/EventLoop.h"
 #include "base/eventLoop/Task.h"
 #include "base/eventLoop/TaskRunnerHandle.h"
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -13,18 +14,20 @@ class TaskRunner;
 
 class Thread {
 public:
-	Thread() = default;
+	using LoopFactory = std::function<std::unique_ptr<EventLoop>()>;
+
+	Thread(std::unique_ptr<EventLoop> loop);
+	Thread(LoopFactory factory);
 	~Thread();
 
-	void start(std::unique_ptr<EventLoop> loop);
 	void stop(bool wait = true);
 
 	TaskRunnerHandle taskRunner() const;
-
 	std::thread::id id() const { return mThread.get_id(); }
 
 private:
 	void run(std::unique_ptr<EventLoop> loop);
+	void runWithFactory(LoopFactory factory);
 	void quit();
 
 	void setTaskRunnerHandle(TaskRunnerHandle runner);

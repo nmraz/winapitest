@@ -1,23 +1,24 @@
 #include "Thread.h"
 
-#include "base/assert.h"
 #include "base/eventLoop/EventLoop.h"
 #include "base/eventLoop/TaskRunner.h"
-#include <functional>
 #include <utility>
 
 
 namespace base {
 
+Thread::Thread(std::unique_ptr<EventLoop> loop)
+	: mThread(&Thread::run, this, std::move(loop)) {
+}
+
+Thread::Thread(LoopFactory factory)
+	: mThread(&Thread::runWithFactory, this, std::move(factory)) {
+}
+
 Thread::~Thread() {
 	stop();
 }
 
-
-void Thread::start(std::unique_ptr<EventLoop> loop) {
-	ASSERT(!mThread.joinable()) << "Thread already running";
-	mThread = std::thread(&Thread::run, this, std::move(loop));
-}
 
 void Thread::stop(bool wait) {
 	if (mThread.joinable()) {
@@ -39,6 +40,10 @@ void Thread::run(std::unique_ptr<EventLoop> loop) {
 	TaskRunner runner;
 	setTaskRunnerHandle(runner.handle());
 	loop->run();
+}
+
+void Thread::runWithFactory(LoopFactory factory) {
+	run(factory());
 }
 
 void Thread::quit() {
