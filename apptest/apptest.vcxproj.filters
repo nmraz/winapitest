@@ -134,5 +134,8 @@
     <ClInclude Include="src\base\CmdLine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\AutoRestore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
