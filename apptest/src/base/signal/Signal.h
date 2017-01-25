@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/assert.h"
+#include "base/AutoRestore.h"
 #include "base/NonCopyable.h"
 #include "base/signal/SlotHandle.h"
 #include <algorithm>
@@ -20,9 +21,15 @@ public:
 
 private:
 	friend SlotHandle;
+	// list is required here because it guarantees pointer validity even after
+	// mutation of unrelated entries (SlotHandle holds a pointer)
+	using Slots = std::list<Slot>;
+	using SlotIter = typename Slots::const_iterator;
+
 	void removeSlot(void* slot);
 
-	std::list<Slot> mSlots;
+	Slots mSlots;
+	mutable SlotIter* mNextSlot = nullptr;  // points to the slot after the currently executing slot
 };
 
 
@@ -39,8 +46,9 @@ template<typename... Args>
 void Signal<Args...>::operator()(Args... args) const {
 	auto it = mSlots.begin();
 
+	AutoRestore<SlotIter*> restore(mNextSlot, &it);
 	while (it != mSlots.end()) {
-		(*it++)(args...);  // it must be incremented *before* the slot is called
+		(*it++)(args...);
 	}
 }
 
@@ -54,8 +62,11 @@ void Signal<Args...>::removeSlot(void* slotAddr) {
 			return &slot == slotAddr;
 		}
 	);
+	ASSERT(it != mSlots.end());
 
-	ASSERT(it != mSlots.end()) << "Cannot remove nonexistent slot";
+	if (mNextSlot && it == *mNextSlot) {
+		++(*mNextSlot);  // increment before it is invalidated by erase
+	}
 	mSlots.erase(it);
 }
 
