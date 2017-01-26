@@ -24,7 +24,7 @@ void Thread::stop(bool wait) {
 
 TaskRunnerHandle Thread::taskRunner() const {
 	std::unique_lock<std::mutex> hold(mRunnerLock);
-	mRunnerCv.wait(hold, [this] {return mHasRunner; });  // wait until the runner is created
+	mRunnerCv.wait(hold, [this] { return mHasRunner; });  // wait until the runner is created
 	return mRunner;
 }
 
