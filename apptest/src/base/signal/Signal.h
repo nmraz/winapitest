@@ -16,7 +16,7 @@ class Signal : public NonCopyMovable {
 public:
 	using Slot = std::function<void(Args...)>;
 
-	SlotHandle on(Slot fn);
+	SlotHandle on(Slot slot);
 	void operator()(Args... args) const;
 
 private:
