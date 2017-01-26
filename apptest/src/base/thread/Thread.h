@@ -1,8 +1,8 @@
 #pragma once
 
 #include "base/eventLoop/EventLoop.h"
-#include "base/eventLoop/Task.h"
 #include "base/eventLoop/TaskRunnerHandle.h"
+#include <condition_variable>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -16,7 +16,6 @@ class Thread {
 public:
 	using LoopFactory = std::function<std::unique_ptr<EventLoop>()>;
 
-	Thread(std::unique_ptr<EventLoop> loop);
 	Thread(LoopFactory factory);
 	~Thread();
 
@@ -26,15 +25,18 @@ public:
 	std::thread::id id() const { return mThread.get_id(); }
 
 private:
-	void run(std::unique_ptr<EventLoop> loop);
-	void runWithFactory(LoopFactory factory);
+	void run(LoopFactory factory);
 	void quit();
 
-	void setTaskRunnerHandle(TaskRunnerHandle runner);
+	void setTaskRunner(TaskRunnerHandle runner);
 
 	std::thread mThread;
 	TaskRunnerHandle mRunner;
-	mutable std::mutex mRunnerLock;  // protects mRunner
+
+	// wait for taskRunner to be available
+	mutable std::mutex mRunnerLock;
+	mutable std::condition_variable mRunnerCv;
+	bool mHasRunner = false;
 };
 
 }  // namespace base

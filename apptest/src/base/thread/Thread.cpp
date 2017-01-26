@@ -7,12 +7,8 @@
 
 namespace base {
 
-Thread::Thread(std::unique_ptr<EventLoop> loop)
-	: mThread(&Thread::run, this, std::move(loop)) {
-}
-
 Thread::Thread(LoopFactory factory)
-	: mThread(&Thread::runWithFactory, this, std::move(factory)) {
+	: mThread(&Thread::run, this, std::move(factory)) {
 }
 
 Thread::~Thread() {
@@ -21,29 +17,25 @@ Thread::~Thread() {
 
 
 void Thread::stop(bool wait) {
-	if (mThread.joinable()) {
-		taskRunner().postTask(std::bind(&Thread::quit, this));
-		wait ? mThread.join() : mThread.detach();
-	}
+	taskRunner().postTask(std::bind(&Thread::quit, this));
+	wait ? mThread.join() : mThread.detach();
 }
 
 
 TaskRunnerHandle Thread::taskRunner() const {
-	std::lock_guard<std::mutex> hold(mRunnerLock);
+	std::unique_lock<std::mutex> hold(mRunnerLock);
+	mRunnerCv.wait(hold, [this] {return mHasRunner; });  // wait until the runner is created
 	return mRunner;
 }
 
 
 // PRIVATE
 
-void Thread::run(std::unique_ptr<EventLoop> loop) {
+void Thread::run(LoopFactory factory) {
+	std::unique_ptr<EventLoop> loop = factory();
 	TaskRunner runner;
-	setTaskRunnerHandle(runner.handle());
+	setTaskRunner(runner.handle());
 	loop->run();
-}
-
-void Thread::runWithFactory(LoopFactory factory) {
-	run(factory());
 }
 
 void Thread::quit() {
@@ -51,9 +43,11 @@ void Thread::quit() {
 }
 
 
-void Thread::setTaskRunnerHandle(TaskRunnerHandle runner) {
+void Thread::setTaskRunner(TaskRunnerHandle runner) {
 	std::lock_guard<std::mutex> hold(mRunnerLock);
+	mHasRunner = true;
 	mRunner = std::move(runner);
+	mRunnerCv.notify_all();
 }
 
 }  // namepsace base
