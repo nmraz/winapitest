@@ -57,9 +57,6 @@
     <ClCompile Include="src\base\signal\ScopedSlotHandle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\thread\Waitable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\eventLoop\TaskRunner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -117,9 +114,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\signal\ScopedSlotHandle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\thread\Waitable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\eventLoop\TaskRunner.h">

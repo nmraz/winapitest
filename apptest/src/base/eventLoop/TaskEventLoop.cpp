@@ -25,12 +25,14 @@ void TaskEventLoop::doRun(TaskRunner& runner) {
 		// We finished running the current tasks:
 		// wait until we have to process the next delayed task or the runner wakes us up explicitly
 		std::optional<Task::Delay> delay = runner.nextDelay();
+		std::unique_lock<std::mutex> hold(mWakeUpLock);
 
 		if (delay) {
-			mWakeUpEvt.waitFor(*delay);
+			mWakeUpCv.wait_for(hold, *delay, [this] {return mShouldWakeUp; });
 		} else {
-			mWakeUpEvt.wait();
+			mWakeUpCv.wait(hold, [this] {return mShouldWakeUp; });
 		}
+		mShouldWakeUp = false;
 	}
 }
 
@@ -40,7 +42,9 @@ void TaskEventLoop::quit() {
 }
 
 void TaskEventLoop::wakeUp() {
-	mWakeUpEvt.signal();
+	std::lock_guard<std::mutex> hold(mWakeUpLock);
+	mShouldWakeUp = true;
+	mWakeUpCv.notify_one();
 }
 
 }  // namespace base

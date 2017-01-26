@@ -1,7 +1,8 @@
 #pragma once
 
 #include "base/eventLoop/EventLoop.h"
-#include "base/thread/Waitable.h"
+#include <condition_variable>
+#include <mutex>
 
 namespace base {
 
@@ -15,7 +16,10 @@ public:
 private:
 	bool mShouldQuit;
 
-	Waitable mWakeUpEvt;
+	// wake-up mechanism
+	bool mShouldWakeUp;
+	std::mutex mWakeUpLock;
+	std::condition_variable mWakeUpCv;
 };
 
 }
