@@ -10,8 +10,6 @@
 
 namespace base {
 
-class TaskRunner;
-
 class Thread {
 public:
 	using LoopFactory = std::function<std::unique_ptr<EventLoop>()>;
