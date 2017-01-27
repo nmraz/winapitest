@@ -17,8 +17,14 @@ Thread::~Thread() {
 
 
 void Thread::stop(bool wait) {
-	taskRunner().postTask(std::bind(&Thread::quit, this));
-	wait ? mThread.join() : mThread.detach();
+	if (mThread.joinable()) {
+		try {
+			taskRunner().postTask(std::bind(&Thread::quit, this));
+		} catch (const BadTaskRunnerHandle&) {
+			// the thread is no loner running...
+		}
+		wait ? mThread.join() : mThread.detach();
+	}
 }
 
 
