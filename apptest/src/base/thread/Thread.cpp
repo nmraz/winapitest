@@ -6,6 +6,15 @@
 
 
 namespace base {
+namespace {
+
+// thrown when a thread should quit
+// This class explicitly doesn't derive from std::exception to prevent it from
+// inadvertently being caught in user code.
+struct QuitNow {
+};
+
+}
 
 Thread::Thread(LoopFactory factory)
 	: mThread(&Thread::run, this, std::move(factory)) {
@@ -21,7 +30,7 @@ void Thread::stop(bool wait) {
 		try {
 			taskRunner().postTask(std::bind(&Thread::quit, this));
 		} catch (const BadTaskRunnerHandle&) {
-			// the thread is no loner running...
+			// the thread is no loner running anyway
 		}
 		wait ? mThread.join() : mThread.detach();
 	}
@@ -38,14 +47,17 @@ TaskRunnerHandle Thread::taskRunner() const {
 // PRIVATE
 
 void Thread::run(LoopFactory factory) {
-	std::unique_ptr<EventLoop> loop = factory();
-	TaskRunner runner;
-	setTaskRunner(runner.handle());
-	loop->run();
+	try {
+		std::unique_ptr<EventLoop> loop = factory();
+		TaskRunner runner;
+		setTaskRunner(runner.handle());
+		loop->run();
+	} catch (const QuitNow&) {
+	}
 }
 
 void Thread::quit() {
-	TaskRunner::current().postQuit();
+	throw QuitNow();
 }
 
 
