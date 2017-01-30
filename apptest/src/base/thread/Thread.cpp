@@ -8,13 +8,13 @@
 namespace base {
 namespace {
 
-// thrown when a thread should quit
-// This class explicitly doesn't derive from std::exception to prevent it from
+// Thrown when a thread should quit
+// This class intentionally doesn't derive from std::exception to prevent it from
 // inadvertently being caught in user code.
 struct QuitNow {
 };
 
-}
+}  // namespace
 
 Thread::Thread(LoopFactory factory)
 	: mThread(&Thread::run, this, std::move(factory)) {
@@ -30,7 +30,7 @@ void Thread::stop(bool wait) {
 		try {
 			taskRunner().postTask(std::bind(&Thread::quit, this));
 		} catch (const BadTaskRunnerHandle&) {
-			// the thread is no loner running anyway
+			// the thread is no loner running anyway (?)
 		}
 		wait ? mThread.join() : mThread.detach();
 	}
@@ -39,7 +39,7 @@ void Thread::stop(bool wait) {
 
 TaskRunnerHandle Thread::taskRunner() const {
 	std::unique_lock<std::mutex> hold(mRunnerLock);
-	mRunnerCv.wait(hold, [this] { return mHasRunner; });  // wait until the runner is created
+	mRunnerCv.wait(hold, [this] { return mHasRunner; });  // wait until the runner exists
 	return mRunner;
 }
 

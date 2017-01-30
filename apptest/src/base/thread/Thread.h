@@ -31,7 +31,7 @@ private:
 	std::thread mThread;
 	TaskRunnerHandle mRunner;
 
-	// wait for taskRunner to be available
+	// wait mechanism for taskRunner
 	mutable std::mutex mRunnerLock;
 	mutable std::condition_variable mRunnerCv;
 	bool mHasRunner = false;
