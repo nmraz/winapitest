@@ -11,8 +11,10 @@ namespace win {
 template<typename T>
 class ComPtr {
 public:
-	constexpr ComPtr();
-	constexpr ComPtr(std::nullptr_t);
+	constexpr ComPtr()
+		: mPtr(nullptr) {}
+	constexpr ComPtr(std::nullptr_t)
+		: ComPtr() {}
 
 	explicit ComPtr(T* ptr);
 
@@ -51,20 +53,9 @@ private:
 
 
 template<typename T>
-constexpr ComPtr<T>::ComPtr()
-	: mPtr(nullptr) {
-}
-
-template<typename T>
-constexpr ComPtr<T>::ComPtr(std::nullptr_t)
-	: ComPtr() {
-}
-
-template<typename T>
 ComPtr<T>::ComPtr(T* ptr)
 	: mPtr(ptr) {
 }
-
 
 template<typename T>
 template<typename U, typename>
@@ -98,6 +89,7 @@ ComPtr<T>& ComPtr<T>::operator=(T* ptr) {
 template<typename T>
 ComPtr<T>& ComPtr<T>::operator=(ComPtr rhs) {
 	rhs.swap(*this);
+	return *this;
 }
 
 
@@ -133,7 +125,7 @@ T** ComPtr<T>::addr() {
 template<typename T>
 template<typename U>
 HRESULT ComPtr<T>::queryInterface(ComPtr<U>& query) {
-	ASSERT(mPtr) << "Can't query a null pointer";
+	ASSERT(mPtr) << "Null pointer dereference";
 	return mPtr->QueryInterface(query.addr());
 }
 
@@ -151,23 +143,23 @@ inline bool operator!=(const ComPtr<T>& rhs, const ComPtr<U>& lhs) {
 }
 
 template<typename T>
-inline bool operator!=(const ComPtr<T>& ptr, std::nullptr_t) {
-	return static_cast<bool>(ptr);
-}
-
-template<typename T>
-inline bool operator!=(std::nullptr_t, const ComPtr<T>& ptr) {
-	return ptr != nullptr;
-}
-
-template<typename T>
 inline bool operator==(const ComPtr<T>& ptr, std::nullptr_t) {
-	return !(ptr != nullptr);
+	return ptr.get() == nullptr;
 }
 
 template<typename T>
 inline bool operator==(std::nullptr_t, const ComPtr<T>& ptr) {
 	return ptr == nullptr;
+}
+
+template<typename T>
+inline bool operator!=(const ComPtr<T>& ptr, std::nullptr_t) {
+	return !(ptr == nullptr);
+}
+
+template<typename T>
+inline bool operator!=(std::nullptr_t, const ComPtr<T>& ptr) {
+	return ptr != nullptr;
 }
 
 }  // namespace win
