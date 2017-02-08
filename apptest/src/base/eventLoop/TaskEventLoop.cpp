@@ -27,12 +27,13 @@ void TaskEventLoop::doRun(TaskRunner& runner) {
 		std::optional<Task::Delay> delay = runner.nextDelay();
 		std::unique_lock<std::mutex> hold(mWakeUpLock);
 
+		mShouldWakeUp = false;
+
 		if (delay) {
 			mWakeUpCv.wait_for(hold, *delay, [this] { return mShouldWakeUp; });
 		} else {
 			mWakeUpCv.wait(hold, [this] { return mShouldWakeUp; });
 		}
-		mShouldWakeUp = false;
 	}
 }
 
