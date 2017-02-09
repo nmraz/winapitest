@@ -74,10 +74,8 @@ bool TaskRunner::runPendingTask() {
 		
 		if (task.runTime == Task::RunTime()) {
 			task.callback();
-
 			return true;
 		}
-
 		mDelayedTasks.push(std::move(task));
 	}
 
@@ -117,7 +115,6 @@ std::optional<Task::Delay> TaskRunner::nextDelay() const {
 // static
 TaskRunner& TaskRunner::current() {
 	ASSERT(gCurrentRunner) << "TaskRunner not initialized on this thread";
-
 	return *gCurrentRunner;
 }
 
