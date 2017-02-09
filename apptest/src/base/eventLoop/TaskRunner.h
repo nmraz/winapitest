@@ -25,6 +25,7 @@ public:
 	~TaskRunner();
 
 	void postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
+	void quitNow();
 	void postQuit();
 
 	TaskRunnerHandle handle();
@@ -40,7 +41,6 @@ private:
 	using DelayedTaskQueue = std::priority_queue<Task>;
 
 	void setLoop(EventLoop* loop);
-	void quitTask();
 
 	TaskQueue mTaskQueue;
 	std::mutex mTaskLock;  // protects mTaskQueue, mCurrentLoop

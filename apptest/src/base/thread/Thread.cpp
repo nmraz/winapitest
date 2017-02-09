@@ -1,5 +1,6 @@
 #include "Thread.h"
 
+#include "base/assert.h"
 #include "base/eventLoop/EventLoop.h"
 #include "base/eventLoop/TaskRunner.h"
 #include <utility>
@@ -8,11 +9,7 @@
 namespace base {
 namespace {
 
-// Thrown when a thread should quit
-// This class intentionally doesn't derive from std::exception to prevent it from
-// inadvertently being caught in user code.
-struct QuitNow {
-};
+thread_local bool quitProperly = false;
 
 }  // namespace
 
@@ -27,11 +24,7 @@ Thread::~Thread() {
 
 void Thread::stop(bool wait) {
 	if (mThread.joinable()) {
-		try {
-			taskRunner().postTask(std::bind(&Thread::quit, this));
-		} catch (const BadTaskRunnerHandle&) {
-			// the thread is no loner running anyway (?)
-		}
+		taskRunner().postTask(std::bind(&Thread::quit, this));
 		wait ? mThread.join() : mThread.detach();
 	}
 }
@@ -47,17 +40,16 @@ TaskRunnerHandle Thread::taskRunner() const {
 // PRIVATE
 
 void Thread::run(LoopFactory factory) {
-	try {
-		std::unique_ptr<EventLoop> loop = factory();
-		TaskRunner runner;
-		setTaskRunner(runner.handle());
-		loop->run();
-	} catch (const QuitNow&) {
-	}
+	std::unique_ptr<EventLoop> loop = factory();
+	TaskRunner runner;
+	setTaskRunner(runner.handle());
+	loop->run();
+	ASSERT(quitProperly) << "Thread should not quit of its own accord";
 }
 
 void Thread::quit() {
-	throw QuitNow();
+	quitProperly = true;
+	TaskRunner::current().quitNow();
 }
 
 

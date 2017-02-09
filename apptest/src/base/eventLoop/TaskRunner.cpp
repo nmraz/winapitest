@@ -45,7 +45,15 @@ void TaskRunner::postTask(Task::Callback callback, const Task::Delay& delay) {
 }
 
 void TaskRunner::postQuit() {
-	postTask(std::bind(&TaskRunner::quitTask, this));
+	postTask(std::bind(&TaskRunner::quitNow, this));
+}
+
+void TaskRunner::quitNow() {
+	if (EventLoop::isNested()) {
+		postQuit();
+	}
+
+	EventLoop::current().quit();
 }
 
 
@@ -57,7 +65,6 @@ TaskRunnerHandle TaskRunner::handle() {
 bool TaskRunner::runPendingTask() {
 	if (mCurrentTasks.empty()) {
 		std::lock_guard<std::mutex> hold(mTaskLock);
-
 		mTaskQueue.swap(mCurrentTasks);
 	}
 
@@ -120,14 +127,6 @@ TaskRunner& TaskRunner::current() {
 void TaskRunner::setLoop(EventLoop* loop) {
 	std::lock_guard<std::mutex> hold(mTaskLock);
 	mCurrentLoop = loop;
-}
-
-void TaskRunner::quitTask() {
-	if (EventLoop::isNested()) {
-		postQuit();
-	}
-
-	EventLoop::current().quit();
 }
 
 }  // namespace base
