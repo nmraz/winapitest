@@ -27,15 +27,6 @@ void TaskRunnerHandle::postTask(Task::Callback callback) {
 	runner->postTask(std::move(callback));
 }
 
-void TaskRunnerHandle::postTaskAndThen(Task::Callback callback, Task::Callback then) {
-	postTask([callback = std::move(callback), then = std::move(then),
-		callerHandle = TaskRunner::current().handle()]() mutable {
-			callback();
-			callerHandle.postTask(std::move(then));
-		}
-	);
-}
-
 // PRIVATE
 
 TaskRunnerHandle::TaskRunnerHandle(std::shared_ptr<impl::TaskRunnerRef> ref)
