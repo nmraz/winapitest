@@ -18,6 +18,9 @@ public:
 
 	explicit ComPtr(T* ptr);
 
+	ComPtr(const ComPtr& rhs);
+	ComPtr(ComPtr&& rhs);
+
 	template<typename U, typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
 	ComPtr(const ComPtr<U>& rhs);
 
@@ -55,6 +58,21 @@ private:
 template<typename T>
 ComPtr<T>::ComPtr(T* ptr)
 	: mPtr(ptr) {
+}
+
+template<typename T>
+ComPtr<T>::ComPtr(const ComPtr& rhs)
+	: mPtr(rhs.mPtr) {
+	if (mPtr) {
+		mPtr->AddRef();
+	}
+}
+
+template<typename T>
+template<typename U, typename>
+ComPtr<T>::ComPtr(ComPtr<U>&& rhs) noexcept
+	: mPtr(rhs.mPtr) {
+	rhs.mPtr = nullptr;
 }
 
 template<typename T>
