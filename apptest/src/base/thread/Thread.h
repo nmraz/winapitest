@@ -28,13 +28,13 @@ private:
 
 	void setTaskRunner(TaskRunnerHandle runner);
 
-	std::thread mThread;
-	TaskRunnerHandle mRunner;
-
 	// wait mechanism for taskRunner
 	mutable std::mutex mRunnerLock;
 	mutable std::condition_variable mRunnerCv;
 	bool mHasRunner = false;
+
+	TaskRunnerHandle mRunner;
+	std::thread mThread;  // the thread must be constructed (and started) last!
 };
 
 }  // namespace base
