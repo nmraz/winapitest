@@ -4,6 +4,7 @@
 #include "base/logging/logging.h"
 #include "base/logging/loggingSinks.h"
 #include "base/Timer.h"
+#include "base/thread/Thread.h"
 
 namespace chrono = std::chrono;
 using namespace std::literals;
@@ -18,7 +19,8 @@ int wmain(int argc, wchar_t** argv) {
 	base::TaskRunner runner;
 	base::TaskEventLoop loop;
 	
-	base::Timer timer1, timer2; 
+	base::Timer timer1, timer2;
+	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); });
 
 	chrono::steady_clock::time_point startTime;
 
@@ -39,6 +41,12 @@ int wmain(int argc, wchar_t** argv) {
 
 		timer1.set(5s);
 		timer2.set(2s);
+
+		thr.taskRunner().postTaskAndThen([] {
+			return 5;
+		}, [] (int n) {
+			LOG(trace) << "recieved value " << n;
+		});
 	});
 
 	loop.run();
