@@ -48,7 +48,7 @@ private:
 template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::true_type) {
 	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
-		      caller = TaskRunner::current().handle()] () mutable {
+		      caller = TaskRunner::current().handle()]() mutable {
 		callback();
 		caller.postTask(std::forward<Then>(then));
 	});
@@ -57,7 +57,7 @@ void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::true_t
 template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::false_type) {
 	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
-		      caller = TaskRunner::current().handle()] () mutable {
+		      caller = TaskRunner::current().handle()]() mutable {
 		caller.postTask(std::bind(std::forward<Then>(then), callback()));
 	});
 }
