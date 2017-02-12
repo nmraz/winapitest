@@ -1,6 +1,7 @@
 #include "logging.h"
 
 #include <mutex>
+#include <thread>
 #include <type_traits>
 
 namespace {
@@ -39,7 +40,8 @@ bool filterOut(Level level) {
 
 
 Message::Message(Level level, const char* file, int line) {
-	mStream << "[" << loggingLevelToString(level, gColorizeLogging) << "][" << file << "(" << line << ")] ";
+	mStream << "[" << loggingLevelToString(level, gColorizeLogging) << "][thread " << std::this_thread::get_id() << "]["
+		<< file << "(" << line << ")] ";
 }
 
 Message::~Message() {
