@@ -41,7 +41,7 @@ bool filterOut(Level level) {
 
 Message::Message(Level level, const char* file, int line) {
 	mStream << "[" << loggingLevelToString(level, gColorizeLogging) << "][thread " << std::this_thread::get_id() << "]["
-		<< file << "(" << line << ")] ";
+		<< file << ":" << line << "] ";
 }
 
 Message::~Message() {

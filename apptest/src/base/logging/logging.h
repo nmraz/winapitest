@@ -4,7 +4,7 @@
 #include <sstream>
 
 #define LOG_FULL(LEVEL, FILE, LINE) ::logging::impl::filterOut(logging::Level::LEVEL) ? (void) 0 : \
-	::logging::impl::StreamVoidify() | ::logging::impl::Message(logging::Level::LEVEL, FILE, LINE).stream()
+	::logging::impl::MsgVoidify() | ::logging::impl::Message(logging::Level::LEVEL, FILE, LINE)
 
 #define LOG(LEVEL) LOG_FULL(LEVEL, __FILE__, __LINE__)
 
@@ -24,20 +24,24 @@ namespace impl {
 bool filterOut(Level level);
 
 
-struct StreamVoidify {
-	void operator|(std::ostream&) {}
-};
-
-
 class Message {
 public:
 	Message(Level level, const char* file, int line);
 	~Message();
 
-	std::ostream& stream() { return mStream; }
+	template<typename T>
+	Message& operator<<(T&& val) {
+		mStream << std::forward<T>(val);
+		return *this;
+	}
 
 private:
 	std::ostringstream mStream;
+};
+
+
+struct MsgVoidify {
+	void operator|(const Message&) {}
 };
 
 }  // namespace impl
