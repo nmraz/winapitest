@@ -6,7 +6,13 @@
 
 namespace {
 
-const char* loggingLevelToString(logging::Level level, bool colorize) {
+std::mutex gLoggingLock;
+
+std::unique_ptr<logging::Sink> gLoggingSink;
+logging::Level gMinLoggingLevel;
+bool gColorizeLogging;
+
+const char* loggingLevelToString(logging::Level level) {
 	using LevelType = std::underlying_type_t<logging::Level>;
 
 	// maps [Level level][bool color] to string
@@ -18,14 +24,8 @@ const char* loggingLevelToString(logging::Level level, bool colorize) {
 		{"ERROR", "\x1b[31mERROR\x1b[0m"}
 	};
 
-	return table[static_cast<LevelType>(level)][colorize];
+	return table[static_cast<LevelType>(level)][gColorizeLogging];
 }
-
-std::mutex gLoggingLock;
-
-std::unique_ptr<logging::Sink> gLoggingSink;
-logging::Level gMinLoggingLevel;
-bool gColorizeLogging;
 
 }  // namespace
 
@@ -40,7 +40,7 @@ bool filterOut(Level level) {
 
 
 Message::Message(Level level, const char* file, int line) {
-	mStream << "[" << loggingLevelToString(level, gColorizeLogging) << "][thread " << std::this_thread::get_id() << "]["
+	mStream << "[" << loggingLevelToString(level) << "][thread " << std::this_thread::get_id() << "]["
 		<< file << ":" << line << "] ";
 }
 
