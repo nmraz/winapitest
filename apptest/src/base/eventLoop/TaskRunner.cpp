@@ -69,7 +69,7 @@ bool TaskRunner::runPendingTask() {
 	}
 
 	while (!mCurrentTasks.empty()) {
-		Task task = std::move(const_cast<Task&>(mCurrentTasks.front()));
+		Task task = std::move(mCurrentTasks.front());
 		mCurrentTasks.pop();
 		
 		if (task.runTime == Task::RunTime()) {
