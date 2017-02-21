@@ -58,7 +58,9 @@ template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::false_type) {
 	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
 		      caller = TaskRunner::current().handle()]() mutable {
-		caller.postTask(std::bind(std::forward<Then>(then), callback()));
+		caller.postTask([then = std::forward<Then>(then), tmp = callback()] {
+			then(std::move(tmp));
+		});
 	});
 }
 
