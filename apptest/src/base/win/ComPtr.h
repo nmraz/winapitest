@@ -40,7 +40,7 @@ public:
 
 	T** addr();
 	void** voidAddr() { return static_cast<void**>(addr()); }
-	IUnknown** unknownAddr() { return reinterpret_cast<IUnknown**>(addr()); }
+	IUnknown** unknownAddr() { return static_cast<IUnknown**>(addr()); }
 
 	template<typename U>
 	HRESULT queryInterface(ComPtr<U>& query);
