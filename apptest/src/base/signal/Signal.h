@@ -62,7 +62,7 @@ void Signal<Args...>::removeSlot(void* slotAddr) {
 			return &slot == slotAddr;
 		}
 	);
-	ASSERT(it != mSlots.end());
+	ASSERT(it != mSlots.end()) << "Corrupt signal state";
 
 	if (mNextSlot && it == *mNextSlot) {
 		++(*mNextSlot);  // increment before it is invalidated by erase
