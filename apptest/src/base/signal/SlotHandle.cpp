@@ -1,37 +1,26 @@
 #include "SlotHandle.h"
 
-namespace {
-
-void noop(void*, void*) {}
-
-}  // namespace
-
+#include "base/signal/Signal.h"
 
 namespace base {
 
-SlotHandle::SlotHandle()
-	: mRemover(noop) {}
-
-SlotHandle::SlotHandle(SlotHandle&& rhs) noexcept
-	: mSignal(rhs.mSignal)
-	, mSlot(rhs.mSlot)
-	, mRemover(rhs.mRemover) {
-	rhs.mRemover = noop;
-}
-
 void SlotHandle::off() {
-	mRemover(mSignal, mSlot);
-	mRemover = noop;
+	if (auto slot = mSlot.lock()) {
+		slot->off();
+	}
 }
 
-SlotHandle& SlotHandle::operator=(SlotHandle&& rhs) {
-	mSignal = rhs.mSignal;
-	mSlot = rhs.mSlot;
-	mRemover = rhs.mRemover;
+void SlotHandle::block(bool block) {
+	if (auto slot = mSlot.lock()) {
+		slot->block(block);
+	}
+}
 
-	rhs.mRemover = noop;
-
-	return *this;
+bool SlotHandle::blocked() const {
+	if (auto slot = mSlot.lock()) {
+		return slot->blocked();
+	}
+	return true;
 }
 
 }  // namespace base

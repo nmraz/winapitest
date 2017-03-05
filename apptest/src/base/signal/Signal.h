@@ -6,10 +6,19 @@
 #include "base/signal/SlotHandle.h"
 #include <algorithm>
 #include <functional>
-#include <list>
 #include <utility>
+#include <vector>
 
 namespace base {
+namespace impl {
+
+struct SlotRepBase {
+	virtual void off() = 0;
+	virtual void block(bool block) = 0;
+	virtual bool blocked() const = 0;
+};
+
+}  // namespace impl
 
 template<typename... Args>
 class Signal : public NonCopyMovable {
@@ -21,53 +30,86 @@ public:
 
 private:
 	friend SlotHandle;
-	// list is required here because it guarantees pointer validity even after
-	// mutation of unrelated entries (SlotHandle holds a pointer)
-	using Slots = std::list<Slot>;
-	using SlotIter = typename Slots::const_iterator;
 
-	void removeSlot(void* slot);
+	struct SlotRep : impl::SlotRepBase {
+		SlotRep(Signal* signal, Slot slot)
+			: mSignal(signal)
+			, mSlot(std::move(slot)) {
+		}
+
+		void off() override { mSignal->removeSlot(this); }
+		void block(bool block) override { mBlocked = block; }
+		bool blocked() const override { return mBlocked; }
+
+		void call(Args... args) const { if (!mBlocked) mSlot(args...); }
+
+		Signal* mSignal;
+		Slot mSlot;
+		bool mBlocked = false;
+	};
+
+	using SlotPtr = std::shared_ptr<SlotRep>;
+	using Slots = std::vector<SlotPtr>;
+
+	void removeSlot(SlotRep* rep);
+	void tidy();  // removes elements marked for removal, if safe
 
 	Slots mSlots;
-	mutable SlotIter* mNextSlot = nullptr;  // points to the slot after the currently executing slot
+	// number of nested emissions - when 0, it is safe to remove elements directly
+	mutable int mEmitDepth = 0;
 };
 
 
 template<typename... Args>
 SlotHandle Signal<Args...>::on(Slot slot) {
-	mSlots.push_back(std::move(slot));
-	void* slotAddr = &*mSlots.rbegin();  // iterator => pointer
-
-	return {this, slotAddr};
+	auto rep = std::make_shared<SlotRep>(this, std::move(slot));
+	mSlots.push_back(rep);
+	return SlotHandle(rep);
 }
 
 
 template<typename... Args>
 void Signal<Args...>::operator()(Args... args) const {
-	auto it = mSlots.begin();
+	{
+		AutoRestore<int> restore(mEmitDepth);
+		++mEmitDepth;
 
-	AutoRestore<SlotIter*> restore(mNextSlot, &it);
-	while (it != mSlots.end()) {
-		(*it++)(args...);
+		// iterators may be invalidated, use indices instead
+		for (std::size_t i = 0; i < mSlots.size(); ++i) {
+			const auto& slot = mSlots[i];
+			if (slot) {
+				slot->call(args...);
+			}
+		}
 	}
+
+	const_cast<Signal*>(this)->tidy();
 }
 
 
 // PRIVATE
 
 template<typename... Args>
-void Signal<Args...>::removeSlot(void* slotAddr) {
+void Signal<Args...>::removeSlot(SlotRep* rep) {
 	auto it = std::find_if(mSlots.begin(), mSlots.end(),
-		[slotAddr](const auto& slot) {
-			return &slot == slotAddr;
+		[&](const auto& cur) {
+			return cur.get() == rep;
 		}
 	);
 	ASSERT(it != mSlots.end()) << "Corrupt signal state";
 
-	if (mNextSlot && it == *mNextSlot) {
-		++(*mNextSlot);  // increment before it is invalidated by erase
+	if (!mEmitDepth) {
+		mSlots.erase(it);
+	} else {
+		*it = nullptr;
 	}
-	mSlots.erase(it);
+}
+
+template<typename... Args>
+void Signal<Args...>::tidy() {
+	if (!mEmitDepth) {
+		mSlots.erase(std::remove(mSlots.begin(), mSlots.end(), nullptr), mSlots.end());
+	}
 }
 
 }  // namepsace base

@@ -5,23 +5,20 @@
 
 namespace base {
 
-class ScopedSlotHandle : public NonCopyable {
+class ScopedSlotHandle : public NonCopyable, private SlotHandle {
 public:
+	using SlotHandle::off;
+	using SlotHandle::active;
+	using SlotHandle::block;
+	using SlotHandle::blocked;
+	using SlotHandle::operator=;
+
 	ScopedSlotHandle() = default;
-	ScopedSlotHandle(ScopedSlotHandle&&) = default;
+	ScopedSlotHandle(const SlotHandle& rhs);
+	ScopedSlotHandle(SlotHandle&& rhs);
+	~ScopedSlotHandle() { off(); }
 
-	explicit ScopedSlotHandle(SlotHandle handle);
-
-	~ScopedSlotHandle();
-
-	ScopedSlotHandle& operator=(ScopedSlotHandle rhs);
-	ScopedSlotHandle& operator=(SlotHandle handle);
-
-	void off();
-	SlotHandle release();
-
-private:
-	SlotHandle mSlot;
+	SlotHandle release() { return std::move(*this); }
 };
 
 }  // namespace base

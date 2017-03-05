@@ -1,36 +1,31 @@
 #pragma once
 
-#include "base/NonCopyable.h"
+#include <memory>
 
 namespace base {
 
-class SlotHandle : public NonCopyable {
+namespace impl {
+struct SlotRepBase;
+}
+
+class SlotHandle {
 public:
-	SlotHandle();
-	SlotHandle(SlotHandle&& rhs) noexcept;
+	SlotHandle() = default;
 
 	void off();
-
-	SlotHandle& operator=(SlotHandle&& rhs);
+	void block(bool block = true);
+	bool blocked() const;
+	bool active() const { return !mSlot.expired(); }
 
 private:
-	template<typename Signal>
-	SlotHandle(Signal* signal, void* slot);
-
-	void* mSignal;
-	void* mSlot;
-	void (*mRemover)(void*, void*);
-
 	template<typename... Args>
 	friend class Signal;
+
+	explicit SlotHandle(std::weak_ptr<impl::SlotRepBase> slot)
+		: mSlot(std::move(slot)) {
+	}
+
+	std::weak_ptr<impl::SlotRepBase> mSlot;
 };
-
-
-template<typename Signal>
-SlotHandle::SlotHandle(Signal* signal, void* slot)
-	: mSignal(signal)
-	, mSlot(slot)
-	, mRemover([](void* signal, void* slot) { static_cast<Signal*>(signal)->removeSlot(slot); }) {
-}
 
 }  // namespace base
