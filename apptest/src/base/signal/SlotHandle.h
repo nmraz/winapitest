@@ -15,7 +15,7 @@ public:
 	void off();
 	void block(bool block = true);
 	bool blocked() const;
-	bool active() const { return !mSlot.expired(); }
+	bool alive() const { return !mSlot.expired(); }
 
 private:
 	template<typename... Args>

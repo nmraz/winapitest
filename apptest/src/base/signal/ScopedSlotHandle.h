@@ -8,7 +8,7 @@ namespace base {
 class ScopedSlotHandle : public NonCopyable, private SlotHandle {
 public:
 	using SlotHandle::off;
-	using SlotHandle::active;
+	using SlotHandle::alive;
 	using SlotHandle::block;
 	using SlotHandle::blocked;
 	using SlotHandle::operator=;
