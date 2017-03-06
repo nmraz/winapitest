@@ -41,7 +41,7 @@ private:
 		void block(bool block) override { mBlocked = block; }
 		bool blocked() const override { return mBlocked; }
 
-		void call(Args... args) const { if (!mBlocked) mSlot(args...); }
+		void call(Args&... args) const { if (!mBlocked) mSlot(args...); }
 
 		Signal* mSignal;
 		Slot mSlot;
