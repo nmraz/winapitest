@@ -26,7 +26,7 @@ public:
 	using Slot = std::function<void(Args...)>;
 
 	SlotHandle on(Slot slot);
-	void operator()(Args... args) const;
+	void operator()(Args... args);
 
 private:
 	friend SlotHandle;
@@ -56,7 +56,7 @@ private:
 
 	Slots mSlots;
 	// number of nested emissions - when 0, it is safe to remove elements directly
-	mutable int mEmitDepth = 0;
+	int mEmitDepth = 0;
 };
 
 
@@ -69,7 +69,7 @@ SlotHandle Signal<Args...>::on(Slot slot) {
 
 
 template<typename... Args>
-void Signal<Args...>::operator()(Args... args) const {
+void Signal<Args...>::operator()(Args... args) {
 	{
 		AutoRestore<int> restore(mEmitDepth);
 		++mEmitDepth;
@@ -83,7 +83,7 @@ void Signal<Args...>::operator()(Args... args) const {
 		}
 	}
 
-	const_cast<Signal*>(this)->tidy();
+	tidy();
 }
 
 
