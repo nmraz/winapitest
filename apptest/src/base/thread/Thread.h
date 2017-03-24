@@ -24,7 +24,6 @@ public:
 
 private:
 	void run(LoopFactory factory);
-	void quit();
 
 	void setTaskRunner(TaskRunnerHandle runner);
 

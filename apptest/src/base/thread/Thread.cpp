@@ -24,7 +24,10 @@ Thread::~Thread() {
 
 void Thread::stop(bool wait) {
 	if (mThread.joinable()) {
-		taskRunner().postTask(std::bind(&Thread::quit, this));
+		taskRunner().postTask([] {
+			quitProperly = true;
+			TaskRunner::current().quitNow();
+		});
 		wait ? mThread.join() : mThread.detach();
 	}
 }
@@ -45,11 +48,6 @@ void Thread::run(LoopFactory factory) {
 	setTaskRunner(runner.handle());
 	loop->run();
 	ASSERT(quitProperly) << "Thread should not quit of its own accord";
-}
-
-void Thread::quit() {
-	quitProperly = true;
-	TaskRunner::current().quitNow();
 }
 
 
