@@ -5,6 +5,7 @@
 #include "base/logging/loggingSinks.h"
 #include "base/Timer.h"
 #include "base/thread/Thread.h"
+#include "base/thread/threadName.h"
 
 namespace chrono = std::chrono;
 using namespace std::literals;
@@ -15,12 +16,13 @@ int wmain(int argc, wchar_t** argv) {
 	base::CmdLine cmdLine(argc, argv);
 
 	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, cmdLine.hasFlag("logging-colorize"));
+	base::setCurrentThreadName("MainThread");
 
 	base::TaskRunner runner;
 	base::TaskEventLoop loop;
 	
 	base::Timer timer1, timer2;
-	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); });
+	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); }, "WorkerThread");
 
 	chrono::steady_clock::time_point startTime;
 
@@ -43,6 +45,7 @@ int wmain(int argc, wchar_t** argv) {
 		timer2.set(2s);
 
 		thr.taskRunner().postTaskAndThen([] {
+			LOG(trace) << "sending value 5";
 			return 5;
 		}, [] (int n) {
 			LOG(trace) << "recieved value " << n;

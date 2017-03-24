@@ -3,8 +3,8 @@
 #include "base/assert.h"
 #include "base/eventLoop/EventLoop.h"
 #include "base/eventLoop/TaskRunner.h"
+#include "base/thread/threadName.h"
 #include <utility>
-
 
 namespace base {
 namespace {
@@ -15,6 +15,10 @@ thread_local bool quitProperly = false;
 
 Thread::Thread(LoopFactory factory)
 	: mThread(&Thread::run, this, std::move(factory)) {
+}
+
+Thread::Thread(LoopFactory factory, std::string name)
+	: mThread(&Thread::namedRun, this, std::move(factory), std::move(name)) {
 }
 
 Thread::~Thread() {
@@ -48,6 +52,11 @@ void Thread::run(LoopFactory factory) {
 	setTaskRunner(runner.handle());
 	loop->run();
 	ASSERT(quitProperly) << "Thread should not quit of its own accord";
+}
+
+void Thread::namedRun(LoopFactory factory, std::string name) {
+	setCurrentThreadName(std::move(name));
+	run(std::move(factory));
 }
 
 

@@ -6,6 +6,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <thread>
 
 namespace base {
@@ -15,6 +16,7 @@ public:
 	using LoopFactory = std::function<std::unique_ptr<EventLoop>()>;
 
 	Thread(LoopFactory factory);
+	Thread(LoopFactory factory, std::string name);
 	~Thread();
 
 	void stop(bool wait = true);
@@ -24,6 +26,7 @@ public:
 
 private:
 	void run(LoopFactory factory);
+	void namedRun(LoopFactory factory, std::string name);
 
 	void setTaskRunner(TaskRunnerHandle runner);
 

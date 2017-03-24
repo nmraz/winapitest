@@ -149,6 +149,7 @@
     <ClCompile Include="src\base\signal\ScopedSlotHandle.cpp" />
     <ClCompile Include="src\base\signal\SlotHandle.cpp" />
     <ClCompile Include="src\base\thread\Thread.cpp" />
+    <ClCompile Include="src\base\thread\threadName.cpp" />
     <ClCompile Include="src\base\Timer.cpp" />
     <ClCompile Include="src\base\unicode.cpp" />
     <ClCompile Include="src\base\win\ScopedHandle.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="src\base\signal\Signal.h" />
     <ClInclude Include="src\base\signal\SlotHandle.h" />
     <ClInclude Include="src\base\thread\Thread.h" />
+    <ClInclude Include="src\base\thread\threadName.h" />
     <ClInclude Include="src\base\Timer.h" />
     <ClInclude Include="src\base\unicode.h" />
     <ClInclude Include="src\base\WeakPtr.h" />
