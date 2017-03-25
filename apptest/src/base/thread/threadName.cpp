@@ -44,7 +44,7 @@ void setCurrentThreadName(std::string name) {
 	gCurrentName = std::move(name);
 }
 
-std::string getCurrentThreadName() {
+const std::string& getCurrentThreadName() {
 	return gCurrentName;
 }
 
