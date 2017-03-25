@@ -8,7 +8,6 @@ namespace base {
 
 BadTaskRunnerHandle::BadTaskRunnerHandle()
 	: std::runtime_error("Bad TaskRunnerHandle") {
-
 }
 
 
@@ -17,7 +16,7 @@ void TaskRunnerHandle::postTask(Task::Callback callback) {
 		throw BadTaskRunnerHandle();
 	}
 
-	std::shared_lock<std::shared_mutex> hold(mRef->lock);
+	std::lock_guard<std::mutex> hold(mRef->lock);
 	TaskRunner* runner = mRef->runner;
 	
 	if (!runner) {

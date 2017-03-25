@@ -22,7 +22,7 @@ TaskRunner::TaskRunner()
 }
 
 TaskRunner::~TaskRunner() {
-	std::lock_guard<std::shared_mutex> hold(mHandleRef->lock);
+	std::lock_guard<std::mutex> hold(mHandleRef->lock);
 	mHandleRef->runner = nullptr;
 
 	gCurrentRunner = nullptr;
