@@ -6,7 +6,7 @@
 namespace base {
 namespace {
 
-thread_local std::string gCurrentName = "thr" + std::to_string(::GetCurrentThreadId());
+thread_local std::string gCurrentName = "<anonymous>";
 
 
 // Adapted from https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx

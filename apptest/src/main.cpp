@@ -16,13 +16,13 @@ int wmain(int argc, wchar_t** argv) {
 	base::CmdLine cmdLine(argc, argv);
 
 	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, cmdLine.hasFlag("logging-colorize"));
-	base::setCurrentThreadName("MainThread");
+	base::setCurrentThreadName("Main");
 
 	base::TaskRunner runner;
 	base::TaskEventLoop loop;
 	
 	base::Timer timer1, timer2;
-	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); }, "WorkerThread");
+	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); }, "Worker");
 
 	chrono::steady_clock::time_point startTime;
 
