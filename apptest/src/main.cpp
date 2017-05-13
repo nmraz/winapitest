@@ -18,9 +18,6 @@ int wmain(int argc, wchar_t** argv) {
 	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, cmdLine.hasFlag("logging-colorize"));
 	base::setCurrentThreadName("Main");
 
-	base::TaskRunner runner;
-	base::TaskEventLoop loop;
-	
 	base::Timer timer1, timer2;
 	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); }, "Worker");
 
@@ -29,7 +26,7 @@ int wmain(int argc, wchar_t** argv) {
 	timer1.onFire([&] {
 		LOG(trace) << "timer1: elapsed time: "
 			<< Millis(chrono::steady_clock::now() - startTime).count() << "ms";
-		runner.postQuit();
+		base::TaskRunner::current().postQuit();
 	});
 
 	timer2.onFire([&] {
@@ -37,7 +34,7 @@ int wmain(int argc, wchar_t** argv) {
 			<< Millis(chrono::steady_clock::now() - startTime).count() << "ms";
 	});
 
-	runner.postTask([&] {
+	base::TaskRunner::current().postTask([&] {
 		LOG(trace) << "started";
 		startTime = chrono::steady_clock::now();
 
@@ -52,5 +49,6 @@ int wmain(int argc, wchar_t** argv) {
 		});
 	});
 
+	base::TaskEventLoop loop;
 	loop.run();
 }

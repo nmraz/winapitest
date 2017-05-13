@@ -48,8 +48,7 @@ TaskRunnerHandle Thread::taskRunner() const {
 
 void Thread::run(LoopFactory factory) {
 	std::unique_ptr<EventLoop> loop = factory();
-	TaskRunner runner;
-	setTaskRunner(runner.handle());
+	setTaskRunner(TaskRunner::current().handle());
 	loop->run();
 	ASSERT(quitProperly) << "Thread should not quit of its own accord";
 }

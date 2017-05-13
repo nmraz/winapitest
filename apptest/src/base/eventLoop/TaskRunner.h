@@ -20,9 +20,10 @@ struct TaskRunnerRef;
 class TaskRunner : public NonCopyMovable {
 	friend EventLoop;
 
-public:
 	TaskRunner();
 	~TaskRunner();
+
+public:
 
 	void postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
 	void quitNow();

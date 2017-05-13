@@ -8,24 +8,15 @@
 #include <utility>
 
 namespace base {
-namespace {
-
-thread_local TaskRunner* gCurrentRunner = nullptr;
-
-}  // namespace
-
 
 TaskRunner::TaskRunner()
 	: mCurrentLoop(nullptr)
 	, mHandleRef(std::make_shared<impl::TaskRunnerRef>(this)) {
-	gCurrentRunner = this;
 }
 
 TaskRunner::~TaskRunner() {
 	std::lock_guard<std::mutex> hold(mHandleRef->lock);
 	mHandleRef->runner = nullptr;
-
-	gCurrentRunner = nullptr;
 }
 
 
@@ -114,8 +105,8 @@ std::optional<Task::Delay> TaskRunner::nextDelay() const {
 
 // static
 TaskRunner& TaskRunner::current() {
-	ASSERT(gCurrentRunner) << "TaskRunner not initialized on this thread";
-	return *gCurrentRunner;
+	static thread_local TaskRunner runner;
+	return runner;
 }
 
 
