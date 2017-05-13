@@ -13,7 +13,7 @@ namespace base {
 namespace impl {
 
 struct SlotRepBase {
-	virtual void off() = 0;
+	virtual void disconnect() = 0;
 	virtual void block(bool block) = 0;
 	virtual bool blocked() const = 0;
 };
@@ -25,7 +25,7 @@ class Signal : public NonCopyMovable {
 public:
 	using Slot = std::function<void(Args...)>;
 
-	SlotHandle on(Slot slot);
+	SlotHandle connect(Slot slot);
 	void operator()(Args... args);
 
 private:
@@ -37,7 +37,7 @@ private:
 			, mSlot(std::move(slot)) {
 		}
 
-		void off() override { mSignal->removeSlot(this); }
+		void disconnect() override { mSignal->disconnect(this); }
 		void block(bool block) override { mBlocked = block; }
 		bool blocked() const override { return mBlocked; }
 
@@ -51,7 +51,7 @@ private:
 	using SlotPtr = std::shared_ptr<SlotRep>;
 	using Slots = std::vector<SlotPtr>;
 
-	void removeSlot(SlotRep* rep);
+	void disconnect(SlotRep* rep);
 	void tidy();  // removes elements marked for removal, if safe
 
 	Slots mSlots;
@@ -61,7 +61,7 @@ private:
 
 
 template<typename... Args>
-SlotHandle Signal<Args...>::on(Slot slot) {
+SlotHandle Signal<Args...>::connect(Slot slot) {
 	auto rep = std::make_shared<SlotRep>(this, std::move(slot));
 	mSlots.push_back(rep);
 	return SlotHandle(rep);
@@ -90,7 +90,7 @@ void Signal<Args...>::operator()(Args... args) {
 // PRIVATE
 
 template<typename... Args>
-void Signal<Args...>::removeSlot(SlotRep* rep) {
+void Signal<Args...>::disconnect(SlotRep* rep) {
 	auto it = std::find_if(mSlots.begin(), mSlots.end(),
 		[&](const auto& cur) {
 			return cur.get() == rep;

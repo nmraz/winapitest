@@ -7,8 +7,8 @@ namespace base {
 
 class ScopedSlotHandle : public NonCopyable, private SlotHandle {
 public:
-	using SlotHandle::off;
-	using SlotHandle::alive;
+	using SlotHandle::disconnect;
+	using SlotHandle::connected;
 	using SlotHandle::block;
 	using SlotHandle::blocked;
 	using SlotHandle::operator=;
@@ -16,7 +16,7 @@ public:
 	ScopedSlotHandle() = default;
 	ScopedSlotHandle(const SlotHandle& rhs);
 	ScopedSlotHandle(SlotHandle&& rhs);
-	~ScopedSlotHandle() { off(); }
+	~ScopedSlotHandle() { disconnect(); }
 
 	SlotHandle release() { return std::move(*this); }
 };

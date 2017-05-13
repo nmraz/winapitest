@@ -12,10 +12,10 @@ class SlotHandle {
 public:
 	SlotHandle() = default;
 
-	void off();
+	void disconnect();
 	void block(bool block = true);
 	bool blocked() const;
-	bool alive() const { return !mSlot.expired(); }
+	bool connected() const { return !mSlot.expired(); }
 
 private:
 	template<typename... Args>

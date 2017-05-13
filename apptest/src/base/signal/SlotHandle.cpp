@@ -4,9 +4,9 @@
 
 namespace base {
 
-void SlotHandle::off() {
+void SlotHandle::disconnect() {
 	if (auto slot = mSlot.lock()) {
-		slot->off();
+		slot->disconnect();
 	}
 }
 
