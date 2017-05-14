@@ -12,7 +12,7 @@ using namespace std::literals;
 
 using Millis = chrono::duration<double, std::milli>;
 
-int wmain(int argc, wchar_t** argv) {
+int wmain(int argc, const wchar_t** argv) {
 	base::CmdLine cmdLine(argc, argv);
 
 	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, cmdLine.hasFlag("logging-colorize"));
