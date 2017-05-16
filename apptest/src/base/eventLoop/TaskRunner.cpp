@@ -22,7 +22,6 @@ TaskRunner::~TaskRunner() {
 
 void TaskRunner::postTask(Task::Callback callback, const Task::Delay& delay) {
 	ASSERT(delay.count() >= 0) << "Can't post a task with a negative delay";
-	ASSERT(callback) << "Can't post an empty callback";
 
 	Task::RunTime runTime = delay.count() == 0 ? Task::RunTime() : Task::Clock::now() + delay;
 	std::lock_guard<std::mutex> hold(mTaskLock);
