@@ -52,7 +52,7 @@ void ScopedHandle::release() {
 
 
 ScopedHandle::operator bool() const {
-	return !!mHandle && mHandle != INVALID_HANDLE_VALUE;
+	return !!mHandle;
 }
 
 }  // namespace win
