@@ -2,7 +2,6 @@
 #include "base/unicode.h"
 #include "base/win/lastError.h"
 #include <memory>
-#include <type_traits>
 #include <utility>
 #include <Windows.h>
 
