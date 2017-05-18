@@ -12,7 +12,7 @@ struct OverlappedEx : OVERLAPPED {
 	File::CompleteCallback callback;
 };
 
-auto makeOverlapped(std::int64_t offset, File::CompleteCallback& callback) {
+auto makeOverlapped(File::Offset offset, File::CompleteCallback& callback) {
 	auto overlapped = std::make_unique<OverlappedEx>();
 
 	LARGE_INTEGER offsetParts;
@@ -72,7 +72,7 @@ void File::close() {
 }
 
 
-void File::read(std::int64_t offset, void* buf, unsigned long count, CompleteCallback callback) {
+void File::read(Offset offset, void* buf, unsigned long count, CompleteCallback callback) {
 	auto overlapped = makeOverlapped(offset, callback);
 
 	if (!::ReadFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
@@ -81,7 +81,7 @@ void File::read(std::int64_t offset, void* buf, unsigned long count, CompleteCal
 	overlapped.release();
 }
 
-void File::write(std::int64_t offset, const void* buf, unsigned long count, CompleteCallback callback) {
+void File::write(Offset offset, const void* buf, unsigned long count, CompleteCallback callback) {
 	auto overlapped = makeOverlapped(offset, callback);
 
 	if (!::WriteFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
@@ -91,7 +91,7 @@ void File::write(std::int64_t offset, const void* buf, unsigned long count, Comp
 }
 
 
-std::int64_t File::length() {
+File::Offset File::length() {
 	LARGE_INTEGER length;
 	::GetFileSizeEx(mHandle.get(), &length);
 	return length.QuadPart;

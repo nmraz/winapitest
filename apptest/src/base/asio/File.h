@@ -22,6 +22,8 @@ public:
 		out = 1 << 5  // write
 	};
 
+	using Offset = std::int64_t;
+
 	using CompleteCallback = std::function<void(unsigned long, const std::error_code&)>;
 
 	File() = default;
@@ -31,15 +33,15 @@ public:
 	void close();
 
 	template<typename Buffer, typename Cb>
-	void read(std::int64_t offset, Buffer&& buf, Cb&& callback);
+	void read(Offset offset, Buffer&& buf, Cb&& callback);
 
 	template<typename Buffer, typename Cb>
-	void write(std::int64_t offset, Buffer&& buf, Cb&& callback);
+	void write(Offset offset, Buffer&& buf, Cb&& callback);
 
-	void read(std::int64_t offset, void* buf, unsigned long count, CompleteCallback callback);
-	void write(std::int64_t offset, const void* buf, unsigned long count, CompleteCallback callback);
+	void read(Offset offset, void* buf, unsigned long count, CompleteCallback callback);
+	void write(Offset offset, const void* buf, unsigned long count, CompleteCallback callback);
 
-	std::int64_t length();
+	Offset length();
 
 private:
 	win::ScopedHandle mHandle;
@@ -47,12 +49,12 @@ private:
 
 
 template<typename Buffer, typename Cb>
-void File::read(std::int64_t offset, Buffer&& buf, Cb&& callback) {
+void File::read(Offset offset, Buffer&& buf, Cb&& callback) {
 	read(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
 }
 
 template<typename Buffer, typename Cb>
-void File::write(std::int64_t offset, Buffer&& buf, Cb&& callback) {
+void File::write(Offset offset, Buffer&& buf, Cb&& callback) {
 	write(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
 }
 
