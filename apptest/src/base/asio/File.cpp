@@ -63,7 +63,7 @@ void File::open(std::string_view name, Flags flags) {
 	}
 
 	mHandle = ::CreateFileW(u8ToU16(name).c_str(), access, FILE_SHARE_READ, nullptr, createDisp, FILE_FLAG_OVERLAPPED, nullptr);
-	if (!mHandle) {
+	if (mHandle.get() == INVALID_HANDLE_VALUE) {
 		win::throwLastError("Failed to open file");
 	}
 }
