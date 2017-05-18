@@ -3,6 +3,7 @@
 #include "base/win/ScopedHandle.h"
 #include <cstdint>
 #include <functional>
+#include <iterator>
 #include <string_view>
 #include <system_error>
 
@@ -29,6 +30,12 @@ public:
 	void open(std::string_view name, Flags flags);
 	void close();
 
+	template<typename Buffer, typename Cb>
+	void read(std::int64_t offset, Buffer&& buf, Cb&& callback);
+
+	template<typename Buffer, typename Cb>
+	void write(std::int64_t offset, Buffer&& buf, Cb&& callback);
+
 	void read(std::int64_t offset, void* buf, unsigned long count, CompleteCallback callback);
 	void write(std::int64_t offset, const void* buf, unsigned long count, CompleteCallback callback);
 
@@ -37,5 +44,16 @@ public:
 private:
 	win::ScopedHandle mHandle;
 };
+
+
+template<typename Buffer, typename Cb>
+void File::read(std::int64_t offset, Buffer&& buf, Cb&& callback) {
+	read(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
+}
+
+template<typename Buffer, typename Cb>
+void File::write(std::int64_t offset, Buffer&& buf, Cb&& callback) {
+	write(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
+}
 
 }  // namespace base
