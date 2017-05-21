@@ -19,7 +19,7 @@ public:
 	ScopedHandle& operator=(Handle handle);
 	ScopedHandle& operator=(ScopedHandle rhs);
 
-	Handle get() { return mHandle; }
+	Handle get() const { return mHandle; }
 	void swap(ScopedHandle& other);
 	void release();
 
