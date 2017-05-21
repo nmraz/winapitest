@@ -39,8 +39,18 @@ EventLoop::LoopPusher::~LoopPusher() {
 
 void EventLoop::run() {
 	LoopPusher push(this);
+	mShouldQuit = false;
 
 	doRun(TaskRunner::current());
+}
+
+void EventLoop::quit() {
+	mShouldQuit = true;
+}
+
+
+bool EventLoop::shouldQuit() const {
+	return mShouldQuit;
 }
 
 

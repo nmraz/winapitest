@@ -5,16 +5,14 @@
 namespace base {
 
 void TaskEventLoop::doRun(TaskRunner& runner) {
-	mShouldQuit = false;
-
 	while (true) {
 		bool ranTask = runner.runPendingTask();
-		if (mShouldQuit) {
+		if (shouldQuit()) {
 			break;
 		}
 		
 		ranTask |= runner.runDelayedTask();
-		if (mShouldQuit) {
+		if (shouldQuit()) {
 			break;
 		}
 
@@ -36,10 +34,6 @@ void TaskEventLoop::doRun(TaskRunner& runner) {
 	}
 }
 
-
-void TaskEventLoop::quit() {
-	mShouldQuit = true;
-}
 
 void TaskEventLoop::wakeUp() {
 	std::lock_guard<std::mutex> hold(mWakeUpLock);
