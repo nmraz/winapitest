@@ -41,7 +41,28 @@ void EventLoop::run() {
 	LoopPusher push(this);
 	mShouldQuit = false;
 
-	doRun(TaskRunner::current());
+	TaskRunner& runner = TaskRunner::current();
+
+	while (true) {
+		bool ranTask = runner.runPendingTask();
+		if (mShouldQuit) {
+			break;
+		}
+
+		ranTask |= runner.runDelayedTask();
+		if (mShouldQuit) {
+			break;
+		}
+
+		ranTask |= doWork();
+		if (mShouldQuit) {
+			break;
+		}
+
+		if (!ranTask) {
+			sleep(runner.nextDelay());
+		}
+	}
 }
 
 void EventLoop::quit() {
@@ -49,8 +70,8 @@ void EventLoop::quit() {
 }
 
 
-bool EventLoop::shouldQuit() const {
-	return mShouldQuit;
+bool EventLoop::doWork() {
+	return false;
 }
 
 

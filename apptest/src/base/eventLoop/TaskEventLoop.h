@@ -8,7 +8,7 @@ namespace base {
 
 class TaskEventLoop : public EventLoop {
 public:
-	void doRun(TaskRunner& runner) override;
+	void sleep(const std::optional<Task::Delay>& delay) override;
 	void wakeUp() override;
 
 private:

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "base/eventLoop/Task.h"
 #include "base/NonCopyable.h"
+#include <optional>
 
 namespace base {
 
@@ -12,14 +14,13 @@ public:
 	void quit();
 
 	virtual ~EventLoop() = default;
-	virtual void doRun(TaskRunner& runner) = 0;
+
+	virtual bool doWork();
+	virtual void sleep(const std::optional<Task::Delay>& delay) = 0;
 	virtual void wakeUp() = 0;
 
 	static EventLoop& current();
 	static bool isNested();
-
-protected:
-	bool shouldQuit() const;
 
 private:
 	struct LoopPusher;
