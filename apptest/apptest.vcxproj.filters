@@ -72,6 +72,9 @@
     <ClCompile Include="src\base\asio\File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\base\asio\IoEventLoop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\eventLoop\EventLoop.h">
@@ -144,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\asio\File.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\asio\IoEventLoop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

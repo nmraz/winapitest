@@ -138,6 +138,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\base\asio\File.cpp" />
+    <ClCompile Include="src\base\asio\IoEventLoop.cpp" />
     <ClCompile Include="src\base\assert.cpp" />
     <ClCompile Include="src\base\CmdLine.cpp" />
     <ClCompile Include="src\base\eventLoop\EventLoop.cpp" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\asio\File.h" />
+    <ClInclude Include="src\base\asio\IoEventLoop.h" />
     <ClInclude Include="src\base\assert.h" />
     <ClInclude Include="src\base\AutoRestore.h" />
     <ClInclude Include="src\base\CmdLine.h" />
