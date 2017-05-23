@@ -27,9 +27,9 @@ public:
 	using CompleteCallback = std::function<void(unsigned long, const std::error_code&)>;
 
 	File() = default;
-	File(std::string_view name, Flags flags);
+	File(std::string_view name, int flags);
 
-	void open(std::string_view name, Flags flags);
+	void open(std::string_view name, int flags);
 	void close();
 
 	template<typename Buffer, typename Cb>

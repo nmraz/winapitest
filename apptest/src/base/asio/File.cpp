@@ -36,12 +36,12 @@ void IoCompleteCallback(DWORD err, DWORD bytesTransferred, OVERLAPPED* overlappe
 }  // namespace
 
 
-File::File(std::string_view name, Flags mode) {
-	open(name, mode);
+File::File(std::string_view name, int flags) {
+	open(name, flags);
 }
 
 
-void File::open(std::string_view name, Flags flags) {
+void File::open(std::string_view name, int flags) {
 	DWORD access = 0, createDisp = 0;
 
 	if (flags & Flags::openOnly) {
