@@ -22,6 +22,11 @@ public:
 	static EventLoop& current();
 	static bool isNested();
 
+protected:
+	bool runPendingTask();
+	bool runDelayedTask();
+	std::optional<Task::Delay> nextDelay();
+
 private:
 	struct LoopPusher;
 

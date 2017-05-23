@@ -84,4 +84,19 @@ bool EventLoop::isNested() {
 	return gNestingLevel > 1;
 }
 
+
+// PROTECTED
+
+bool EventLoop::runPendingTask() {
+	return TaskRunner::current().runPendingTask();
+}
+
+bool EventLoop::runDelayedTask() {
+	return TaskRunner::current().runDelayedTask();
+}
+
+std::optional<Task::Delay> EventLoop::nextDelay() {
+	return TaskRunner::current().nextDelay();
+}
+
 }  // namespace base
