@@ -76,7 +76,7 @@ void File::read(Offset offset, void* buf, unsigned long count, CompleteCallback 
 	auto overlapped = makeOverlapped(offset, callback);
 
 	if (!::ReadFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
-		win::throwLastError("Failed to initiate file read");
+		overlapped->callback(0, win::lastErrorCode());
 	}
 	overlapped.release();
 }
@@ -85,7 +85,7 @@ void File::write(Offset offset, const void* buf, unsigned long count, CompleteCa
 	auto overlapped = makeOverlapped(offset, callback);
 
 	if (!::WriteFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
-		win::throwLastError("Failed to initiate file write");
+		overlapped->callback(0, win::lastErrorCode());
 	}
 	overlapped.release();
 }
