@@ -1,4 +1,6 @@
-﻿#include "base/CmdLine.h"
+﻿#include "base/asio/File.h"
+#include "base/asio/IoEventLoop.h"
+#include "base/CmdLine.h"
 #include "base/eventLoop/TaskRunner.h"
 #include "base/eventLoop/TaskEventLoop.h"
 #include "base/logging/logging.h"
@@ -19,7 +21,7 @@ int wmain(int argc, const wchar_t** argv) {
 	base::setCurrentThreadName("Main");
 
 	base::Timer timer1, timer2;
-	base::Thread thr([] { return std::make_unique<base::TaskEventLoop>(); }, "Worker");
+	base::Thread ioThread([] { return std::make_unique<base::IoEventLoop>(); }, "IO");
 
 	chrono::steady_clock::time_point startTime;
 
@@ -41,11 +43,13 @@ int wmain(int argc, const wchar_t** argv) {
 		timer1.set(5s);
 		timer2.set(2s);
 
-		thr.taskRunner().postTaskAndThen([] {
-			LOG(trace) << "sending value 5";
-			return 5;
-		}, [] (int n) {
-			LOG(trace) << "recieved value " << n;
+		ioThread.taskRunner().postTask([] {
+			auto file = std::make_shared<base::File>("test.txt", base::File::out | base::File::createAlways);
+			auto data = std::make_shared<std::string>(3000, 'h');
+
+			file->write(0, *data, [file, data](unsigned long written, const std::error_code& err) {
+				LOG(trace) << "wrote " << written << " bytes of data: " << err.message();
+			});
 		});
 	});
 
