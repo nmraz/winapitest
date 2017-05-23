@@ -26,7 +26,7 @@ auto makeOverlapped(File::Offset offset, File::CompleteCallback& callback) {
 }
 
 
-void IoCompleteCallback(DWORD err, DWORD bytesTransferred, OVERLAPPED* overlapped) noexcept {
+void CALLBACK IoCompleteCallback(DWORD err, DWORD bytesTransferred, OVERLAPPED* overlapped) noexcept {
 	std::unique_ptr<OverlappedEx> overlappedEx(static_cast<OverlappedEx*>(overlapped));
 	std::error_code ec(err, std::system_category());
 
