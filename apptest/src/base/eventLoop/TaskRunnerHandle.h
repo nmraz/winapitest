@@ -34,6 +34,7 @@ public:
 
 private:
 	TaskRunnerHandle(std::shared_ptr<impl::TaskRunnerRef> ref);
+	static TaskRunnerHandle currentHande();
 
 	template<typename Cb, typename Then>
 	void doPostTaskAndThen(Cb&& callback, Then&& then, std::true_type);  // void return type
@@ -48,7 +49,7 @@ private:
 template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::true_type) {
 	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
-		      caller = TaskRunner::current().handle()]() mutable {
+		      caller = currentHande()]() mutable {
 		callback();
 		caller.postTask(std::forward<Then>(then));
 	});
@@ -57,7 +58,7 @@ void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::true_t
 template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::false_type) {
 	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
-		      caller = TaskRunner::current().handle()]() mutable {
+		      caller = currentHande()]() mutable {
 		caller.postTask([then = std::forward<Then>(then), tmp = callback()] {
 			then(std::move(tmp));
 		});

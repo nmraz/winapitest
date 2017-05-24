@@ -26,10 +26,16 @@ void TaskRunnerHandle::postTask(Task::Callback callback) {
 	runner->postTask(std::move(callback));
 }
 
+
 // PRIVATE
 
 TaskRunnerHandle::TaskRunnerHandle(std::shared_ptr<impl::TaskRunnerRef> ref)
 	: mRef(std::move(ref)) {
+}
+
+// static
+TaskRunnerHandle TaskRunnerHandle::currentHande() {
+	return TaskRunner::current().handle();
 }
 
 }  // namespace base
