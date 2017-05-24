@@ -26,6 +26,9 @@ public:
 
 	void postTask(Task::Callback callback);
 
+	template<typename Cb>
+	void postTaskWithCaller(Cb&& callback);
+
 	template<typename Cb, typename Then>
 	void postTaskAndThen(Cb&& callback, Then&& then) {
 		doPostTaskAndThen(std::forward<Cb>(callback), std::forward<Then>(then),
@@ -46,10 +49,17 @@ private:
 };
 
 
+template<typename Cb>
+void TaskRunnerHandle::postTaskWithCaller(Cb&& callback) {
+	postTask([caller = currentHande(), callback = std::forward<Cb>(callback)]() mutable {
+		callback(std::move(caller));
+	});
+}
+
+
 template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::true_type) {
-	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
-		      caller = currentHande()]() mutable {
+	postTaskWithCaller([callback = std::forward<Cb>(callback), then = std::forward<Then>(then)](TaskRunnerHandle caller) {
 		callback();
 		caller.postTask(std::forward<Then>(then));
 	});
@@ -57,8 +67,7 @@ void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::true_t
 
 template<typename Cb, typename Then>
 void TaskRunnerHandle::doPostTaskAndThen(Cb&& callback, Then&& then, std::false_type) {
-	postTask([callback = std::forward<Cb>(callback), then = std::forward<Then>(then),
-		      caller = currentHande()]() mutable {
+	postTaskWithCaller([callback = std::forward<Cb>(callback), then = std::forward<Then>(then)](TaskRunnerHandle caller) {
 		caller.postTask([then = std::forward<Then>(then), tmp = callback()] {
 			then(std::move(tmp));
 		});
