@@ -77,6 +77,7 @@ void File::read(Offset offset, void* buf, unsigned long count, CompleteCallback 
 
 	if (!::ReadFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
 		overlapped->callback(0, win::lastErrorCode());
+		return;
 	}
 	overlapped.release();
 }
@@ -86,6 +87,7 @@ void File::write(Offset offset, const void* buf, unsigned long count, CompleteCa
 
 	if (!::WriteFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
 		overlapped->callback(0, win::lastErrorCode());
+		return;
 	}
 	overlapped.release();
 }
