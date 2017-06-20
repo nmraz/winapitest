@@ -1,7 +1,6 @@
 #include "Timer.h"
 
 #include "base/eventLoop/TaskRunner.h"
-#include <functional>
 #include <utility>
 
 namespace base {
@@ -72,7 +71,7 @@ void Timer::fire() {
 
 
 void Timer::repostTask() {
-	TaskRunner::current().postTask(std::bind(&PostedTask::run, mCurrentTask), mInterval);
+	TaskRunner::current().postTask([this] { mCurrentTask->run(); }, mInterval);
 }
 
 }  // namespace base

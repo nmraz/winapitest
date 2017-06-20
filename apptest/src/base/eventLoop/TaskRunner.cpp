@@ -4,7 +4,6 @@
 #include "base/eventLoop/EventLoop.h"
 #include "base/eventLoop/TaskRunnerHandle.h"
 #include "base/eventLoop/TaskRunnerRef.h"
-#include <functional>
 #include <utility>
 
 namespace base {
@@ -35,7 +34,7 @@ void TaskRunner::postTask(Task::Callback callback, const Task::Delay& delay) {
 }
 
 void TaskRunner::postQuit() {
-	postTask(std::bind(&TaskRunner::quitNow, this));
+	postTask([this] { quitNow(); });
 }
 
 void TaskRunner::quitNow() {
