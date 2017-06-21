@@ -14,10 +14,10 @@ public:
 	}
 
 	template<typename U>
-	auto_restore(T& var, U&& newVal)
+	auto_restore(T& var, U&& new_val)
 		: var_(&var)
 		, old_val_(std::move(var)) {
-		*var_ = std::forward<U>(newVal);
+		*var_ = std::forward<U>(new_val);
 	}
 
 	~auto_restore() {
