@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/assert.h"
-#include "base/NonCopyable.h"
+#include "base/non_copyable.h"
 #include <memory>
 #include <type_traits>
 #include <utility>

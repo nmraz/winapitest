@@ -1,4 +1,4 @@
-#include "loggingSinks.h"
+#include "logging_sinks.h"
 
 #include "base/unicode.h"
 #include <iostream>

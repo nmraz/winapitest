@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/win/ScopedHandle.h"
+#include "base/win/scoped_handle.h"
 #include <cstdint>
 #include <functional>
 #include <iterator>

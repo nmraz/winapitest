@@ -1,9 +1,9 @@
 #pragma once
 
 #include "base/assert.h"
-#include "base/AutoRestore.h"
-#include "base/NonCopyable.h"
-#include "base/signal/SlotHandle.h"
+#include "base/auto_restore.h"
+#include "base/non_copyable.h"
+#include "base/signal/slot_handle.h"
 #include <algorithm>
 #include <functional>
 #include <utility>

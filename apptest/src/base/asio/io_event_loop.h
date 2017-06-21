@@ -1,7 +1,7 @@
 #pragma once
 
-#include "base/eventLoop/EventLoop.h"
-#include "base/win/ScopedHandle.h"
+#include "base/event_loop/event_loop.h"
+#include "base/win/scoped_handle.h"
 
 namespace base {
 

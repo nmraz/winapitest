@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/NonCopyable.h"
+#include "base/non_copyable.h"
 #include <utility>
 
 namespace base {

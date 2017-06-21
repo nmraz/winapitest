@@ -1,9 +1,8 @@
-#include "Thread.h"
+#include "thread.h"
 
 #include "base/assert.h"
-#include "base/eventLoop/EventLoop.h"
-#include "base/eventLoop/TaskRunner.h"
-#include "base/thread/threadName.h"
+#include "base/event_loop/task_runner.h"
+#include "base/thread/thread_name.h"
 #include <utility>
 
 namespace base {

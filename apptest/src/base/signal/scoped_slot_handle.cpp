@@ -1,4 +1,4 @@
-#include "ScopedSlotHandle.h"
+#include "scoped_slot_handle.h"
 #include <utility>
 
 namespace base {
