@@ -8,111 +8,111 @@
 
 namespace base {
 
-TaskRunner::TaskRunner()
-	: mCurrentLoop(nullptr)
-	, mHandleRef(std::make_shared<impl::TaskRunnerRef>(this)) {
+task_runner::task_runner()
+	: current_loop_(nullptr)
+	, handle_ref_(std::make_shared<impl::task_runner_ref>(this)) {
 }
 
-TaskRunner::~TaskRunner() {
-	std::lock_guard<std::mutex> hold(mHandleRef->lock);
-	mHandleRef->runner = nullptr;
+task_runner::~task_runner() {
+	std::lock_guard<std::mutex> hold(handle_ref_->lock);
+	handle_ref_->runner = nullptr;
 }
 
 
-void TaskRunner::postTask(Task::Callback callback, const Task::Delay& delay) {
+void task_runner::post_task(task::callback_type callback, const task::delay_type& delay) {
 	ASSERT(delay.count() >= 0) << "Can't post a task with a negative delay";
 
-	Task::RunTime runTime = delay.count() == 0 ? Task::RunTime() : Task::Clock::now() + delay;
-	std::lock_guard<std::mutex> hold(mTaskLock);
+	task::run_time_type run_time = delay.count() == 0 ? task::run_time_type() : task::clock_type::now() + delay;
+	std::lock_guard<std::mutex> hold(task_lock_);
 	
-	bool wasEmpty = mTaskQueue.empty();
-	mTaskQueue.emplace(std::move(callback), runTime);
+	bool was_empty = task_queue_.empty();
+	task_queue_.emplace(std::move(callback), run_time);
 
-	if (mCurrentLoop && wasEmpty) {
-		mCurrentLoop->wakeUp();
+	if (current_loop_ && was_empty) {
+		current_loop_->wake_up();
 	}
 }
 
-void TaskRunner::postQuit() {
-	postTask([this] { quitNow(); });
+void task_runner::post_quit() {
+	post_task([this] { quit_now(); });
 }
 
-void TaskRunner::quitNow() {
-	if (EventLoop::isNested()) {
-		postQuit();
+void task_runner::quit_now() {
+	if (event_loop::is_nested()) {
+		post_quit();
 	}
 
-	EventLoop::current().quit();
+	event_loop::current().quit();
 }
 
 
-TaskRunnerHandle TaskRunner::handle() {
-	return TaskRunnerHandle(mHandleRef);
+task_runner_handle task_runner::handle() {
+	return task_runner_handle(handle_ref_);
 }
 
 
-bool TaskRunner::runPendingTask() {
-	if (mCurrentTasks.empty()) {
-		std::lock_guard<std::mutex> hold(mTaskLock);
-		mTaskQueue.swap(mCurrentTasks);
+bool task_runner::run_pending_task() {
+	if (current_tasks_.empty()) {
+		std::lock_guard<std::mutex> hold(task_lock_);
+		task_queue_.swap(current_tasks_);
 	}
 
-	while (!mCurrentTasks.empty()) {
-		Task task = std::move(mCurrentTasks.front());
-		mCurrentTasks.pop();
+	while (!current_tasks_.empty()) {
+		task current_task = std::move(current_tasks_.front());
+		current_tasks_.pop();
 		
-		if (task.runTime == Task::RunTime()) {
-			task.callback();
+		if (current_task.run_time == task::run_time_type()) {
+			current_task.callback();
 			return true;
 		}
-		mDelayedTasks.push(std::move(task));
+		delayed_tasks_.push(std::move(current_task));
 	}
 
 	return false;
 }
 
-bool TaskRunner::runDelayedTask() {
-	if (mDelayedTasks.empty()) {
+bool task_runner::run_delayed_task() {
+	if (delayed_tasks_.empty()) {
 		return false;
 	}
 
-	const Task& task = mDelayedTasks.top();
+	const task& current_task = delayed_tasks_.top();
 
-	if (task.runTime > mCachedNow) {
-		if (task.runTime > (mCachedNow = Task::Clock::now())) {
+	if (current_task.run_time > cached_now_) {
+		if (current_task.run_time > (cached_now_ = task::clock_type::now())) {
 			return false;
 		}
 	}
 
-	task.callback();
-	mDelayedTasks.pop();
+	current_task.callback();
+	delayed_tasks_.pop();
 
 	return true;
 }
 
 
-std::optional<Task::Delay> TaskRunner::nextDelay() const {
-	if (mDelayedTasks.empty()) {
+std::optional<task::delay_type> task_runner::next_delay() const {
+	if (delayed_tasks_.empty()) {
 		return std::nullopt;
 	}
 	
-	Task::Delay delay = mDelayedTasks.top().runTime - Task::Clock::now();
-	return delay < Task::Delay::zero() ? Task::Delay::zero() : delay;
+	task::delay_type delay = delayed_tasks_.top().run_time - task::clock_type::now();
+	return delay < task::delay_type::zero() ? task::delay_type::zero() : delay;
 }
 
 
 // static
-TaskRunner& TaskRunner::current() {
-	static thread_local TaskRunner runner;
+task_runner& task_runner::current() {
+	static thread_local task_runner runner;
 	return runner;
 }
 
 
 // PRIVATE
 
-void TaskRunner::setLoop(EventLoop* loop) {
-	std::lock_guard<std::mutex> hold(mTaskLock);
-	mCurrentLoop = loop;
+void task_runner::set_loop(event_loop* loop) {
+	std::lock_guard<std::mutex> hold(task_lock_);
+	current_loop_ = loop;
 }
 
 }  // namespace base

@@ -3,12 +3,12 @@
 
 namespace base {
 
-ScopedSlotHandle::ScopedSlotHandle(const SlotHandle& rhs)
-	: SlotHandle(rhs) {
+scoped_slot_handle::scoped_slot_handle(const slot_handle& rhs)
+	: slot_handle(rhs) {
 }
 
-ScopedSlotHandle::ScopedSlotHandle(SlotHandle&& rhs)
-	: SlotHandle(std::move(rhs)) {
+scoped_slot_handle::scoped_slot_handle(slot_handle&& rhs)
+	: slot_handle(std::move(rhs)) {
 }
 
 }  // namespace base

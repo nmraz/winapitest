@@ -10,49 +10,49 @@
 
 namespace base {
 
-class EventLoop;
+class event_loop;
 
 namespace impl {
-struct TaskRunnerRef;
+struct task_runner_ref;
 }
 
 
-class TaskRunner : public NonCopyMovable {
-	friend EventLoop;
+class task_runner : public non_copy_movable {
+	friend event_loop;
 
-	TaskRunner();
-	~TaskRunner();
+	task_runner();
+	~task_runner();
 
 public:
-	void postTask(Task::Callback callback, const Task::Delay& delay = Task::Delay::zero());
-	void quitNow();
-	void postQuit();
+	void post_task(task::callback_type callback, const task::delay_type& delay = task::delay_type::zero());
+	void quit_now();
+	void post_quit();
 
-	TaskRunnerHandle handle();
+	task_runner_handle handle();
 
-	static TaskRunner& current();
+	static task_runner& current();
 
 private:
-	using TaskQueue = std::queue<Task>;
-	using DelayedTaskQueue = std::priority_queue<Task>;
+	using task_queue = std::queue<task>;
+	using delayed_task_queue = std::priority_queue<task>;
 
-	void setLoop(EventLoop* loop);
+	void set_loop(event_loop* loop);
 
-	bool runPendingTask();
-	bool runDelayedTask();
-	std::optional<Task::Delay> nextDelay() const;
+	bool run_pending_task();
+	bool run_delayed_task();
+	std::optional<task::delay_type> next_delay() const;
 
-	TaskQueue mTaskQueue;
-	std::mutex mTaskLock;  // protects mTaskQueue, mCurrentLoop
+	task_queue task_queue_;
+	std::mutex task_lock_;  // protects task_queue_, current_loop_
 
-	TaskQueue mCurrentTasks;  // to avoid locking the mutex every time, process tasks in batches
-	DelayedTaskQueue mDelayedTasks;
+	task_queue current_tasks_;  // to avoid locking the mutex every time, process tasks in batches
+	delayed_task_queue delayed_tasks_;
 
-	Task::RunTime mCachedNow;  // make running more efficient when multiple tasks have to run now
+	task::run_time_type cached_now_;  // make running more efficient when multiple tasks have to run now
 
-	EventLoop* mCurrentLoop;
+	event_loop* current_loop_;
 
-	std::shared_ptr<impl::TaskRunnerRef> mHandleRef;  // synchronizes with handles on other threads
+	std::shared_ptr<impl::task_runner_ref> handle_ref_;  // synchronizes with handles on other threads
 };
 
 }  // namespace base

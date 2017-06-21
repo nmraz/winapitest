@@ -6,27 +6,27 @@
 namespace base {
 
 template<typename T>
-class AutoRestore : public NonCopyMovable {
+class auto_restore : public non_copy_movable {
 public:
-	AutoRestore(T& var)
-		: mVar(&var)
-		, mOldVal(var) {
+	auto_restore(T& var)
+		: var_(&var)
+		, old_val_(var) {
 	}
 
 	template<typename U>
-	AutoRestore(T& var, U&& newVal)
-		: mVar(&var)
-		, mOldVal(std::move(var)) {
-		*mVar = std::forward<U>(newVal);
+	auto_restore(T& var, U&& newVal)
+		: var_(&var)
+		, old_val_(std::move(var)) {
+		*var_ = std::forward<U>(newVal);
 	}
 
-	~AutoRestore() {
-		*mVar = std::move(mOldVal);
+	~auto_restore() {
+		*var_ = std::move(old_val_);
 	}
 
 private:
-	T* mVar;
-	T mOldVal;
+	T* var_;
+	T old_val_;
 };
 
 }

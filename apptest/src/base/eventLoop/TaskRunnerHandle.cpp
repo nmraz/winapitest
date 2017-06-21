@@ -6,36 +6,36 @@
 
 namespace base {
 
-BadTaskRunnerHandle::BadTaskRunnerHandle()
-	: std::runtime_error("Bad TaskRunnerHandle") {
+bad_task_runner_handle::bad_task_runner_handle()
+	: std::runtime_error("The requested task_runner is no longer alive") {
 }
 
 
-void TaskRunnerHandle::postTask(Task::Callback callback) {
-	if (!mRef) {
-		throw BadTaskRunnerHandle();
+void task_runner_handle::post_task(task::callback_type callback) {
+	if (!ref_) {
+		throw bad_task_runner_handle();
 	}
 
-	std::lock_guard<std::mutex> hold(mRef->lock);
-	TaskRunner* runner = mRef->runner;
+	std::lock_guard<std::mutex> hold(ref_->lock);
+	task_runner* runner = ref_->runner;
 	
 	if (!runner) {
-		throw BadTaskRunnerHandle();
+		throw bad_task_runner_handle();
 	}
 
-	runner->postTask(std::move(callback));
+	runner->post_task(std::move(callback));
 }
 
 
 // PRIVATE
 
-TaskRunnerHandle::TaskRunnerHandle(std::shared_ptr<impl::TaskRunnerRef> ref)
-	: mRef(std::move(ref)) {
+task_runner_handle::task_runner_handle(std::shared_ptr<impl::task_runner_ref> ref)
+	: ref_(std::move(ref)) {
 }
 
 // static
-TaskRunnerHandle TaskRunnerHandle::currentHande() {
-	return TaskRunner::current().handle();
+task_runner_handle task_runner_handle::current_hande() {
+	return task_runner::current().handle();
 }
 
 }  // namespace base

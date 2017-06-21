@@ -5,8 +5,8 @@
 namespace base {
 namespace win {
 
-[[noreturn]] void throwLastError(const char* what = "");
-std::error_code lastErrorCode();
+[[noreturn]] void throw_last_error(const char* what = "");
+std::error_code last_error_code();
 
 }  // namespace win
 }  // namespace base

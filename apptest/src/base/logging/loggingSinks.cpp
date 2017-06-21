@@ -6,23 +6,23 @@
 
 namespace logging {
 
-FileSink::FileSink(std::string_view name)
-	: mFile(base::u8ToU16(name)) {
-	mFile << "\xef\xbb\xbf";  // write utf-8 bom for windows compatibility
+file_sink::file_sink(std::string_view name)
+	: file_(base::u8_to_u16(name)) {
+	file_ << "\xef\xbb\xbf";  // write utf-8 bom for windows compatibility
 }
 
-void FileSink::write(const char* str) {
-	mFile << str;
+void file_sink::write(const char* str) {
+	file_ << str;
 }
 
 
-void StdoutSink::write(const char* str) {
+void stdout_sink::write(const char* str) {
 	std::cout << str << std::flush;
 }
 
 
-void DebuggerSink::write(const char* str) {
-	::OutputDebugStringW(base::u8ToU16(str).c_str());
+void debugger_sink::write(const char* str) {
+	::OutputDebugStringW(base::u8_to_u16(str).c_str());
 }
 
 }  // namespace logging

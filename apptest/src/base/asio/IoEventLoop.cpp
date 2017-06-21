@@ -6,26 +6,26 @@
 
 namespace base {
 
-IoEventLoop::IoEventLoop()
-	: mWakeUpEvt(::CreateEventW(nullptr, false, false, nullptr)) {
-	if (!mWakeUpEvt) {
-		win::throwLastError("Failed to create event");
+io_event_loop::io_event_loop()
+	: wake_up_evt_(::CreateEventW(nullptr, false, false, nullptr)) {
+	if (!wake_up_evt_) {
+		win::throw_last_error("Failed to create event");
 	}
 }
 
 
-void IoEventLoop::sleep(const std::optional<Task::Delay>& delay) {
-	DWORD waitTime = INFINITE;
+void io_event_loop::sleep(const std::optional<task::delay_type>& delay) {
+	DWORD wait_time = INFINITE;
 	if (delay) {
 		auto millis = std::chrono::ceil<std::chrono::milliseconds>(*delay);
-		waitTime = static_cast<DWORD>(millis.count());
+		wait_time = static_cast<DWORD>(millis.count());
 	}
 
-	::WaitForSingleObjectEx(mWakeUpEvt.get(), waitTime, true);
+	::WaitForSingleObjectEx(wake_up_evt_.get(), wait_time, true);
 }
 
-void IoEventLoop::wakeUp() {
-	::SetEvent(mWakeUpEvt.get());
+void io_event_loop::wake_up() {
+	::SetEvent(wake_up_evt_.get());
 }
 
 }  // namepace base

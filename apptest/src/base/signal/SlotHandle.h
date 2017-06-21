@@ -5,27 +5,27 @@
 namespace base {
 
 namespace impl {
-struct SlotRepBase;
+struct slot_rep_base;
 }
 
-class SlotHandle {
+class slot_handle {
 public:
-	SlotHandle() = default;
+	slot_handle() = default;
 
 	void disconnect();
 	void block(bool block = true);
 	bool blocked() const;
-	bool connected() const { return !mSlot.expired(); }
+	bool connected() const { return !slot_.expired(); }
 
 private:
 	template<typename... Args>
-	friend class Signal;
+	friend class signal;
 
-	explicit SlotHandle(std::weak_ptr<impl::SlotRepBase> slot)
-		: mSlot(std::move(slot)) {
+	explicit slot_handle(std::weak_ptr<impl::slot_rep_base> slot)
+		: slot_(std::move(slot)) {
 	}
 
-	std::weak_ptr<impl::SlotRepBase> mSlot;
+	std::weak_ptr<impl::slot_rep_base> slot_;
 };
 
 }  // namespace base

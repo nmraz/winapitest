@@ -5,15 +5,15 @@
 
 namespace base {
 
-class IoEventLoop : public EventLoop {
+class io_event_loop : public event_loop {
 public:
-	IoEventLoop();
+	io_event_loop();
 
-	void sleep(const std::optional<Task::Delay>& delay) override;
-	void wakeUp() override;
+	void sleep(const std::optional<task::delay_type>& delay) override;
+	void wake_up() override;
 
 private:
-	win::ScopedHandle mWakeUpEvt;
+	win::scoped_handle wake_up_evt_;
 };
 
 }  // namespace base

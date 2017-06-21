@@ -9,52 +9,52 @@
 
 namespace base {
 
-class File {
+class file {
 public:
-	enum Flags {
-		openOnly = 1 << 0,  // open only if exists
-		createOnly = 1 << 1,  // create only if doesn't exist
+	enum flags {
+		open_only = 1 << 0,  // open only if exists
+		create_only = 1 << 1,  // create only if doesn't exist
 
-		openAlways = 1 << 2,  // open or create
-		createAlways = 1 << 3,  // open and trucate or create
+		open_always = 1 << 2,  // open or create
+		create_always = 1 << 3,  // open and trucate or create
 		
 		in = 1 << 4,  // read
 		out = 1 << 5  // write
 	};
 
-	using Offset = std::int64_t;
+	using offset_type = std::int64_t;
 
-	using CompleteCallback = std::function<void(unsigned long, const std::error_code&)>;
+	using complete_callback = std::function<void(unsigned long, const std::error_code&)>;
 
-	File() = default;
-	File(std::string_view name, int flags);
+	file() = default;
+	file(std::string_view name, int open_flags);
 
-	void open(std::string_view name, int flags);
+	void open(std::string_view name, int open_flags);
 	void close();
 
 	template<typename Buffer, typename Cb>
-	void read(Offset offset, Buffer&& buf, Cb&& callback);
+	void read(offset_type offset, Buffer&& buf, Cb&& callback);
 
 	template<typename Buffer, typename Cb>
-	void write(Offset offset, Buffer&& buf, Cb&& callback);
+	void write(offset_type offset, Buffer&& buf, Cb&& callback);
 
-	void read(Offset offset, void* buf, unsigned long count, CompleteCallback callback);
-	void write(Offset offset, const void* buf, unsigned long count, CompleteCallback callback);
+	void read(offset_type offset, void* buf, unsigned long count, complete_callback callback);
+	void write(offset_type offset, const void* buf, unsigned long count, complete_callback callback);
 
-	Offset length();
+	offset_type length();
 
 private:
-	win::ScopedHandle mHandle;
+	win::scoped_handle handle_;
 };
 
 
 template<typename Buffer, typename Cb>
-void File::read(Offset offset, Buffer&& buf, Cb&& callback) {
+void file::read(offset_type offset, Buffer&& buf, Cb&& callback) {
 	read(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
 }
 
 template<typename Buffer, typename Cb>
-void File::write(Offset offset, Buffer&& buf, Cb&& callback) {
+void file::write(offset_type offset, Buffer&& buf, Cb&& callback) {
 	write(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
 }
 

@@ -4,21 +4,21 @@
 
 namespace base {
 
-void TaskEventLoop::sleep(const std::optional<Task::Delay>& delay) {
-	std::unique_lock<std::mutex> hold(mWakeUpLock);
+void task_event_loop::sleep(const std::optional<task::delay_type>& delay) {
+	std::unique_lock<std::mutex> hold(wake_up_lock_);
 
 	if (delay) {
-		mWakeUpCv.wait_for(hold, *delay, [this] { return mShouldWakeUp; });
+		wake_up_cv_.wait_for(hold, *delay, [this] { return should_wake_up_; });
 	} else {
-		mWakeUpCv.wait(hold, [this] { return mShouldWakeUp; });
+		wake_up_cv_.wait(hold, [this] { return should_wake_up_; });
 	}
-	mShouldWakeUp = false;
+	should_wake_up_ = false;
 }
 
-void TaskEventLoop::wakeUp() {
-	std::lock_guard<std::mutex> hold(mWakeUpLock);
-	mShouldWakeUp = true;
-	mWakeUpCv.notify_one();
+void task_event_loop::wake_up() {
+	std::lock_guard<std::mutex> hold(wake_up_lock_);
+	should_wake_up_ = true;
+	wake_up_cv_.notify_one();
 }
 
 }  // namespace base

@@ -4,16 +4,16 @@
 
 namespace base {
 
-class TaskRunner;
+class task_runner;
 
 namespace impl {
 
-struct TaskRunnerRef {
-	TaskRunnerRef(TaskRunner* runner) 
+struct task_runner_ref {
+	task_runner_ref(task_runner* runner) 
 		: runner(runner) {}
 
 	std::mutex lock;  // prevents the runner from destructing during task posting
-	TaskRunner* runner;
+	task_runner* runner;
 };
 
 }  // namespace impl

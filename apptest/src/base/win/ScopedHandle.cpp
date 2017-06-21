@@ -6,53 +6,53 @@
 namespace base {
 namespace win {
 
-using Handle = HANDLE;  // trigger compiler error if Handle is the wrong type in the header
+using handle = HANDLE;  // trigger compiler error if handle is the wrong type in the header
 
-ScopedHandle::ScopedHandle()
-	: mHandle(nullptr) {}
+scoped_handle::scoped_handle()
+	: handle_(nullptr) {}
 
-ScopedHandle::ScopedHandle(Handle handle)
-	: mHandle(handle) {}
+scoped_handle::scoped_handle(handle handle)
+	: handle_(handle) {}
 
-ScopedHandle::ScopedHandle(ScopedHandle&& rhs) noexcept
-	: mHandle(rhs.mHandle) {
-	rhs.mHandle = nullptr;
+scoped_handle::scoped_handle(scoped_handle&& rhs) noexcept
+	: handle_(rhs.handle_) {
+	rhs.handle_ = nullptr;
 }
 
 
-ScopedHandle::~ScopedHandle() {
+scoped_handle::~scoped_handle() {
 	release();
 }
 
 
-ScopedHandle& ScopedHandle::operator=(Handle handle) {
-	ScopedHandle(handle).swap(*this);
+scoped_handle& scoped_handle::operator=(handle handle) {
+	scoped_handle(handle).swap(*this);
 
 	return *this;
 }
 
-ScopedHandle& ScopedHandle::operator=(ScopedHandle rhs) {
+scoped_handle& scoped_handle::operator=(scoped_handle rhs) {
 	rhs.swap(*this);
 
 	return *this;
 }
 
 
-void ScopedHandle::swap(ScopedHandle& other) {
-	std::swap(mHandle, other.mHandle);
+void scoped_handle::swap(scoped_handle& other) {
+	std::swap(handle_, other.handle_);
 }
 
 
-void ScopedHandle::release() {
+void scoped_handle::release() {
 	if (*this) {
-		::CloseHandle(mHandle);
-		mHandle = nullptr;
+		::CloseHandle(handle_);
+		handle_ = nullptr;
 	}
 }
 
 
-ScopedHandle::operator bool() const {
-	return !!mHandle;
+scoped_handle::operator bool() const {
+	return !!handle_;
 }
 
 }  // namespace win

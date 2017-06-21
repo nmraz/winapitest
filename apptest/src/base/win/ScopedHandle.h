@@ -5,28 +5,28 @@
 namespace base {
 namespace win {
 
-using Handle = void*;
+using handle = void*;
 
-class ScopedHandle : public NonCopyable {
+class scoped_handle : public non_copyable {
 public:
-	ScopedHandle();
+	scoped_handle();
 
-	explicit ScopedHandle(Handle handle);
-	ScopedHandle(ScopedHandle&& rhs) noexcept;
+	explicit scoped_handle(handle handle);
+	scoped_handle(scoped_handle&& rhs) noexcept;
 
-	~ScopedHandle();
+	~scoped_handle();
 
-	ScopedHandle& operator=(Handle handle);
-	ScopedHandle& operator=(ScopedHandle rhs);
+	scoped_handle& operator=(handle handle);
+	scoped_handle& operator=(scoped_handle rhs);
 
-	Handle get() const { return mHandle; }
-	void swap(ScopedHandle& other);
+	handle get() const { return handle_; }
+	void swap(scoped_handle& other);
 	void release();
 
 	explicit operator bool() const;
 
 private:
-	Handle mHandle;
+	handle handle_;
 };
 
 }  // namespace win

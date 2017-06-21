@@ -8,12 +8,12 @@
 namespace base {
 namespace {
 
-struct OverlappedEx : OVERLAPPED {
-	File::CompleteCallback callback;
+struct overlappedex : OVERLAPPED {
+	file::complete_callback callback;
 };
 
-auto makeOverlapped(File::Offset offset, File::CompleteCallback& callback) {
-	auto overlapped = std::make_unique<OverlappedEx>();
+auto make_overlapped(file::offset_type offset, file::complete_callback& callback) {
+	auto overlapped = std::make_unique<overlappedex>();
 
 	LARGE_INTEGER offsetParts;
 	offsetParts.QuadPart = offset;
@@ -26,76 +26,76 @@ auto makeOverlapped(File::Offset offset, File::CompleteCallback& callback) {
 }
 
 
-void CALLBACK IoCompleteCallback(DWORD err, DWORD bytesTransferred, OVERLAPPED* overlapped) noexcept {
-	std::unique_ptr<OverlappedEx> overlappedEx(static_cast<OverlappedEx*>(overlapped));
+void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* overlapped) noexcept {
+	std::unique_ptr<overlappedex> overlapped_ex(static_cast<overlappedex*>(overlapped));
 	std::error_code ec(err, std::system_category());
 
-	overlappedEx->callback(bytesTransferred, ec);
+	overlapped_ex->callback(bytes_transferred, ec);
 }
 
 }  // namespace
 
 
-File::File(std::string_view name, int flags) {
+file::file(std::string_view name, int flags) {
 	open(name, flags);
 }
 
 
-void File::open(std::string_view name, int flags) {
-	DWORD access = 0, createDisp = 0;
+void file::open(std::string_view name, int flags) {
+	DWORD access = 0, create_disp = 0;
 
-	if (flags & Flags::openOnly) {
-		createDisp = OPEN_EXISTING;
-	} else if (flags & Flags::createOnly) {
-		createDisp = CREATE_NEW;
-	} else if (flags & Flags::openAlways) {
-		createDisp = OPEN_ALWAYS;
-	} else if (flags & Flags::createAlways) {
-		createDisp = CREATE_ALWAYS;
+	if (flags & flags::open_only) {
+		create_disp = OPEN_EXISTING;
+	} else if (flags & flags::create_only) {
+		create_disp = CREATE_NEW;
+	} else if (flags & flags::open_always) {
+		create_disp = OPEN_ALWAYS;
+	} else if (flags & flags::create_always) {
+		create_disp = CREATE_ALWAYS;
 	}
 
-	if (flags & Flags::in) {
+	if (flags & flags::in) {
 		access |= GENERIC_READ;
 	}
-	if (flags & Flags::out) {
+	if (flags & flags::out) {
 		access |= GENERIC_WRITE;
 	}
 
-	mHandle = ::CreateFileW(u8ToU16(name).c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, createDisp, FILE_FLAG_OVERLAPPED, nullptr);
-	if (mHandle.get() == INVALID_HANDLE_VALUE) {
-		win::throwLastError("Failed to open file");
+	handle_ = ::CreateFileW(u8_to_u16(name).c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, create_disp, FILE_FLAG_OVERLAPPED, nullptr);
+	if (handle_.get() == INVALID_HANDLE_VALUE) {
+		win::throw_last_error("Failed to open file");
 	}
 }
 
-void File::close() {
-	mHandle.release();
+void file::close() {
+	handle_.release();
 }
 
 
-void File::read(Offset offset, void* buf, unsigned long count, CompleteCallback callback) {
-	auto overlapped = makeOverlapped(offset, callback);
+void file::read(offset_type offset, void* buf, unsigned long count, complete_callback callback) {
+	auto overlapped = make_overlapped(offset, callback);
 
-	if (!::ReadFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
-		overlapped->callback(0, win::lastErrorCode());
+	if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
+		overlapped->callback(0, win::last_error_code());
 		return;
 	}
 	overlapped.release();
 }
 
-void File::write(Offset offset, const void* buf, unsigned long count, CompleteCallback callback) {
-	auto overlapped = makeOverlapped(offset, callback);
+void file::write(offset_type offset, const void* buf, unsigned long count, complete_callback callback) {
+	auto overlapped = make_overlapped(offset, callback);
 
-	if (!::WriteFileEx(mHandle.get(), buf, count, overlapped.get(), IoCompleteCallback)) {
-		overlapped->callback(0, win::lastErrorCode());
+	if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
+		overlapped->callback(0, win::last_error_code());
 		return;
 	}
 	overlapped.release();
 }
 
 
-File::Offset File::length() {
+file::offset_type file::length() {
 	LARGE_INTEGER length;
-	::GetFileSizeEx(mHandle.get(), &length);
+	::GetFileSizeEx(handle_.get(), &length);
 	return length.QuadPart;
 }
 

@@ -5,73 +5,73 @@
 
 namespace base {
 
-struct Timer::PostedTask {
-	PostedTask(Timer* timer)
-		: mTimer(timer) {}
+struct timer::posted_task {
+	posted_task(timer* timer)
+		: timer_(timer) {}
 
-	void cancel() { mTimer = nullptr; }
+	void cancel() { timer_ = nullptr; }
 	void run();
 
-	Timer* mTimer;
+	timer* timer_;
 };
 
-void Timer::PostedTask::run() {
-	if (mTimer) {
-		mTimer->fire();
+void timer::posted_task::run() {
+	if (timer_) {
+		timer_->fire();
 	}
 }
 
 
-Timer::~Timer() {
+timer::~timer() {
 	cancel();
 }
 
 
-void Timer::cancel() {
-	if (isRunning()) {
-		mCurrentTask->cancel();
-		mCurrentTask = nullptr;
+void timer::cancel() {
+	if (is_running()) {
+		current_task_->cancel();
+		current_task_ = nullptr;
 	}
 }
 
-bool Timer::isRunning() const {
-	return mCurrentTask != nullptr;
+bool timer::is_running() const {
+	return current_task_ != nullptr;
 }
 
 
-SlotHandle Timer::onFire(FireSignal::Slot slot) {
-	return mFireSignal.connect(std::move(slot));
+slot_handle timer::on_fire(fire_signal::slot_type slot) {
+	return fire_signal_.connect(std::move(slot));
 }
 
 
 // PRIVATE
 
-void Timer::doSet(const Task::Delay& interval, bool repeat) {
+void timer::do_set(const task::delay_type& interval, bool repeat) {
 	cancel();
 
-	mRepeating = repeat;
-	mInterval = interval;
-	mCurrentTask = std::make_shared<PostedTask>(this);
+	repeating_ = repeat;
+	interval_ = interval;
+	current_task_ = std::make_shared<posted_task>(this);
 
-	repostTask();
+	repost_task();
 }
 
 
-void Timer::fire() {
-	if (mRepeating) {
-		repostTask();
+void timer::fire() {
+	if (repeating_) {
+		repost_task();
 	}
 
-	mFireSignal();
+	fire_signal_();
 
-	if (!mRepeating) {
-		mCurrentTask = nullptr;  // no need to cancel() here, as the task will never run again
+	if (!repeating_) {
+		current_task_ = nullptr;  // no need to cancel() here, as the task will never run again
 	}
 }
 
 
-void Timer::repostTask() {
-	TaskRunner::current().postTask([this] { mCurrentTask->run(); }, mInterval);
+void timer::repost_task() {
+	task_runner::current().post_task([this] { current_task_->run(); }, interval_);
 }
 
 }  // namespace base

@@ -8,10 +8,10 @@
 
 namespace {
 
-constexpr const char* switchSep = "--";
-constexpr std::size_t switchSepLen = 2;
+constexpr const char* switch_sep = "--";
+constexpr std::size_t switch_sep_len = 2;
 
-constexpr const char* switchValDelim = "=";
+constexpr const char* switch_val_delim = "=";
 
 std::string quote(const std::string& str) {
 	if (str.find_first_of(" \t\\\"") == std::string::npos) {  // no quoting necessary
@@ -48,11 +48,11 @@ std::string quote(const std::string& str) {
 
 namespace base {
 
-CmdLine::CmdLine(int argc, const wchar_t* const* argv) {
+command_line::command_line(int argc, const wchar_t* const* argv) {
 	parse(argc, argv);
 }
 
-CmdLine::CmdLine(const wchar_t* cmdLine) {
+command_line::command_line(const wchar_t* cmdLine) {
 	int argc;
 	std::unique_ptr<wchar_t*, decltype(::LocalFree)*> argv(nullptr, ::LocalFree);
 
@@ -61,39 +61,39 @@ CmdLine::CmdLine(const wchar_t* cmdLine) {
 }
 
 
-std::optional<std::string> CmdLine::getSwitch(std::string_view name) const {
-	auto it = mSwitches.find(name);
+std::optional<std::string> command_line::get_switch(std::string_view name) const {
+	auto it = switches_.find(name);
 
-	if (it == mSwitches.end()) {
+	if (it == switches_.end()) {
 		return std::nullopt;
 	}
 	return it->second;
 }
 
-bool CmdLine::hasFlag(std::string_view name) const {
-	auto sw = getSwitch(name);
+bool command_line::has_flag(std::string_view name) const {
+	auto sw = get_switch(name);
 	return sw && *sw != "0";
 }
 
 
-std::string CmdLine::getCmdLineString() const {
-	std::string ret = mProgram;
+std::string command_line::to_string() const {
+	std::string ret = program_;
 
-	if (mSwitches.size()) {
+	if (switches_.size()) {
 		ret += ' ';
 	}
-	for (const auto& sw : mSwitches) {
-		ret += switchSep + sw.first;
+	for (const auto& sw : switches_) {
+		ret += switch_sep + sw.first;
 		if (sw.second.size()) {
-			ret += switchValDelim + quote(sw.second);
+			ret += switch_val_delim + quote(sw.second);
 		}
 		ret += ' ';
 	}
 
-	if (mArgs.size()) {
-		ret += switchSep;
+	if (args_.size()) {
+		ret += switch_sep;
 	}
-	for (const auto& arg : mArgs) {
+	for (const auto& arg : args_) {
 		ret += ' ' + quote(arg);
 	}
 
@@ -101,39 +101,39 @@ std::string CmdLine::getCmdLineString() const {
 }
 
 
-void CmdLine::setSwitch(std::string name, std::string value) {
-	mSwitches[std::move(name)] = std::move(value);
+void command_line::set_switch(std::string name, std::string value) {
+	switches_[std::move(name)] = std::move(value);
 }
 
-void CmdLine::appendArg(std::string arg) {
-	mArgs.push_back(std::move(arg));
+void command_line::append_arg(std::string arg) {
+	args_.push_back(std::move(arg));
 }
 
-void CmdLine::setProgram(std::string program) {
-	mProgram = std::move(program);
+void command_line::set_program(std::string program) {
+	program_ = std::move(program);
 }
 
 
-void CmdLine::parse(int argc, const wchar_t* const* argv) {
-	bool allowSwitches = true;
+void command_line::parse(int argc, const wchar_t* const* argv) {
+	bool allow_switches = true;
 
-	mProgram = u16ToU8(argv[0]);
+	program_ = u16_to_u8(argv[0]);
 	for (int i = 1; i < argc; i++) {
-		std::string arg = u16ToU8(argv[i]);
+		std::string arg = u16_to_u8(argv[i]);
 
-		allowSwitches &= arg != switchSep;
+		allow_switches &= arg != switch_sep;
 
-		if (arg.find(switchSep) == 0 && allowSwitches) {
-			arg = arg.substr(switchSepLen);
-			std::size_t delimPos = arg.find(switchValDelim);
+		if (arg.find(switch_sep) == 0 && allow_switches) {
+			arg = arg.substr(switch_sep_len);
+			std::size_t delim_pos = arg.find(switch_val_delim);
 
-			if (delimPos == std::string::npos) {
-				setSwitch(std::move(arg), "");
+			if (delim_pos == std::string::npos) {
+				set_switch(std::move(arg), "");
 			} else {
-				setSwitch(arg.substr(0, delimPos), arg.substr(delimPos + 1));
+				set_switch(arg.substr(0, delim_pos), arg.substr(delim_pos + 1));
 			}
 		} else {
-			appendArg(std::move(arg));
+			append_arg(std::move(arg));
 		}
 	}
 }

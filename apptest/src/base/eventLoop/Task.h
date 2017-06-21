@@ -5,18 +5,18 @@
 
 namespace base {
 
-struct Task {
-	using Callback = std::function<void()>;
+struct task {
+	using callback_type = std::function<void()>;
 
-	using Clock = std::chrono::steady_clock;
-	using RunTime = Clock::time_point;
-	using Delay = RunTime::duration;
+	using clock_type = std::chrono::steady_clock;
+	using run_time_type = clock_type::time_point;
+	using delay_type = run_time_type::duration;
 
-	Task(Callback callback, const RunTime& runTime);
-	bool operator<(const Task& rhs) const;
+	task(callback_type callback, const run_time_type& run_time);
+	bool operator<(const task& rhs) const;
 
-	Callback callback;
-	RunTime runTime;
+	callback_type callback;
+	run_time_type run_time;
 };
 
 }  // namespace base

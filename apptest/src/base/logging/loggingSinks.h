@@ -6,24 +6,24 @@
 
 namespace logging {
 
-class FileSink : public Sink {
+class file_sink : public sink {
 public:
-	explicit FileSink(std::string_view name);
+	explicit file_sink(std::string_view name);
 
 	void write(const char* str) override;
 
 private:
-	std::ofstream mFile;
+	std::ofstream file_;
 };
 
 
-class StdoutSink : public Sink {
+class stdout_sink : public sink {
 public:
 	void write(const char* str) override;
 };
 
 
-class DebuggerSink : public Sink {
+class debugger_sink : public sink {
 public:
 	void write(const char* str) override;
 };

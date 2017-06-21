@@ -7,96 +7,96 @@
 namespace base {
 namespace {
 
-thread_local EventLoop* gCurrentLoop = nullptr;
-thread_local int gNestingLevel = 0;
+thread_local event_loop* current_loop = nullptr;
+thread_local int nesting_level = 0;
 
 }  // namespace
 
 
-struct EventLoop::LoopPusher {
-	LoopPusher(EventLoop* loop);
-	~LoopPusher();
+struct event_loop::loop_pusher {
+	loop_pusher(event_loop* loop);
+	~loop_pusher();
 
-	EventLoop* mPrevLoop;
+	event_loop* prev_loop_;
 };
 
-EventLoop::LoopPusher::LoopPusher(EventLoop* loop)
-	: mPrevLoop(gCurrentLoop) {
-	gCurrentLoop = loop;
-	TaskRunner::current().setLoop(loop);
+event_loop::loop_pusher::loop_pusher(event_loop* loop)
+	: prev_loop_(current_loop) {
+	current_loop = loop;
+	task_runner::current().set_loop(loop);
 }
 
-EventLoop::LoopPusher::~LoopPusher() {
-	gCurrentLoop = mPrevLoop;
-	TaskRunner::current().setLoop(mPrevLoop);
+event_loop::loop_pusher::~loop_pusher() {
+	current_loop = prev_loop_;
+	task_runner::current().set_loop(prev_loop_);
 }
 
 
-void EventLoop::run() {
-	LoopPusher push(this);
-	AutoRestore<int> restoreNesting(gNestingLevel);
+void event_loop::run() {
+	loop_pusher push(this);
+	auto_restore<int> restore_nesting(nesting_level);
 
-	++gNestingLevel;
-	mShouldQuit = false;
+	++nesting_level;
+	should_quit_ = false;
 
-	TaskRunner& runner = TaskRunner::current();
+	task_runner& runner = task_runner::current();
 
 	while (true) {
-		bool ranTask = runner.runPendingTask();
-		if (mShouldQuit) {
+		bool ran_task = runner.run_pending_task();
+		if (should_quit_) {
 			break;
 		}
 
-		ranTask |= runner.runDelayedTask();
-		if (mShouldQuit) {
+		ran_task |= runner.run_delayed_task();
+		if (should_quit_) {
 			break;
 		}
 
-		ranTask |= doWork();
-		if (mShouldQuit) {
+		ran_task |= do_work();
+		if (should_quit_) {
 			break;
 		}
 
-		if (!ranTask) {
-			sleep(runner.nextDelay());
+		if (!ran_task) {
+			sleep(runner.next_delay());
 		}
 	}
 }
 
-void EventLoop::quit() {
-	mShouldQuit = true;
+void event_loop::quit() {
+	should_quit_ = true;
 }
 
 
-bool EventLoop::doWork() {
+bool event_loop::do_work() {
 	return false;
 }
 
 
 // static
-EventLoop& EventLoop::current() {
-	ASSERT(gCurrentLoop) << "No event loop running on this thread";
-	return *gCurrentLoop;
+event_loop& event_loop::current() {
+	ASSERT(current_loop) << "No event loop running on this thread";
+	return *current_loop;
 }
 
 // static
-bool EventLoop::isNested() {
-	return gNestingLevel > 1;
+bool event_loop::is_nested() {
+	return nesting_level > 1;
 }
 
 
 // PROTECTED
 
-bool EventLoop::runPendingTask() {
-	return TaskRunner::current().runPendingTask();
+bool event_loop::run_pending_task() {
+	return task_runner::current().run_pending_task();
 }
 
-bool EventLoop::runDelayedTask() {
-	return TaskRunner::current().runDelayedTask();
+bool event_loop::run_delayed_task() {
+	return task_runner::current().run_delayed_task();
 }
 
-std::optional<Task::Delay> EventLoop::nextDelay() {
-	return TaskRunner::current().nextDelay();
+std::optional<task::delay_type> event_loop::next_delay() {
+	return task_runner::current().next_delay();
 }
 
 }  // namespace base

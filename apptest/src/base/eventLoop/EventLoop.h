@@ -6,31 +6,31 @@
 
 namespace base {
 
-class TaskRunner;
+class task_runner;
 
-class EventLoop : public NonCopyMovable {
+class event_loop : public non_copy_movable {
 public:
 	void run();
 	void quit();
 
-	virtual ~EventLoop() = default;
+	virtual ~event_loop() = default;
 
-	virtual bool doWork();
-	virtual void sleep(const std::optional<Task::Delay>& delay) = 0;
-	virtual void wakeUp() = 0;
+	virtual bool do_work();
+	virtual void sleep(const std::optional<task::delay_type>& delay) = 0;
+	virtual void wake_up() = 0;
 
-	static EventLoop& current();
-	static bool isNested();
+	static event_loop& current();
+	static bool is_nested();
 
 protected:
-	bool runPendingTask();
-	bool runDelayedTask();
-	std::optional<Task::Delay> nextDelay();
+	bool run_pending_task();
+	bool run_delayed_task();
+	std::optional<task::delay_type> next_delay();
 
 private:
-	struct LoopPusher;
+	struct loop_pusher;
 
-	bool mShouldQuit;
+	bool should_quit_;
 };
 
 }  // namespace base

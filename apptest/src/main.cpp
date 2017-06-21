@@ -12,39 +12,39 @@
 namespace chrono = std::chrono;
 using namespace std::literals;
 
-using Millis = chrono::duration<double, std::milli>;
+using millis = chrono::duration<double, std::milli>;
 
 int wmain(int argc, const wchar_t** argv) {
-	base::CmdLine cmdLine(argc, argv);
+	base::command_line cmd_line(argc, argv);
 
-	logging::init(std::make_unique<logging::StdoutSink>(), logging::Level::trace, cmdLine.hasFlag("logging-colorize"));
-	base::setCurrentThreadName("Main");
+	logging::init(std::make_unique<logging::stdout_sink>(), logging::level::trace, cmd_line.has_flag("logging-colorize"));
+	base::set_current_thread_name("Main");
 
-	base::Timer timer1, timer2;
-	base::Thread ioThread([] { return std::make_unique<base::IoEventLoop>(); }, "IO");
+	base::timer timer1, timer2;
+	base::thread io_thread([] { return std::make_unique<base::io_event_loop>(); }, "IO");
 
-	chrono::steady_clock::time_point startTime;
+	chrono::steady_clock::time_point start_time;
 
-	timer1.onFire([&] {
+	timer1.on_fire([&] {
 		LOG(trace) << "timer1: elapsed time: "
-			<< Millis(chrono::steady_clock::now() - startTime).count() << "ms";
-		base::TaskRunner::current().postQuit();
+			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
+		base::task_runner::current().post_quit();
 	});
 
-	timer2.onFire([&] {
+	timer2.on_fire([&] {
 		LOG(trace) << "timer2: elapsed time: "
-			<< Millis(chrono::steady_clock::now() - startTime).count() << "ms";
+			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
 	});
 
-	base::TaskRunner::current().postTask([&] {
+	base::task_runner::current().post_task([&] {
 		LOG(trace) << "started";
-		startTime = chrono::steady_clock::now();
+		start_time = chrono::steady_clock::now();
 
 		timer1.set(5s);
 		timer2.set(2s);
 
-		ioThread.taskRunner().postTask([] {
-			auto file = std::make_shared<base::File>("test.txt", base::File::out | base::File::createAlways);
+		io_thread.task_runner().post_task([] {
+			auto file = std::make_shared<base::file>("test.txt", base::file::out | base::file::create_always);
 			auto data = std::make_shared<std::string>(3000, 'h');
 
 			file->write(0, *data, [file, data](unsigned long written, const std::error_code& err) {
@@ -53,6 +53,6 @@ int wmain(int argc, const wchar_t** argv) {
 		});
 	});
 
-	base::TaskEventLoop loop;
+	base::task_event_loop loop;
 	loop.run();
 }

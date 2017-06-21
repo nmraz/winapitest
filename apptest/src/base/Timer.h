@@ -8,37 +8,37 @@
 
 namespace base {
 
-class Timer : public NonCopyMovable {
-	using FireSignal = Signal<>;
+class timer : public non_copy_movable {
+	using fire_signal = signal<>;
 
 public:
-	~Timer();
+	~timer();
 
 	template<typename Rep, typename Period>
 	void set(const std::chrono::duration<Rep, Period>& interval, bool repeat = false);
 	void cancel();
 
-	bool isRunning() const;
+	bool is_running() const;
 
-	SlotHandle onFire(FireSignal::Slot slot);
+	slot_handle on_fire(fire_signal::slot_type slot);
 
 private:
-	struct PostedTask;
+	struct posted_task;
 
-	void doSet(const Task::Delay& delay, bool repeat);
+	void do_set(const task::delay_type& delay, bool repeat);
 	void fire();
-	void repostTask();
+	void repost_task();
 
-	bool mRepeating;
-	Task::Delay mInterval;
+	bool repeating_;
+	task::delay_type interval_;
 
-	std::shared_ptr<PostedTask> mCurrentTask;
-	FireSignal mFireSignal;
+	std::shared_ptr<posted_task> current_task_;
+	fire_signal fire_signal_;
 };
 
 template<typename Rep, typename Period>
-inline void Timer::set(const std::chrono::duration<Rep, Period>& interval, bool repeat) {
-	doSet(std::chrono::ceil<Task::Delay>(interval), repeat);
+inline void timer::set(const std::chrono::duration<Rep, Period>& interval, bool repeat) {
+	do_set(std::chrono::ceil<task::delay_type>(interval), repeat);
 }
 
 }  // namespace base

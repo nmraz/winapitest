@@ -3,7 +3,7 @@
 #include <sstream>
 
 #define ASSERT_IMPL(COND) (COND) ? (void) 0 : \
-	::base::impl::AssertVoidify() | ::base::impl::FailedAssertion(__FILE__, __LINE__, #COND, __FUNCTION__)
+	::base::impl::assert_voidify() | ::base::impl::failed_assertion(__FILE__, __LINE__, #COND, __FUNCTION__)
 
 #ifndef NDEBUG
 #define ASSERT(COND) ASSERT_IMPL(COND)
@@ -15,25 +15,25 @@
 namespace base {
 namespace impl {
 
-class FailedAssertion {
+class failed_assertion {
 public:
-	FailedAssertion(const char* file, int line, const char* cond, const char* func);
-	~FailedAssertion();
+	failed_assertion(const char* file, int line, const char* cond, const char* func);
+	~failed_assertion();
 
 	template<typename T>
-	FailedAssertion& operator<<(T&& val) {
-		mStream << std::forward<T>(val);
+	failed_assertion& operator<<(T&& val) {
+		stream_ << std::forward<T>(val);
 		return *this;
 	}
 
 private:
-	std::ostringstream mStream;
-	const char* mFile;
-	int mLine;
+	std::ostringstream stream_;
+	const char* file_;
+	int line_;
 };
 
-struct AssertVoidify {
-	void operator|(const FailedAssertion&) {}
+struct assert_voidify {
+	void operator|(const failed_assertion&) {}
 };
 
 }  // namespace impl

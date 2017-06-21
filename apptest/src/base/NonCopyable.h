@@ -2,23 +2,23 @@
 
 namespace base {
 
-class NonCopyable {
+class non_copyable {
 public:
-	NonCopyable() = default;
+	non_copyable() = default;
 
-	NonCopyable(NonCopyable&&) = default;
-	NonCopyable& operator=(NonCopyable&&) = default;
+	non_copyable(non_copyable&&) = default;
+	non_copyable& operator=(non_copyable&&) = default;
 
-	NonCopyable(const NonCopyable&) = delete;
-	NonCopyable& operator=(const NonCopyable&) = delete;
+	non_copyable(const non_copyable&) = delete;
+	non_copyable& operator=(const non_copyable&) = delete;
 };
 
-class NonCopyMovable : public NonCopyable {
+class non_copy_movable : public non_copyable {
 public:
-	NonCopyMovable() = default;
+	non_copy_movable() = default;
 
-	NonCopyMovable(NonCopyMovable&&) = delete;
-	NonCopyMovable& operator=(NonCopyMovable&&) = delete;
+	non_copy_movable(non_copy_movable&&) = delete;
+	non_copy_movable& operator=(non_copy_movable&&) = delete;
 };
 
 }  // namespace base

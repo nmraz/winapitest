@@ -2,12 +2,12 @@
 
 namespace base {
 
-Task::Task(Callback callback, const RunTime& runTime)
+task::task(callback_type callback, const run_time_type& run_time)
 	: callback(callback)
-	, runTime(runTime) {}
+	, run_time(run_time) {}
 
-bool Task::operator<(const Task& rhs) const {
-	return runTime > rhs.runTime;
+bool task::operator<(const task& rhs) const {
+	return run_time > rhs.run_time;
 }
 
 }  // namespace base

@@ -4,20 +4,20 @@
 
 namespace base {
 
-void SlotHandle::disconnect() {
-	if (auto slot = mSlot.lock()) {
+void slot_handle::disconnect() {
+	if (auto slot = slot_.lock()) {
 		slot->disconnect();
 	}
 }
 
-void SlotHandle::block(bool block) {
-	if (auto slot = mSlot.lock()) {
+void slot_handle::block(bool block) {
+	if (auto slot = slot_.lock()) {
 		slot->block(block);
 	}
 }
 
-bool SlotHandle::blocked() const {
-	if (auto slot = mSlot.lock()) {
+bool slot_handle::blocked() const {
+	if (auto slot = slot_.lock()) {
 		return slot->blocked();
 	}
 	return true;

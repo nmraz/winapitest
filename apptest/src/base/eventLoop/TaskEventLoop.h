@@ -6,16 +6,16 @@
 
 namespace base {
 
-class TaskEventLoop : public EventLoop {
+class task_event_loop : public event_loop {
 public:
-	void sleep(const std::optional<Task::Delay>& delay) override;
-	void wakeUp() override;
+	void sleep(const std::optional<task::delay_type>& delay) override;
+	void wake_up() override;
 
 private:
 	// wake-up mechanism
-	bool mShouldWakeUp;
-	std::mutex mWakeUpLock;
-	std::condition_variable mWakeUpCv;
+	bool should_wake_up_;
+	std::mutex wake_up_lock_;
+	std::condition_variable wake_up_cv_;
 };
 
 }

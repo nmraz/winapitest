@@ -8,34 +8,34 @@
 
 namespace base {
 
-class CmdLine {
+class command_line {
 public:
-	using Switches = std::map<std::string, std::string, std::less<>>;
-	using Args = std::vector<std::string>;
+	using switches = std::map<std::string, std::string, std::less<>>;
+	using args = std::vector<std::string>;
 
-	CmdLine() = default;
-	CmdLine(int argc, const wchar_t* const* argv);
-	explicit CmdLine(const wchar_t* cmdLine);
+	command_line() = default;
+	command_line(int argc, const wchar_t* const* argv);
+	explicit command_line(const wchar_t* cmdLine);
 
-	std::optional<std::string> getSwitch(std::string_view name) const;
-	bool hasFlag(std::string_view name) const;
+	std::optional<std::string> get_switch(std::string_view name) const;
+	bool has_flag(std::string_view name) const;
 
-	const Args& getArgs() const { return mArgs; }
-	const Switches& getSwitches() const { return mSwitches; }
+	const args& get_args() const { return args_; }
+	const switches& get_switches() const { return switches_; }
 
-	std::string getProgram() const { return mProgram; }
-	std::string getCmdLineString() const;
+	std::string get_program() const { return program_; }
+	std::string to_string() const;
 
-	void setSwitch(std::string name, std::string value = "");
-	void appendArg(std::string arg);
-	void setProgram(std::string program);
+	void set_switch(std::string name, std::string value = "");
+	void append_arg(std::string arg);
+	void set_program(std::string program);
 
 private:
 	void parse(int argc, const wchar_t* const* argv);
 
-	std::string mProgram;
-	Switches mSwitches;
-	Args mArgs;
+	std::string program_;
+	switches switches_;
+	args args_;
 };
 
 }  // namespace base
