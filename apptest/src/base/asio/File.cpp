@@ -36,28 +36,28 @@ void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* ove
 }  // namespace
 
 
-file::file(std::string_view name, int flags) {
-	open(name, flags);
+file::file(std::string_view name, int open_flags) {
+	open(name, open_flags);
 }
 
 
-void file::open(std::string_view name, int flags) {
+void file::open(std::string_view name, int open_flags) {
 	DWORD access = 0, create_disp = 0;
 
-	if (flags & flags::open_only) {
+	if (open_flags & flags::open_only) {
 		create_disp = OPEN_EXISTING;
-	} else if (flags & flags::create_only) {
+	} else if (open_flags & flags::create_only) {
 		create_disp = CREATE_NEW;
-	} else if (flags & flags::open_always) {
+	} else if (open_flags & flags::open_always) {
 		create_disp = OPEN_ALWAYS;
-	} else if (flags & flags::create_always) {
+	} else if (open_flags & flags::create_always) {
 		create_disp = CREATE_ALWAYS;
 	}
 
-	if (flags & flags::in) {
+	if (open_flags & flags::in) {
 		access |= GENERIC_READ;
 	}
-	if (flags & flags::out) {
+	if (open_flags & flags::out) {
 		access |= GENERIC_WRITE;
 	}
 
