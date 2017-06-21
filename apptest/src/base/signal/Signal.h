@@ -1,9 +1,9 @@
 #pragma once
 
 #include "base/assert.h"
-#include "base/AutoRestore.h"
-#include "base/NonCopyable.h"
-#include "base/signal/SlotHandle.h"
+#include "base/auto_restore.h"
+#include "base/non_copyable.h"
+#include "base/signal/slot_handle.h"
 #include <algorithm>
 #include <functional>
 #include <utility>
@@ -12,7 +12,7 @@
 namespace base {
 namespace impl {
 
-struct SlotRepBase {
+struct slot_rep_base {
 	virtual void disconnect() = 0;
 	virtual void block(bool block) = 0;
 	virtual bool blocked() const = 0;
@@ -21,62 +21,62 @@ struct SlotRepBase {
 }  // namespace impl
 
 template<typename... Args>
-class Signal : public NonCopyMovable {
+class signal : public non_copy_movable {
 public:
-	using Slot = std::function<void(Args...)>;
+	using slot_type = std::function<void(Args...)>;
 
-	SlotHandle connect(Slot slot);
+	slot_handle connect(slot_type slot);
 	void operator()(Args... args);
 
 private:
-	friend SlotHandle;
+	friend slot_handle;
 
-	struct SlotRep : impl::SlotRepBase {
-		SlotRep(Signal* signal, Slot slot)
-			: mSignal(signal)
-			, mSlot(std::move(slot)) {
+	struct slot_rep : impl::slot_rep_base {
+		slot_rep(signal* signal, slot_type slot)
+			: signal_(signal)
+			, slot_(std::move(slot)) {
 		}
 
-		void disconnect() override { mSignal->disconnect(this); }
-		void block(bool block) override { mBlocked = block; }
-		bool blocked() const override { return mBlocked; }
+		void disconnect() override { signal_->disconnect(this); }
+		void block(bool block) override { blocked_ = block; }
+		bool blocked() const override { return blocked_; }
 
-		void call(Args&... args) const { if (!mBlocked) mSlot(args...); }
+		void call(Args&... args) const { if (!blocked_) slot_(args...); }
 
-		Signal* mSignal;
-		Slot mSlot;
-		bool mBlocked = false;
+		signal* signal_;
+		slot_type slot_;
+		bool blocked_ = false;
 	};
 
-	using SlotPtr = std::shared_ptr<SlotRep>;
-	using Slots = std::vector<SlotPtr>;
+	using slot_ptr = std::shared_ptr<slot_rep>;
+	using slot_list = std::vector<slot_ptr>;
 
-	void disconnect(SlotRep* rep);
+	void disconnect(slot_rep* rep);
 	void tidy();  // removes elements marked for removal, if safe
 
-	Slots mSlots;
+	slot_list slots_;
 	// number of nested emissions - when 0, it is safe to remove elements directly
-	int mEmitDepth = 0;
+	int emit_depth_ = 0;
 };
 
 
 template<typename... Args>
-SlotHandle Signal<Args...>::connect(Slot slot) {
-	auto rep = std::make_shared<SlotRep>(this, std::move(slot));
-	mSlots.push_back(rep);
-	return SlotHandle(rep);
+slot_handle signal<Args...>::connect(slot_type slot) {
+	auto rep = std::make_shared<slot_rep>(this, std::move(slot));
+	slots_.push_back(rep);
+	return slot_handle(rep);
 }
 
 
 template<typename... Args>
-void Signal<Args...>::operator()(Args... args) {
+void signal<Args...>::operator()(Args... args) {
 	{
-		AutoRestore<int> restore(mEmitDepth);
-		++mEmitDepth;
+		auto_restore<int> restore(emit_depth_);
+		++emit_depth_;
 
 		// iterators may be invalidated, use indices instead
-		for (std::size_t i = 0; i < mSlots.size(); ++i) {
-			const auto& slot = mSlots[i];
+		for (std::size_t i = 0; i < slots_.size(); ++i) {
+			const auto& slot = slots_[i];
 			if (slot) {
 				slot->call(args...);
 			}
@@ -90,25 +90,25 @@ void Signal<Args...>::operator()(Args... args) {
 // PRIVATE
 
 template<typename... Args>
-void Signal<Args...>::disconnect(SlotRep* rep) {
-	auto it = std::find_if(mSlots.begin(), mSlots.end(),
+void signal<Args...>::disconnect(slot_rep* rep) {
+	auto it = std::find_if(slots_.begin(), slots_.end(),
 		[&](const auto& cur) {
 			return cur.get() == rep;
 		}
 	);
-	ASSERT(it != mSlots.end()) << "Corrupt signal state";
+	ASSERT(it != slots_.end()) << "Corrupt signal state";
 
-	if (!mEmitDepth) {
-		mSlots.erase(it);
+	if (!emit_depth_) {
+		slots_.erase(it);
 	} else {
 		*it = nullptr;
 	}
 }
 
 template<typename... Args>
-void Signal<Args...>::tidy() {
-	if (!mEmitDepth) {
-		mSlots.erase(std::remove(mSlots.begin(), mSlots.end(), nullptr), mSlots.end());
+void signal<Args...>::tidy() {
+	if (!emit_depth_) {
+		slots_.erase(std::remove(slots_.begin(), slots_.end(), nullptr), slots_.end());
 	}
 }
 

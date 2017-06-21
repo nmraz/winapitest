@@ -5,8 +5,8 @@
 
 namespace base {
 
-std::wstring u8ToU16(std::string_view str);
+std::wstring u8_to_u16(std::string_view str);
 
-std::string u16ToU8(std::wstring_view str);
+std::string u16_to_u8(std::wstring_view str);
 
 }  // namespace base

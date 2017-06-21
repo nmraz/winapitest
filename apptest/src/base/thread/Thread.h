@@ -1,7 +1,7 @@
 #pragma once
 
-#include "base/eventLoop/EventLoop.h"
-#include "base/eventLoop/TaskRunnerHandle.h"
+#include "base/event_loop/event_loop.h"
+#include "base/event_loop/task_runner_handle.h"
 #include <condition_variable>
 #include <functional>
 #include <memory>
@@ -11,32 +11,32 @@
 
 namespace base {
 
-class Thread {
+class thread {
 public:
-	using LoopFactory = std::function<std::unique_ptr<EventLoop>()>;
+	using loop_factory = std::function<std::unique_ptr<event_loop>()>;
 
-	Thread(LoopFactory factory);
-	Thread(LoopFactory factory, std::string name);
-	~Thread();
+	thread(loop_factory factory);
+	thread(loop_factory factory, std::string name);
+	~thread();
 
 	void stop(bool wait = true);
 
-	TaskRunnerHandle taskRunner() const;
-	std::thread::id id() const { return mThread.get_id(); }
+	task_runner_handle task_runner() const;
+	std::thread::id get_id() const { return thread_.get_id(); }
 
 private:
-	void run(LoopFactory factory);
-	void namedRun(LoopFactory factory, std::string name);
+	void run(loop_factory factory);
+	void named_run(loop_factory factory, std::string name);
 
-	void setTaskRunner(TaskRunnerHandle runner);
+	void set_task_runner(task_runner_handle runner);
 
-	// wait mechanism for taskRunner
-	mutable std::mutex mRunnerLock;
-	mutable std::condition_variable mRunnerCv;
-	bool mHasRunner = false;
+	// wait mechanism for task_runner
+	mutable std::mutex runner_lock_;
+	mutable std::condition_variable runner_cv_;
+	bool has_runner_ = false;
 
-	TaskRunnerHandle mRunner;
-	std::thread mThread;  // the thread must be constructed (and started) last!
+	task_runner_handle runner_;
+	std::thread thread_;  // the thread must be constructed (and started) last!
 };
 
 }  // namespace base

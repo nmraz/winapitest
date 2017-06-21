@@ -15,34 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\base\eventLoop\EventLoop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\eventLoop\Task.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\eventLoop\TaskEventLoop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\logging\logging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\logging\loggingSinks.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\signal\SlotHandle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\thread\Thread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\win\lastError.cpp">
+    <ClCompile Include="src\base\thread\thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\base\assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\Timer.cpp">
+    <ClCompile Include="src\base\timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\base\unicode.cpp">
@@ -51,105 +33,123 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\win\ScopedHandle.cpp">
+    <ClCompile Include="src\base\win\scoped_handle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\signal\ScopedSlotHandle.cpp">
+    <ClCompile Include="src\base\win\last_error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\eventLoop\TaskRunner.cpp">
+    <ClCompile Include="src\base\thread\thread_name.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\eventLoop\TaskRunnerHandle.cpp">
+    <ClCompile Include="src\base\signal\scoped_slot_handle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\CmdLine.cpp">
+    <ClCompile Include="src\base\signal\slot_handle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\thread\threadName.cpp">
+    <ClCompile Include="src\base\logging\logging_sinks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\asio\File.cpp">
+    <ClCompile Include="src\base\asio\file.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\asio\IoEventLoop.cpp">
+    <ClCompile Include="src\base\asio\io_event_loop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\command_line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\event_loop\event_loop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\event_loop\task.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\event_loop\task_event_loop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\event_loop\task_runner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\event_loop\task_runner_handle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\base\eventLoop\EventLoop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\eventLoop\Task.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\eventLoop\TaskEventLoop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\base\logging\logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\logging\loggingSinks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\signal\Signal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\signal\SlotHandle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\thread\Thread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\win\ComPtr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\win\lastError.h">
+    <ClInclude Include="src\base\thread\thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\assert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\NonCopyable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\Timer.h">
+    <ClInclude Include="src\base\timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\unicode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\win\ScopedHandle.h">
+    <ClInclude Include="src\base\weak_ptr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\signal\ScopedSlotHandle.h">
+    <ClInclude Include="src\base\win\scoped_handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\eventLoop\TaskRunner.h">
+    <ClInclude Include="src\base\win\last_error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\eventLoop\TaskRunnerHandle.h">
+    <ClInclude Include="src\base\win\com_ptr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\eventLoop\TaskRunnerRef.h">
+    <ClInclude Include="src\base\auto_restore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\CmdLine.h">
+    <ClInclude Include="src\base\non_copyable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\AutoRestore.h">
+    <ClInclude Include="src\base\thread\thread_name.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\WeakPtr.h">
+    <ClInclude Include="src\base\signal\scoped_slot_handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\thread\threadName.h">
+    <ClInclude Include="src\base\signal\signal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\asio\File.h">
+    <ClInclude Include="src\base\signal\slot_handle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\asio\IoEventLoop.h">
+    <ClInclude Include="src\base\logging\logging_sinks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\asio\file.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\asio\io_event_loop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\command_line.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\event_loop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\task_event_loop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\task_runner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\task_runner_handle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\task_runner_ref.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,8 +3,8 @@
 #include <memory>
 #include <sstream>
 
-#define LOG_FULL(LEVEL, FILE, LINE) ::logging::impl::filterOut(logging::Level::LEVEL) ? (void) 0 : \
-	::logging::impl::MsgVoidify() | ::logging::impl::Message(logging::Level::LEVEL, FILE, LINE)
+#define LOG_FULL(LEVEL, FILE, LINE) ::logging::impl::filter_out(logging::level::LEVEL) ? (void) 0 : \
+	::logging::impl::msg_voidify() | ::logging::impl::message(logging::level::LEVEL, FILE, LINE)
 
 #define LOG(LEVEL) LOG_FULL(LEVEL, __FILE__, __LINE__)
 
@@ -12,7 +12,7 @@
 namespace logging {
 
 // logging.cpp depends on this order!
-enum class Level {
+enum class level {
 	trace = 0,
 	info,
 	warn,
@@ -21,37 +21,37 @@ enum class Level {
 
 namespace impl {
 
-bool filterOut(Level level);
+bool filter_out(level level);
 
 
-class Message {
+class message {
 public:
-	Message(Level level, const char* file, int line);
-	~Message();
+	message(level level, const char* file, int line);
+	~message();
 
 	template<typename T>
-	Message& operator<<(T&& val) {
-		mStream << std::forward<T>(val);
+	message& operator<<(T&& val) {
+		stream_ << std::forward<T>(val);
 		return *this;
 	}
 
 private:
-	std::ostringstream mStream;
+	std::ostringstream stream_;
 };
 
 
-struct MsgVoidify {
-	void operator|(const Message&) {}
+struct msg_voidify {
+	void operator|(const message&) {}
 };
 
 }  // namespace impl
 
-struct Sink {
-	virtual ~Sink() = default;
+struct sink {
+	virtual ~sink() = default;
 
 	virtual void write(const char* str) = 0;
 };
 
-void init(std::unique_ptr<Sink> sink, Level minLevel, bool colorize);
+void init(std::unique_ptr<sink> sink, level min_level, bool colorize);
 
 }  // namespace logging
