@@ -17,18 +17,23 @@ struct event_loop::loop_pusher {
 	loop_pusher(event_loop* loop);
 	~loop_pusher();
 
+	void set_loop(event_loop* loop);
+
 	event_loop* prev_loop_;
 };
 
 event_loop::loop_pusher::loop_pusher(event_loop* loop)
 	: prev_loop_(current_loop) {
-	current_loop = loop;
-	task_runner::current().set_loop(loop);
+	set_loop(loop);
 }
 
 event_loop::loop_pusher::~loop_pusher() {
-	current_loop = prev_loop_;
-	task_runner::current().set_loop(prev_loop_);
+	set_loop(prev_loop_);
+}
+
+void event_loop::loop_pusher::set_loop(event_loop* loop) {
+	current_loop = loop;
+	task_runner::current().set_loop(loop);
 }
 
 
