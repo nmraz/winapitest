@@ -1,6 +1,6 @@
 #include "slot_handle.h"
 
-#include "base/signal/Signal.h"
+#include "base/signal/signal.h"
 
 namespace base {
 

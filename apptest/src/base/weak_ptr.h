@@ -111,7 +111,7 @@ public:
 	explicit weak_factory(T* ptr)
 		: ref_(std::make_shared<T*>(ptr)) {}
 
-	weak_ptr<T> getWeakPtr() const { return weak_ptr<T>(ref_); }
+	weak_ptr<T> get_weak_ptr() const { return weak_ptr<T>(ref_); }
 
 	void invalidate() { *ref_ = nullptr; }
 	~weak_factory() { invalidate(); }
