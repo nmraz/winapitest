@@ -35,19 +35,18 @@ event_loop::loop_pusher::~loop_pusher() {
 void event_loop::run() {
 	loop_pusher push(this);
 	auto_restore<int> restore_nesting(nesting_level);
+	auto_restore<task_runner*> restore_runner(runner_, &task_runner::current());
 
 	++nesting_level;
 	should_quit_ = false;
 
-	task_runner& runner = task_runner::current();
-
 	while (true) {
-		bool ran_task = runner.run_pending_task();
+		bool ran_task = run_pending_task();
 		if (should_quit_) {
 			break;
 		}
 
-		ran_task |= runner.run_delayed_task();
+		ran_task |= run_delayed_task();
 		if (should_quit_) {
 			break;
 		}
@@ -58,7 +57,7 @@ void event_loop::run() {
 		}
 
 		if (!ran_task) {
-			sleep(runner.next_delay());
+			sleep(next_delay());
 		}
 	}
 }
@@ -88,15 +87,23 @@ bool event_loop::is_nested() {
 // PROTECTED
 
 bool event_loop::run_pending_task() {
-	return task_runner::current().run_pending_task();
+	return get_runner()->run_pending_task();
 }
 
 bool event_loop::run_delayed_task() {
-	return task_runner::current().run_delayed_task();
+	return get_runner()->run_delayed_task();
 }
 
 std::optional<task::delay_type> event_loop::next_delay() {
-	return task_runner::current().next_delay();
+	return get_runner()->next_delay();
+}
+
+
+// PRIVATE
+
+task_runner* event_loop::get_runner() {
+	ASSERT(runner_ && this == current_loop) << "Only the active event_loop can run tasks";
+	return runner_;
 }
 
 }  // namespace base

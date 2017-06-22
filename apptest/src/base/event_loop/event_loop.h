@@ -30,7 +30,11 @@ protected:
 private:
 	struct loop_pusher;
 
+	// Check that the loop is active and retrieve the current task_runner
+	task_runner* get_runner();
+
 	bool should_quit_;
+	task_runner* runner_ = nullptr;
 };
 
 }  // namespace base
