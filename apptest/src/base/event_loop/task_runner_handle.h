@@ -24,13 +24,13 @@ class task_runner_handle {
 public:
 	task_runner_handle() = default;
 
-	void post_task(task::callback_type callback_type);
+	void post_task(task::callback_type callback);
 
 	template<typename Cb>
-	void post_task_with_caller(Cb&& callback_type);
+	void post_task_with_caller(Cb&& callback);
 
 	template<typename Cb, typename Then>
-	void post_task_and_then(Cb&& callback_type, Then&& then) {
+	void post_task_and_then(Cb&& callback, Then&& then) {
 		do_post_task_and_then(std::forward<Cb>(callback), std::forward<Then>(then),
 			              std::is_void<decltype(callback())>{});
 	}
