@@ -12,7 +12,7 @@ struct overlappedex : OVERLAPPED {
 	file::complete_callback callback;
 };
 
-auto make_overlapped(file::offset_type offset, file::complete_callback& callback) {
+auto make_overlapped(file::offset_type offset, file::complete_callback&& callback) {
 	auto overlapped = std::make_unique<overlappedex>();
 
 	LARGE_INTEGER offsetParts;
@@ -73,7 +73,7 @@ void file::close() {
 
 
 void file::read(offset_type offset, void* buf, unsigned long count, complete_callback callback) {
-	auto overlapped = make_overlapped(offset, callback);
+	auto overlapped = make_overlapped(offset, std::move(callback));
 
 	if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
 		overlapped->callback(0, win::last_error_code());
@@ -83,7 +83,7 @@ void file::read(offset_type offset, void* buf, unsigned long count, complete_cal
 }
 
 void file::write(offset_type offset, const void* buf, unsigned long count, complete_callback callback) {
-	auto overlapped = make_overlapped(offset, callback);
+	auto overlapped = make_overlapped(offset, std::move(callback));
 
 	if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
 		overlapped->callback(0, win::last_error_code());
