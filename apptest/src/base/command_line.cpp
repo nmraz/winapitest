@@ -32,7 +32,7 @@ std::string quote(const std::string& str) {
 			}
 
 			out.append(backslashes, '\\');
-			i = end - 1;  // balance out read characters
+			i = end - 1;  // skip processed characters
 		} else if (str[i] == '"') {
 			out += "\\\"";
 		} else {
@@ -79,19 +79,15 @@ bool command_line::has_flag(std::string_view name) const {
 std::string command_line::to_string() const {
 	std::string ret = program_;
 
-	if (switches_.size()) {
-		ret += ' ';
-	}
 	for (const auto& sw : switches_) {
-		ret += switch_sep + sw.first;
+		ret += ' ' + quote(switch_sep + sw.first);
 		if (sw.second.size()) {
 			ret += switch_val_delim + quote(sw.second);
 		}
-		ret += ' ';
 	}
 
 	if (args_.size()) {
-		ret += switch_sep;
+		ret += std::string(" ") + switch_sep;
 	}
 	for (const auto& arg : args_) {
 		ret += ' ' + quote(arg);
