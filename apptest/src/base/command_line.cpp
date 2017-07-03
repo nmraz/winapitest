@@ -117,9 +117,9 @@ void command_line::set_program(std::string program) {
 void command_line::parse(int argc, const wchar_t* const* argv) {
 	bool allow_switches = true;
 
-	program_ = u16_to_u8(argv[0]);
+	program_ = narrow(argv[0]);
 	for (int i = 1; i < argc; i++) {
-		std::string arg = u16_to_u8(argv[i]);
+		std::string arg = narrow(argv[i]);
 
 		allow_switches &= arg != switch_sep;
 

@@ -61,7 +61,7 @@ void file::open(std::string_view name, int open_flags) {
 		access |= GENERIC_WRITE;
 	}
 
-	handle_ = ::CreateFileW(u8_to_u16(name).c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, create_disp, FILE_FLAG_OVERLAPPED, nullptr);
+	handle_ = ::CreateFileW(widen(name).c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, create_disp, FILE_FLAG_OVERLAPPED, nullptr);
 	if (handle_.get() == INVALID_HANDLE_VALUE) {
 		win::throw_last_error("Failed to open file");
 	}

@@ -5,7 +5,7 @@
 
 namespace base {
 
-std::wstring u8_to_u16(std::string_view str) {
+std::wstring widen(std::string_view str) {
 	if (str.empty()) {
 		return L"";
 	}
@@ -19,7 +19,7 @@ std::wstring u8_to_u16(std::string_view str) {
 	return out;
 }
 
-std::string u16_to_u8(std::wstring_view str) {
+std::string narrow(std::wstring_view str) {
 	if (str.empty()) {
 		return "";
 	}
