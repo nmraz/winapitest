@@ -23,11 +23,15 @@ void task_runner::post_task(task::callback_type callback, const task::delay_type
 	ASSERT(delay.count() >= 0) << "Can't post a task with a negative delay";
 
 	task::run_time_type run_time = delay.count() == 0 ? task::run_time_type() : task::clock_type::now() + delay;
-	std::lock_guard<std::mutex> hold(task_lock_);
-	
-	bool was_empty = task_queue_.empty();
-	task_queue_.emplace(std::move(callback), run_time);
+	bool was_empty;
+	{
+		std::lock_guard<std::mutex> hold(task_lock_);
 
+		was_empty = task_queue_.empty();
+		task_queue_.emplace(std::move(callback), run_time);
+	}
+
+	std::lock_guard<std::mutex> hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
 	if (current_loop_ && was_empty) {
 		current_loop_->wake_up();
 	}
@@ -111,7 +115,7 @@ task_runner& task_runner::current() {
 // PRIVATE
 
 void task_runner::set_loop(event_loop* loop) {
-	std::lock_guard<std::mutex> hold(task_lock_);
+	std::lock_guard<std::mutex> hold(loop_lock_);
 	current_loop_ = loop;
 }
 

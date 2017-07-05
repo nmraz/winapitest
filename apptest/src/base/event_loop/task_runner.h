@@ -43,7 +43,7 @@ private:
 	std::optional<task::delay_type> next_delay() const;
 
 	task_queue task_queue_;
-	std::mutex task_lock_;  // protects task_queue_, current_loop_
+	std::mutex task_lock_;  // protects task_queue_
 
 	task_queue current_tasks_;  // to avoid locking the mutex every time, process tasks in batches
 	delayed_task_queue delayed_tasks_;
@@ -51,6 +51,7 @@ private:
 	task::run_time_type cached_now_;  // make running more efficient when multiple tasks have to run now
 
 	event_loop* current_loop_;
+	std::mutex loop_lock_;  // prevents current_loop_ from changing while it is waking up
 
 	std::shared_ptr<impl::task_runner_ref> handle_ref_;  // synchronizes with handles on other threads
 };
