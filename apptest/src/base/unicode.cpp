@@ -14,7 +14,7 @@ std::wstring widen(std::string_view str) {
 	if (!out_size) {
 		throw std::range_error("Bad unicode conversion");
 	}
-	std::wstring out(out_size, '\0');
+	std::wstring out(out_size, L'\0');
 	::MultiByteToWideChar(CP_UTF8, 0, str.data(), in_size, out.data(), out_size);
 	return out;
 }
