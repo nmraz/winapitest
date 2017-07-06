@@ -31,9 +31,11 @@ void task_runner::post_task(task::callback_type callback, const task::delay_type
 		task_queue_.emplace(std::move(callback), run_time);
 	}
 
-	std::lock_guard<std::mutex> hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
-	if (current_loop_ && was_empty) {
-		current_loop_->wake_up();
+	if (was_empty) {
+		std::lock_guard<std::mutex> hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
+		if (current_loop_) {
+			current_loop_->wake_up();
+		}
 	}
 }
 
