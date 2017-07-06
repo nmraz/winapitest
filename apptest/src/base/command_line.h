@@ -15,7 +15,7 @@ public:
 
 	command_line() = default;
 	command_line(int argc, const wchar_t* const* argv);
-	explicit command_line(const wchar_t* cmdLine);
+	explicit command_line(const wchar_t* cmd_line);
 
 	std::optional<std::string> get_switch(std::string_view name) const;
 	bool has_flag(std::string_view name) const;

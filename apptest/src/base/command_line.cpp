@@ -52,11 +52,11 @@ command_line::command_line(int argc, const wchar_t* const* argv) {
 	parse(argc, argv);
 }
 
-command_line::command_line(const wchar_t* cmdLine) {
+command_line::command_line(const wchar_t* cmd_line) {
 	int argc;
 	std::unique_ptr<wchar_t*, decltype(::LocalFree)*> argv(nullptr, ::LocalFree);
 
-	argv.reset(::CommandLineToArgvW(cmdLine, &argc));
+	argv.reset(::CommandLineToArgvW(cmd_line, &argc));
 	parse(argc, argv.get());
 }
 
