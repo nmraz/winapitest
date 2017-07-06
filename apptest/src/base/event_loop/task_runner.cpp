@@ -14,7 +14,7 @@ task_runner::task_runner()
 }
 
 task_runner::~task_runner() {
-	std::lock_guard<std::mutex> hold(handle_ref_->lock);
+	std::lock_guard<std::shared_mutex> hold(handle_ref_->lock);
 	handle_ref_->runner = nullptr;
 }
 

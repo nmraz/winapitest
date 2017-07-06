@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mutex>
+#include <shared_mutex>
 
 namespace base {
 
@@ -12,7 +12,7 @@ struct task_runner_ref {
 	task_runner_ref(task_runner* runner) 
 		: runner(runner) {}
 
-	std::mutex lock;  // prevents the runner from destructing during task posting
+	std::shared_mutex lock;  // prevents the runner from destructing during task posting
 	task_runner* runner;
 };
 

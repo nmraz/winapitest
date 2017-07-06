@@ -16,7 +16,7 @@ void task_runner_handle::post_task(task::callback_type callback) {
 		throw bad_task_runner_handle();
 	}
 
-	std::lock_guard<std::mutex> hold(ref_->lock);
+	std::shared_lock<std::shared_mutex> hold(ref_->lock);
 	task_runner* runner = ref_->runner;
 	
 	if (!runner) {
