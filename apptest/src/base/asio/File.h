@@ -32,11 +32,17 @@ public:
 	void open(std::string_view name, int open_flags);
 	void close();
 
-	template<typename Buffer, typename Cb>
-	void read(offset_type offset, Buffer&& buf, Cb&& callback);
 
 	template<typename Buffer, typename Cb>
-	void write(offset_type offset, Buffer&& buf, Cb&& callback);
+	void read(offset_type offset, Buffer& buf, Cb&& callback);
+
+
+	template<typename Buffer, typename Cb>
+	void write(offset_type offset, const Buffer& buf, Cb&& callback);
+
+	template<typename Buffer, typename Cb>
+	void write(offset_type, const Buffer&&, Cb&&) = delete;  // temp object
+
 
 	void read(offset_type offset, void* buf, unsigned long count, complete_callback callback);
 	void write(offset_type offset, const void* buf, unsigned long count, complete_callback callback);
@@ -49,12 +55,12 @@ private:
 
 
 template<typename Buffer, typename Cb>
-void file::read(offset_type offset, Buffer&& buf, Cb&& callback) {
+void file::read(offset_type offset, Buffer& buf, Cb&& callback) {
 	read(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
 }
 
 template<typename Buffer, typename Cb>
-void file::write(offset_type offset, Buffer&& buf, Cb&& callback) {
+void file::write(offset_type offset, const Buffer& buf, Cb&& callback) {
 	write(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
 }
 
