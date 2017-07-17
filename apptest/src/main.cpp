@@ -56,7 +56,7 @@ int wmain(int argc, const wchar_t** argv) {
 		});
 	});
 
-	gfx::animation anim([](double value, bool done) {
+	gfx::animation anim([&](double value, bool done) {
 		LOG(trace) << value;
 		if (done) {
 			LOG(info) << "Done";
@@ -69,13 +69,18 @@ int wmain(int argc, const wchar_t** argv) {
 	base::task_runner::current().post_task([&] () {
 		LOG(info) << "Leaving";
 		anim.leave();
+		LOG(info) << "Running: " << anim.is_running();
 	}, 300ms);
 
 	base::task_runner::current().post_task([&]() {
 		LOG(info) << "Entering";
 		anim.enter();
-		anim.enter();
+		LOG(info) << "Running: " << anim.is_running();
 	}, 400ms);
+
+	base::task_runner::current().post_task([&] () {
+		LOG(info) << "Running: " << anim.is_running();
+	}, 1s);
 
 	ui::main_event_loop loop;
 	loop.run();
