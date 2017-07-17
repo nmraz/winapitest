@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-namespace gfx {
-namespace easing {
+namespace gfx::easing {
 
 double linear(double p) {
 	return p;
@@ -31,5 +30,4 @@ double ease_in_out(double p) {
 }
 
 
-}  // namespace easing
-}  // namespace gfx
+}  // namespace gfx::easing

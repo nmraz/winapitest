@@ -5,8 +5,7 @@
 #include <Unknwn.h>
 #include <utility>
 
-namespace base {
-namespace win {
+namespace base::win {
 
 template<typename T>
 class com_ptr {
@@ -169,5 +168,4 @@ inline bool operator!=(std::nullptr_t, const com_ptr<T>& ptr) {
 	return ptr != nullptr;
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

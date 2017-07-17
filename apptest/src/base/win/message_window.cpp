@@ -3,8 +3,7 @@
 #include "base/win/last_error.h"
 #include <utility>
 
-namespace base {
-namespace win {
+namespace base::win {
 
 message_window::message_window(wnd_proc proc)
 	: wnd_proc_(std::move(proc)) {
@@ -49,5 +48,4 @@ LRESULT CALLBACK message_window::main_wnd_proc(HWND hwnd, UINT msg, WPARAM wpara
 	}
 }
 
-}  // namespace win
-}  // namepsace base
+}  // namespace base::win

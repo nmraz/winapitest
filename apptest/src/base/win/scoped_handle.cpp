@@ -3,8 +3,7 @@
 #include <Windows.h>
 #include <utility>
 
-namespace base {
-namespace win {
+namespace base::win {
 
 using handle = HANDLE;  // trigger compiler error if handle is the wrong type in the header
 
@@ -55,5 +54,4 @@ scoped_handle::operator bool() const {
 	return !!handle_;
 }
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

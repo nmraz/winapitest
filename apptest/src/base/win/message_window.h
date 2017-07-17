@@ -4,8 +4,7 @@
 #include <functional>
 #include <Windows.h>
 
-namespace base {
-namespace win {
+namespace base::win {
 
 class message_window : public non_copy_movable {
 public:
@@ -22,5 +21,4 @@ private:
 	wnd_proc wnd_proc_;
 };
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win

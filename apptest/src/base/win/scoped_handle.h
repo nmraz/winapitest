@@ -2,8 +2,7 @@
 
 #include "base/non_copyable.h"
 
-namespace base {
-namespace win {
+namespace base::win {
 
 using handle = void*;
 
@@ -29,5 +28,4 @@ private:
 	handle handle_;
 };
 
-}  // namespace win
-}  // namespace base
+}  // namespace base::win
