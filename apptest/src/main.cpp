@@ -61,7 +61,7 @@ int wmain(int argc, const wchar_t** argv) {
 		if (done) {
 			LOG(info) << "Done";
 		}
-	}, gfx::easing::linear);
+	}, gfx::easing::ease_in);
 
 	anim.set_duration(500ms);
 	anim.enter();
