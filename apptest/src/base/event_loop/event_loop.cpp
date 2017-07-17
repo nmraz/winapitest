@@ -46,17 +46,17 @@ void event_loop::run() {
 	should_quit_ = false;
 
 	while (true) {
-		bool ran_task = run_pending_task();
+		bool ran_task = do_work();
+		if (should_quit_) {
+			break;
+		}
+
+		ran_task |= run_pending_task();
 		if (should_quit_) {
 			break;
 		}
 
 		ran_task |= run_delayed_task();
-		if (should_quit_) {
-			break;
-		}
-
-		ran_task |= do_work();
 		if (should_quit_) {
 			break;
 		}
