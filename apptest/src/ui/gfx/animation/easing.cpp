@@ -10,7 +10,8 @@ double linear(double p) {
 }
 
 double ease(double p) {
-	return std::sin(p);
+	constexpr double pi_over_2 = 1.57079633;
+	return std::sin(p * pi_over_2);
 }
 
 double ease_in(double p) {
