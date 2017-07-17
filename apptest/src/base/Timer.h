@@ -12,6 +12,8 @@ class timer : public non_copy_movable {
 	using fire_signal = signal<>;
 
 public:
+	using callback_type = fire_signal::slot_type;
+	
 	~timer();
 
 	template<typename Rep, typename Period>
@@ -20,7 +22,7 @@ public:
 
 	bool is_running() const;
 
-	slot_handle on_fire(fire_signal::slot_type slot);
+	slot_handle on_fire(callback_type slot);
 
 private:
 	struct posted_task;

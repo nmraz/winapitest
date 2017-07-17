@@ -39,7 +39,7 @@ bool timer::is_running() const {
 }
 
 
-slot_handle timer::on_fire(fire_signal::slot_type slot) {
+slot_handle timer::on_fire(callback_type slot) {
 	return fire_signal_.connect(std::move(slot));
 }
 
