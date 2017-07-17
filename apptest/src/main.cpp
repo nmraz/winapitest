@@ -28,19 +28,19 @@ int wmain(int argc, const wchar_t** argv) {
 	chrono::steady_clock::time_point start_time;
 
 	timer1.on_fire([&] {
-		LOG(trace) << "timer1: elapsed time: "
+		LOG(info) << "timer1: elapsed time: "
 			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
 		base::task_runner::current().post_quit();
 	});
 
 	timer2.on_fire([&] {
-		LOG(trace) << "timer2: elapsed time: "
+		LOG(info) << "timer2: elapsed time: "
 			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
 		::MessageBoxW(nullptr, L"This is a message box", L"Message Box", MB_OK);
 	});
 
 	base::task_runner::current().post_task([&] {
-		LOG(trace) << "started";
+		LOG(info) << "started";
 		start_time = chrono::steady_clock::now();
 
 		timer1.set(5s);
@@ -61,6 +61,17 @@ int wmain(int argc, const wchar_t** argv) {
 	}, gfx::easing::linear);
 	anim.set_duration(500ms);
 	anim.enter();
+
+	base::task_runner::current().post_task([&] () {
+		LOG(info) << "Leaving";
+		anim.leave();
+	}, 300ms);
+
+	base::task_runner::current().post_task([&]() {
+		LOG(info) << "Entering";
+		anim.enter();
+		anim.enter();
+	}, 400ms);
 
 	ui::main_event_loop loop;
 	loop.run();

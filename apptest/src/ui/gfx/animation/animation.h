@@ -12,33 +12,36 @@ class animation : public base::non_copy_movable {
 public:
 	using progress_callback = std::function<void(double)>;
 	using easing_func = std::function<double(double)>;
-	enum class run_state { 
-		not_running, 
-		entering, 
-		leaving
-	};
 
 	animation(progress_callback, easing_func);
 
 	template<typename Rep, typename Period>
 	void set_duration(const std::chrono::duration<Rep, Period>&);
 
+	void animate_to(double progress);
 	void enter();
 	void leave();
 	void stop();
 
-	run_state get_run_state() const { return state_; }
+	bool is_running() const { return timer_slot_.connected(); }
 
 private:
+	using duration_type = std::chrono::duration<double, std::milli>;
+
+	void start();
 	void on_progress();
-	void start(run_state state);
-	
+
 	progress_callback callback_;
 	easing_func easing_;
-	run_state state_;
+
 	base::slot_handle timer_slot_;
 
-	std::chrono::duration<double, std::milli> duration_;
+	double progress_ = 0.0;
+	double initial_progress_;
+	double target_progress_;  // used by animate_to
+
+	duration_type duration_;
+	duration_type computed_duration_;  // used by animate_to
 	std::chrono::steady_clock::time_point start_time_;
 };
 
