@@ -2,7 +2,6 @@
 
 #include "base/non_copyable.h"
 #include "base/signal/slot_handle.h"
-
 #include <chrono>
 #include <functional>
 
@@ -10,13 +9,14 @@ namespace gfx {
 
 class animation : public base::non_copy_movable {
 public:
-	using progress_callback = std::function<void(double, bool)>;
-	using easing_func = std::function<double(double)>;
+	using progress_callback = std::function<void(double value, bool done)>;
+	using easing_func = std::function<double(double prog)>;
 
-	animation(progress_callback, easing_func);
+	using duration_type = std::chrono::duration<double, std::milli>;
 
-	template<typename Rep, typename Period>
-	void set_duration(const std::chrono::duration<Rep, Period>&);
+	animation(progress_callback callback, easing_func easing);
+
+	void set_duration(const duration_type& duration) { duration_ = duration; }
 
 	void animate_to(double progress);
 	void enter();
@@ -26,8 +26,6 @@ public:
 	bool is_running() const { return timer_slot_.connected(); }
 
 private:
-	using duration_type = std::chrono::duration<double, std::milli>;
-
 	void start();
 	void on_progress();
 
@@ -44,10 +42,5 @@ private:
 	duration_type computed_duration_;  // used by animate_to
 	std::chrono::steady_clock::time_point start_time_;
 };
-
-template<typename Rep, typename Period>
-void animation::set_duration(const std::chrono::duration<Rep, Period>& duration) {
-	duration_ = duration;
-}
 
 }  // namespace gfx
