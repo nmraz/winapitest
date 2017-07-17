@@ -71,7 +71,7 @@ void timer::fire() {
 
 
 void timer::repost_task() {
-	task_runner::current().post_task([this] { current_task_->run(); }, interval_);
+	task_runner::current().post_task([task = current_task_] { task->run(); }, interval_);
 }
 
 }  // namespace base
