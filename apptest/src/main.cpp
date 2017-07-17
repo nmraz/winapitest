@@ -2,12 +2,12 @@
 #include "base/asio/io_event_loop.h"
 #include "base/command_line.h"
 #include "base/event_loop/task_runner.h"
-#include "base/event_loop/task_event_loop.h"
 #include "base/logging/logging.h"
 #include "base/logging/logging_sinks.h"
 #include "base/timer.h"
 #include "base/thread/thread.h"
 #include "base/thread/thread_name.h"
+#include "ui/main_event_loop.h"
 
 namespace chrono = std::chrono;
 using namespace std::literals;
@@ -34,6 +34,7 @@ int wmain(int argc, const wchar_t** argv) {
 	timer2.on_fire([&] {
 		LOG(trace) << "timer2: elapsed time: "
 			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
+		::MessageBoxW(nullptr, L"This is a message box", L"Message Box", MB_OK);
 	});
 
 	base::task_runner::current().post_task([&] {
@@ -53,6 +54,6 @@ int wmain(int argc, const wchar_t** argv) {
 		});
 	});
 
-	base::task_event_loop loop;
+	ui::main_event_loop loop;
 	loop.run();
 }
