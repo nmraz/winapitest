@@ -29,11 +29,9 @@ void remove_timer_listener(base::slot_handle callback_handle) {
 }  // namespace
 
 
-animation::animation(progress_callback callback, easing_func easing)
-	: callback_(std::move(callback))
-	, easing_(std::move(easing)) {
+animation::animation(easing_func easing)
+	: easing_(std::move(easing)) {
 }
-
 
 void animation::enter() {
 	animate_to(1.0);

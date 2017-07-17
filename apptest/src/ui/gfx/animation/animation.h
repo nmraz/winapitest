@@ -14,9 +14,13 @@ public:
 
 	using duration_type = std::chrono::duration<double, std::milli>;
 
-	animation(progress_callback callback, easing_func easing);
+
+	animation(easing_func easing);
 
 	void set_duration(const duration_type& duration) { duration_ = duration; }
+	duration_type get_duration() const { return duration_; }
+
+	void set_callback(progress_callback callback) { callback_ = std::move(callback); }
 
 	void animate_to(double progress);
 	void enter();

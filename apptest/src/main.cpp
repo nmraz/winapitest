@@ -56,13 +56,14 @@ int wmain(int argc, const wchar_t** argv) {
 		});
 	});
 
-	gfx::animation anim([&](double value, bool done) {
+	gfx::animation anim(gfx::easing::ease_in);
+
+	anim.set_callback([&] (double value, bool done) {
 		LOG(trace) << value;
 		if (done) {
-			LOG(info) << "Done";
+			LOG(info) << "Done, Running: " << anim.is_running();
 		}
-	}, gfx::easing::ease_in);
-
+	});
 	anim.set_duration(500ms);
 	anim.enter();
 
@@ -77,10 +78,6 @@ int wmain(int argc, const wchar_t** argv) {
 		anim.enter();
 		LOG(info) << "Running: " << anim.is_running();
 	}, 400ms);
-
-	base::task_runner::current().post_task([&] () {
-		LOG(info) << "Running: " << anim.is_running();
-	}, 1s);
 
 	ui::main_event_loop loop;
 	loop.run();
