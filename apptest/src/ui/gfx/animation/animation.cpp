@@ -1,6 +1,7 @@
 #include "animation.h"
 
 #include "base/timer.h"
+#include <algorithm>
 #include <cmath>
 
 using namespace std::chrono_literals;
@@ -46,12 +47,7 @@ void animation::stop() {
 }
 
 void animation::animate_to(double target_progress) {
-	if (target_progress > 1.0) {
-		target_progress = 1.0;
-	} else if (target_progress < 0.0) {
-		target_progress = 0.0;
-	}
-	target_progress_ = target_progress;
+	target_progress_ = std::min(std::max(target_progress, 0.0), 1.0);  // until we have std::clamp
 	initial_progress_ = progress_;
 	computed_duration_ = std::abs(progress_ - target_progress_) * duration_;
 	start();
