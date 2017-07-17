@@ -81,7 +81,7 @@ void animation::on_progress() {
 		stop();
 	}
 	progress_ = initial_progress_ + (target_progress_ - initial_progress_) * relative_progress;
-	callback_(easing_(progress_));
+	callback_(easing_(progress_), relative_progress == 1.0);
 }
 
 

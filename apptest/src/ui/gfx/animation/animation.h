@@ -10,7 +10,7 @@ namespace gfx {
 
 class animation : public base::non_copy_movable {
 public:
-	using progress_callback = std::function<void(double)>;
+	using progress_callback = std::function<void(double, bool)>;
 	using easing_func = std::function<double(double)>;
 
 	animation(progress_callback, easing_func);

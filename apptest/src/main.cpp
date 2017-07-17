@@ -56,9 +56,13 @@ int wmain(int argc, const wchar_t** argv) {
 		});
 	});
 
-	gfx::animation anim([](double value) {
+	gfx::animation anim([](double value, bool done) {
 		LOG(trace) << value;
+		if (done) {
+			LOG(info) << "Done";
+		}
 	}, gfx::easing::linear);
+
 	anim.set_duration(500ms);
 	anim.enter();
 
