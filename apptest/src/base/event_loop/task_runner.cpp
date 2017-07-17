@@ -90,8 +90,9 @@ bool task_runner::run_delayed_task() {
 		}
 	}
 
-	current_task.callback();
-	delayed_tasks_.pop();
+	task tmp_task = std::move(const_cast<task&>(current_task));  // current_task will still be at the top
+	delayed_tasks_.pop();  // the task must be dequeued *before* running
+	tmp_task.callback();
 
 	return true;
 }
