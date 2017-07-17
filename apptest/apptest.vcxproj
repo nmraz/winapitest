@@ -159,6 +159,8 @@
     <ClCompile Include="src\base\win\scoped_handle.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ui\event_loop_base.cpp" />
+    <ClCompile Include="src\ui\gfx\animation\animation.cpp" />
+    <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
     <ClCompile Include="src\ui\main_event_loop.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +190,8 @@
     <ClInclude Include="src\base\win\message_window.h" />
     <ClInclude Include="src\base\win\scoped_handle.h" />
     <ClInclude Include="src\ui\event_loop_base.h" />
+    <ClInclude Include="src\ui\gfx\animation\animation.h" />
+    <ClInclude Include="src\ui\gfx\animation\easing.h" />
     <ClInclude Include="src\ui\main_event_loop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

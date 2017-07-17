@@ -7,6 +7,8 @@
 #include "base/timer.h"
 #include "base/thread/thread.h"
 #include "base/thread/thread_name.h"
+#include "ui/gfx/animation/animation.h"
+#include "ui/gfx/animation/easing.h"
 #include "ui/main_event_loop.h"
 
 namespace chrono = std::chrono;
@@ -53,6 +55,12 @@ int wmain(int argc, const wchar_t** argv) {
 			});
 		});
 	});
+
+	gfx::animation anim([](double value) {
+		LOG(trace) << value;
+	}, gfx::easing::linear);
+	anim.set_duration(500ms);
+	anim.enter();
 
 	ui::main_event_loop loop;
 	loop.run();
