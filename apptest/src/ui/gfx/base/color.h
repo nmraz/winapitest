@@ -11,7 +11,7 @@ struct color {
 	std::uint8_t r;
 	std::uint8_t g;
 	std::uint8_t b;
-	std::uint8_t a = 255;
+	std::uint8_t a = 0xff;
 };
 
 
@@ -26,13 +26,19 @@ constexpr bool operator!=(const color& rhs, const color& lhs) {
 
 namespace color_constants {
 
-constexpr color transparent{0, 0, 0, 0};
-constexpr color white{255, 255, 255};
+constexpr color transparent{0x00, 0x00, 0x00, 0x00};
+constexpr color white{0xff, 0xff, 0xff};
 constexpr color black{};
 
-constexpr color red{255};
-constexpr color green{0, 255};
-constexpr color blue{0, 0, 255};
+constexpr color red{0xff};
+constexpr color green{0x00, 0xff};
+constexpr color blue{0x00, 0x00, 0xff};
+
+constexpr color yellow{0xff, 0xff};
+constexpr color purple{0xff, 0x00, 0xff};
+constexpr color cyan{0x00, 0xff, 0xff};
+
+constexpr color orange{0xff, 0xa5};
 
 }  // namespace color_constants
 
