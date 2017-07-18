@@ -19,7 +19,7 @@ public:
 	~animation();
 
 	void set_duration(const duration_type& duration) { duration_ = duration; }
-	duration_type get_duration() const { return duration_; }
+	duration_type duration() const { return duration_; }
 
 	void set_callback(progress_callback callback) { callback_ = std::move(callback); }
 
