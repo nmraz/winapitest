@@ -40,7 +40,7 @@ animation::~animation() {
 
 
 void animation::animate_to(double target_progress) {
-	target_progress_ = std::min(std::max(target_progress, 0.0), 1.0);  // until we have std::clamp
+	target_progress_ = std::clamp(target_progress, 0.0, 1.0);
 	initial_progress_ = progress_;
 	computed_duration_ = std::abs(progress_ - target_progress_) * duration_;
 	start();
