@@ -179,5 +179,8 @@
     <ClInclude Include="src\ui\gfx\animation\easing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gfx\base\color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

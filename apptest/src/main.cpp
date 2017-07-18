@@ -9,6 +9,7 @@
 #include "base/thread/thread_name.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
+#include "ui/gfx/base/color.h"
 #include "ui/main_event_loop.h"
 
 namespace chrono = std::chrono;
@@ -51,7 +52,7 @@ int wmain(int argc, const wchar_t** argv) {
 			auto data = std::make_shared<std::string>(3000, 'h');
 
 			file->write(0, *data, [file, data](unsigned long written, const std::error_code& err) {
-				LOG(trace) << "wrote " << written << " bytes of data: " << err.message();
+				LOG(info) << "wrote " << written << " bytes of data: " << err.message();
 			});
 		});
 	});
@@ -78,6 +79,13 @@ int wmain(int argc, const wchar_t** argv) {
 		anim.enter();
 		LOG(info) << "Running: " << anim.is_running();
 	}, 400ms);
+
+	constexpr gfx::color yel = gfx::alpha_blend(gfx::color_constants::red, gfx::color_constants::green, 127);
+
+	LOG(info) << '(' << static_cast<int>(yel.r) << ','
+		             << static_cast<int>(yel.g) << ',' 
+		             << static_cast<int>(yel.b) << ','
+		             << static_cast<int>(yel.a) << ')';
 
 	ui::main_event_loop loop;
 	loop.run();
