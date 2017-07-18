@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ui/gfx/base/util.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -12,6 +13,15 @@ struct color {
 	std::uint8_t b;
 	std::uint8_t a = 255;
 };
+
+
+constexpr bool operator==(const color& rhs, const color& lhs) {
+	return rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b && rhs.a == lhs.a;
+}
+
+constexpr bool operator!=(const color& rhs, const color& lhs) {
+	return !(rhs == lhs);
+}
 
 
 namespace color_constants {
@@ -27,22 +37,13 @@ constexpr color blue{0, 0, 255};
 }  // namespace color_constants
 
 
-constexpr bool operator==(const color& rhs, const color& lhs) {
-	return rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b && rhs.a == lhs.a;
-}
-
-constexpr bool operator!=(const color& rhs, const color& lhs) {
-	return !(rhs == lhs);
-}
-
-
 constexpr color lerp(color from, color to, double t) {
 	t = std::clamp(t, 0.0, 1.0);
 
-	int r = static_cast<int>(from.r + (to.r - from.r) * t);
-	int g = static_cast<int>(from.g + (to.g - from.g) * t);
-	int b = static_cast<int>(from.b + (to.b - from.b) * t);
-	int a = static_cast<int>(from.a + (to.a - from.a) * t);
+	int r = static_cast<int>(from.r + (static_cast<int>(to.r) - from.r) * t);
+	int g = static_cast<int>(from.g + (static_cast<int>(to.g) - from.g) * t);
+	int b = static_cast<int>(from.b + (static_cast<int>(to.b) - from.b) * t);
+	int a = static_cast<int>(from.a + (static_cast<int>(to.a) - from.a) * t);
 
 	return {
 		static_cast<std::uint8_t>(r),
