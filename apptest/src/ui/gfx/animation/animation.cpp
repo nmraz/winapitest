@@ -39,6 +39,20 @@ animation::~animation() {
 }
 
 
+void animation::animate_to(double target_progress) {
+	target_progress_ = std::min(std::max(target_progress, 0.0), 1.0);  // until we have std::clamp
+	initial_progress_ = progress_;
+	computed_duration_ = std::abs(progress_ - target_progress_) * duration_;
+	start();
+}
+
+void animation::jump_to(double progress) {
+	stop();
+	progress_ = progress;
+	callback_(easing_(progress_), true);
+}
+
+
 void animation::enter() {
 	animate_to(1.0);
 }
@@ -49,13 +63,6 @@ void animation::leave() {
 
 void animation::stop() {
 	remove_timer_listener(timer_slot_);
-}
-
-void animation::animate_to(double target_progress) {
-	target_progress_ = std::min(std::max(target_progress, 0.0), 1.0);  // until we have std::clamp
-	initial_progress_ = progress_;
-	computed_duration_ = std::abs(progress_ - target_progress_) * duration_;
-	start();
 }
 
 

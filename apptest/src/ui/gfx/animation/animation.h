@@ -24,6 +24,8 @@ public:
 	void set_callback(progress_callback callback) { callback_ = std::move(callback); }
 
 	void animate_to(double progress);
+	void jump_to(double progress);
+
 	void enter();
 	void leave();
 	void stop();
