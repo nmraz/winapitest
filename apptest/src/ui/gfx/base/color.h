@@ -27,7 +27,7 @@ constexpr color blue{0, 0, 255};
 }  // namespace color_constants
 
 
-constexpr color lerp_color(color from, color to, double t) {
+constexpr color lerp(color from, color to, double t) {
 	t = std::clamp(t, 0.0, 1.0);
 
 	int r = static_cast<int>(from.r + (to.r - from.r) * t);

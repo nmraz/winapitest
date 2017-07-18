@@ -80,7 +80,7 @@ int wmain(int argc, const wchar_t** argv) {
 		LOG(info) << "Running: " << anim.is_running();
 	}, 400ms);
 
-	constexpr gfx::color yel = gfx::lerp_color(gfx::color_constants::red, gfx::color_constants::green, 0.5);
+	constexpr gfx::color yel = gfx::lerp(gfx::color_constants::red, gfx::color_constants::green, 0.5);
 
 	LOG(info) << '(' << static_cast<int>(yel.r) << ','
 		             << static_cast<int>(yel.g) << ',' 
