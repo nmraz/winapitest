@@ -66,4 +66,5 @@ constexpr color alpha_blend(color foreground, color background, std::uint8_t alp
 		static_cast<std::uint8_t>(norm)
 	};
 }
+
 }  // namespace gfx
