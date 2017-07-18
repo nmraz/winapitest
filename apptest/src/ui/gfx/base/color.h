@@ -27,6 +27,15 @@ constexpr color blue{0, 0, 255};
 }  // namespace color_constants
 
 
+constexpr bool operator==(const color& rhs, const color& lhs) {
+	return rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b && rhs.a == lhs.a;
+}
+
+constexpr bool operator!=(const color& rhs, const color& lhs) {
+	return !(rhs == lhs);
+}
+
+
 constexpr color lerp(color from, color to, double t) {
 	t = std::clamp(t, 0.0, 1.0);
 

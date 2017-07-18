@@ -71,6 +71,18 @@ constexpr point<Rep> operator/(Rep value, const point<Rep>& lhs) {
 	return lhs / value;
 }
 
+
+template<typename Rep>
+constexpr bool operator==(const point<Rep>& rhs, const point<Rep>& lhs) {
+	return rhs.x == lhs.x && rhs.y == lhs.y;
+}
+
+template<typename Rep>
+constexpr bool operator!=(const point<Rep>& rhs, const point<Rep>& lhs) {
+	return !(rhs == lhs);
+}
+
+
 template<typename Rep>
 constexpr point<Rep> lerp(const point<Rep>& from, const point<Rep>& to, double t) {
 	t = std::clamp(t, 0.0, 1.0);
