@@ -15,7 +15,8 @@ public:
 	using duration_type = std::chrono::duration<double, std::milli>;
 
 
-	animation(easing_func easing);
+	explicit animation(easing_func easing);
+	~animation();
 
 	void set_duration(const duration_type& duration) { duration_ = duration; }
 	duration_type get_duration() const { return duration_; }

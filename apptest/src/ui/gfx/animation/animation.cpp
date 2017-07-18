@@ -34,6 +34,11 @@ animation::animation(easing_func easing)
 	: easing_(std::move(easing)) {
 }
 
+animation::~animation() {
+	stop();
+}
+
+
 void animation::enter() {
 	animate_to(1.0);
 }
