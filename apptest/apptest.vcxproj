@@ -194,6 +194,7 @@
     <ClInclude Include="src\ui\gfx\animation\easing.h" />
     <ClInclude Include="src\ui\gfx\base\color.h" />
     <ClInclude Include="src\ui\gfx\base\point.h" />
+    <ClInclude Include="src\ui\gfx\base\rect.h" />
     <ClInclude Include="src\ui\gfx\base\util.h" />
     <ClInclude Include="src\ui\main_event_loop.h" />
   </ItemGroup>
