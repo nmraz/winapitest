@@ -31,6 +31,12 @@ bool event_loop_base::do_work() {
 		if (msg.hwnd == message_window_.get() && (msg.message == WM_TIMER || msg.message == wake_msg)) {
 			return false;
 		}
+		if (msg.message == WM_QUIT) {
+			quit();
+			::PostQuitMessage(static_cast<int>(msg.lParam));  // in case we're in a nested loop
+			return false;
+		}
+
 		process_message(msg);
 		return true;
 	}
