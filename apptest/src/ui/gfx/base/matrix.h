@@ -28,7 +28,7 @@ constexpr matrix<Rep, M, P> operator*(const matrix<Rep, M, N>& lhs, const matrix
 
 	for (int i = 0; i < M; ++i) {
 		for (int j = 0; j < P; ++j) {
-			int total = 0;
+			Rep total = 0;
 			for (int k = 0; k < N; ++k) {
 				total += lhs.get(i, k) * rhs.get(k, j);
 			}
