@@ -191,5 +191,8 @@
     <ClInclude Include="src\ui\gfx\base\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gfx\base\matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
