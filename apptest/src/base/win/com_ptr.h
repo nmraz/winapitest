@@ -36,7 +36,7 @@ public:
 
 	T** addr();
 	void** void_addr() { return static_cast<void**>(addr()); }
-	IUnknown** unknown_addr() { return static_cast<IUnknown**>(addr()); }
+	IUnknown** unknown_addr() { return reinterpret_cast<IUnknown**>(addr()); }
 
 	template<typename U>
 	HRESULT query_interface(com_ptr<U>& query);
@@ -56,12 +56,6 @@ com_ptr<T>::com_ptr(T* ptr)
 	: ptr_(ptr) {
 }
 
-template<typename T>
-template<typename U, typename>
-com_ptr<T>::com_ptr(com_ptr<U>&& rhs) noexcept
-	: ptr_(rhs.ptr_) {
-	rhs.ptr_ = nullptr;
-}
 
 template<typename T>
 template<typename U, typename>
