@@ -170,6 +170,7 @@
     <ClCompile Include="src\ui\gfx\animation\animation.cpp" />
     <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\error.cpp" />
+    <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\main_event_loop.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -207,6 +208,7 @@
     <ClInclude Include="src\ui\gfx\base\rect.h" />
     <ClInclude Include="src\ui\gfx\base\util.h" />
     <ClInclude Include="src\ui\gfx\d2d\error.h" />
+    <ClInclude Include="src\ui\gfx\d2d\factories.h" />
     <ClInclude Include="src\ui\main_event_loop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
