@@ -207,6 +207,7 @@
     <ClInclude Include="src\ui\gfx\base\point.h" />
     <ClInclude Include="src\ui\gfx\base\rect.h" />
     <ClInclude Include="src\ui\gfx\base\util.h" />
+    <ClInclude Include="src\ui\gfx\d2d\convs.h" />
     <ClInclude Include="src\ui\gfx\d2d\error.h" />
     <ClInclude Include="src\ui\gfx\d2d\factories.h" />
     <ClInclude Include="src\ui\main_event_loop.h" />
