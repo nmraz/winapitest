@@ -70,7 +70,7 @@ void animation::stop() {
 
 void animation::start() {
 	if (computed_duration_ == 0.0ms) {
-		stop();
+		jump_to(target_progress_);
 		return;
 	}
 	start_time_ = std::chrono::steady_clock::now();
