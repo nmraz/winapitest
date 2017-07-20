@@ -49,7 +49,7 @@ void animation::animate_to(double target_progress) {
 void animation::jump_to(double progress) {
 	stop();
 	progress_ = progress;
-	callback_(easing_(progress_), true);
+	callback_(progress_, true);
 }
 
 
@@ -86,8 +86,8 @@ void animation::on_progress() {
 		relative_progress = 1.0;
 		stop();
 	}
-	progress_ = initial_progress_ + (target_progress_ - initial_progress_) * relative_progress;
-	callback_(easing_(progress_), relative_progress == 1.0);
+	progress_ = initial_progress_ + (target_progress_ - initial_progress_) * easing_(relative_progress);
+	callback_(progress_, relative_progress == 1.0);
 }
 
 
