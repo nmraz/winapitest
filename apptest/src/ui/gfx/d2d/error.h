@@ -6,6 +6,9 @@
 namespace gfx::impl {
 
 enum class d2d_errc : HRESULT {
+	out_of_memory = E_OUTOFMEMORY,
+	invalid_arg = E_INVALIDARG,
+
 	bad_number = D2DERR_BAD_NUMBER,
 	bitmap_bound_as_target = D2DERR_BITMAP_BOUND_AS_TARGET,
 	bitmap_cannot_draw = D2DERR_BITMAP_CANNOT_DRAW,

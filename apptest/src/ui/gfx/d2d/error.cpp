@@ -17,6 +17,10 @@ const char* d2d_error_category::name() const noexcept {
 
 std::string d2d_error_category::message(int code) const noexcept {
 	switch (static_cast<d2d_errc>(code)) {
+	case d2d_errc::out_of_memory:
+		return "out of memory";
+	case d2d_errc::invalid_arg:
+		return "invalid argument";
 	case d2d_errc::bad_number:
 		return "bad number";
 	case d2d_errc::bitmap_bound_as_target:
