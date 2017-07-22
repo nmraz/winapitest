@@ -61,9 +61,6 @@ int wmain(int argc, const wchar_t** argv) {
 
 	anim.set_callback([&] (double value, bool done) {
 		LOG(trace) << value;
-		if (done) {
-			LOG(info) << "Done, Running: " << anim.is_running();
-		}
 	});
 	anim.set_duration(500ms);
 	anim.enter();
@@ -71,13 +68,11 @@ int wmain(int argc, const wchar_t** argv) {
 	base::task_runner::current().post_task([&] () {
 		LOG(info) << "Leaving";
 		anim.leave();
-		LOG(info) << "Running: " << anim.is_running();
 	}, 300ms);
 
 	base::task_runner::current().post_task([&]() {
 		LOG(info) << "Entering";
 		anim.enter();
-		LOG(info) << "Running: " << anim.is_running();
 	}, 400ms);
 
 	constexpr gfx::color yel = gfx::lerp(gfx::color_constants::red, gfx::color_constants::green, 0.5);
