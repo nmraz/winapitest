@@ -96,13 +96,13 @@ constexpr point<Rep> operator/(Rep value, const point<Rep>& lhs) {
 
 
 template<typename Rep>
-constexpr bool operator==(const point<Rep>& rhs, const point<Rep>& lhs) {
-	return rhs.x == lhs.x && rhs.y == lhs.y;
+constexpr bool operator==(const point<Rep>& lhs, const point<Rep>& rhs) {
+	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
 template<typename Rep>
-constexpr bool operator!=(const point<Rep>& rhs, const point<Rep>& lhs) {
-	return !(rhs == lhs);
+constexpr bool operator!=(const point<Rep>& lhs, const point<Rep>& rhs) {
+	return !(lhs == rhs);
 }
 
 
