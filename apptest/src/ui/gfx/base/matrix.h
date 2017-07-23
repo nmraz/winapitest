@@ -4,7 +4,7 @@ namespace gfx {
 
 template<typename Rep, int M, int N>
 struct matrix {
-	Rep data[M * N];
+	Rep data[M][N];
 
 	constexpr Rep& get(int row, int col);
 	constexpr const Rep& get(int row, int col) const;
@@ -13,12 +13,12 @@ struct matrix {
 
 template<typename Rep, int M, int N>
 constexpr Rep& matrix<Rep, M, N>::get(int row, int col) {
-	return data[row * N + col];
+	return data[row][col];
 }
 
 template<typename Rep, int M, int N>
 constexpr const Rep& matrix<Rep, M, N>::get(int row, int col) const {
-	return data[row * N + col];
+	return data[row][col];
 }
 
 
