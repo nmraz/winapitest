@@ -3,6 +3,7 @@
 #include "ui/gfx/base/point.h"
 #include "ui/gfx/base/size.h"
 #include "ui/gfx/base/util.h"
+#include <type_traits>
 
 namespace gfx {
 
@@ -11,6 +12,9 @@ struct rect {
 	constexpr rect();
 	constexpr rect(Rep x, Rep y, Rep width, Rep height);
 	constexpr rect(const point<Rep>& origin, const size<Rep>& size);
+
+	template<typename Rep2, typename = std::enable_if_t<std::is_convertible_v<Rep2, Rep>>>
+	constexpr rect(const rect<Rep2>& other);
 
 	constexpr Rep x() const { return origin.x; }
 	constexpr Rep y() const { return origin.y; }
@@ -43,6 +47,13 @@ template<typename Rep>
 constexpr rect<Rep>::rect(const point<Rep>& origin, const size<Rep>& sz)
 	: origin(origin)
 	, size(sz) {
+}
+
+template<typename Rep>
+template<typename Rep2, typename>
+constexpr rect<Rep>::rect(const rect<Rep2>& other)
+	: origin(other.origin)
+	, height(other.height) {
 }
 
 
