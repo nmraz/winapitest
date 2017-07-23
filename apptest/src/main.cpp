@@ -9,7 +9,6 @@
 #include "base/thread/thread_name.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
-#include "ui/gfx/base/color.h"
 #include "ui/main_event_loop.h"
 
 namespace chrono = std::chrono;
@@ -74,13 +73,6 @@ int wmain(int argc, const wchar_t** argv) {
 		LOG(info) << "Entering";
 		anim.enter();
 	}, 400ms);
-
-	constexpr gfx::color yel = gfx::lerp(gfx::color_constants::red, gfx::color_constants::green, 0.5);
-
-	LOG(info) << '(' << static_cast<int>(yel.r) << ','
-		             << static_cast<int>(yel.g) << ',' 
-		             << static_cast<int>(yel.b) << ','
-		             << static_cast<int>(yel.a) << ')';
 
 	ui::main_event_loop loop;
 	loop.run();

@@ -169,6 +169,7 @@
     <ClCompile Include="src\ui\event_loop_base.cpp" />
     <ClCompile Include="src\ui\gfx\animation\animation.cpp" />
     <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
+    <ClCompile Include="src\ui\gfx\base\color.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\error.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\main_event_loop.cpp" />
