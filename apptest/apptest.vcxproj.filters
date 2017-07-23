@@ -209,5 +209,8 @@
     <ClInclude Include="src\ui\gfx\d2d\convs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gfx\base\size.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

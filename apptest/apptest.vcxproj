@@ -206,6 +206,7 @@
     <ClInclude Include="src\ui\gfx\base\matrix.h" />
     <ClInclude Include="src\ui\gfx\base\point.h" />
     <ClInclude Include="src\ui\gfx\base\rect.h" />
+    <ClInclude Include="src\ui\gfx\base\size.h" />
     <ClInclude Include="src\ui\gfx\base\util.h" />
     <ClInclude Include="src\ui\gfx\d2d\convs.h" />
     <ClInclude Include="src\ui\gfx\d2d\error.h" />
