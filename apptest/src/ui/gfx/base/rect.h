@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/gfx/base/point.h"
+#include "ui/gfx/base/size.h"
 #include "ui/gfx/base/util.h"
 
 namespace gfx {
@@ -9,64 +10,52 @@ template<typename Rep>
 struct rect {
 	constexpr rect();
 	constexpr rect(Rep x, Rep y, Rep width, Rep height);
-	constexpr rect(const point<Rep>& origin, Rep width, Rep height);
+	constexpr rect(const point<Rep>& origin, const size<Rep>& size);
 
-	constexpr point<Rep> origin() const;
+	constexpr Rep x() const { return origin.x; }
+	constexpr Rep y() const { return origin.y; }
+	constexpr Rep width() const { return sz.width; }
+	constexpr Rep height() const { return sz.height; }
 
-	constexpr Rep area() const;
-	constexpr bool empty() const;
+	void set(Rep x, Rep y, Rep width, Rep height);
 
-	constexpr bool contains(const point<Rep>& pt) const;
+	constexpr Rep area() const { return sz.area(); }
+	constexpr bool empty() const { return sz.empty(); }
 
-	Rep x;
-	Rep y;
-	Rep width;
-	Rep height;
+	constexpr bool fill_contains(const point<Rep>& pt) const;
+
+	point<Rep> origin;
+	size<Rep> sz;
 };
 
 
 template<typename Rep>
 constexpr rect<Rep>::rect()
-	: x(0)
-	, y(0)
-	, width(0)
-	, height(0) {
+	: rect(0, 0, 0, 0) {
 }
 
 template<typename Rep>
 constexpr rect<Rep>::rect(Rep x, Rep y, Rep width, Rep height)
-	: x(x)
-	, y(y)
-	, width(width)
-	, height(height) {
+	: rect({x, y}, {width, height}) {
 }
 
 template<typename Rep>
-constexpr rect<Rep>::rect(const point<Rep>& origin, Rep width, Rep height)
-	: rect(origin.x, origin.y, width, height) {
-}
-
-
-template<typename Rep>
-constexpr point<Rep> rect<Rep>::origin() const {
-	return {x, y};
+constexpr rect<Rep>::rect(const point<Rep>& origin, const size<Rep>& sz)
+	: origin(origin)
+	, size(sz) {
 }
 
 
 template<typename Rep>
-constexpr Rep rect<Rep>::area() const {
-	return width * height;
-}
-
-template<typename Rep>
-constexpr bool rect<Rep>::empty() const {
-	return area() == Rep(0);
+void rect<Rep>::set(Rep x, Rep y, Rep width, Rep height) {
+	origin = {x, y};
+	sz = {width, height};
 }
 
 
 template<typename Rep>
-constexpr bool rect<Rep>::contains(const point<Rep>& pt) const {
-	return x <= pt.x && pt.x < x + width && y <= pt.y && pt.y < y + height;
+constexpr bool rect<Rep>::fill_contains(const point<Rep>& pt) const {
+	return x < pt.x && pt.x < x + width && y < pt.y && pt.y < y + height;
 }
 
 
@@ -84,10 +73,8 @@ constexpr bool operator!=(const rect<Rep>& rhs, const rect<Rep>& lhs) {
 template<typename Rep>
 constexpr rect<Rep> lerp(const rect<Rep>& from, const rect<Rep> to, double t) {
 	return {
-		lerp(from.x, to.x, t),
-		lerp(from.y, to.y, t),
-		lerp(from.width, to.width, t),
-		lerp(from.height, to.height, t)
+		lerp(from.origin, to.origin, t),
+		lerp(from.sz, to.sz, t)
 	};
 }
 
