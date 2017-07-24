@@ -9,7 +9,8 @@
 namespace gfx {
 
 template<typename Rep>
-struct rect {
+class rect {
+public:
 	static constexpr struct by_xywh_tag {} by_xywh;
 	static constexpr struct by_bounds_tag {} by_bounds;
 
@@ -22,10 +23,26 @@ struct rect {
 	template<typename Rep2, typename = std::enable_if_t<std::is_convertible_v<Rep2, Rep>>>
 	constexpr rect(const rect<Rep2>& other);
 
-	constexpr Rep x() const { return origin.x; }
-	constexpr Rep y() const { return origin.y; }
-	constexpr Rep width() const { return sz.width; }
-	constexpr Rep height() const { return sz.height; }
+
+	constexpr Rep x() const { return origin_.x; }
+	void set_x(Rep x) { origin_.x = x; }
+
+	constexpr Rep y() const { return origin_.y; }
+	void set_y(Rep y) { origin_.y = y; }
+
+	constexpr Rep width() const { return size_.width; }
+	void set_width(Rep new_width) { size_.width = new_width; }
+
+	constexpr Rep height() const { return size_.height; }
+	void set_height(Rep new_height) { size_.height = new_height; }
+
+
+	constexpr const size<Rep>& get_size() const { return size_; }
+	void set_size(const size<Rep>& new_size) { size_ = new_size; }
+
+	constexpr const point<Rep> origin() const { return origin_; }
+	void set_origin(const point<Rep> new_origin) { origin_ = new_origin; }
+
 
 	constexpr Rep right() const { return x() + width(); }
 	constexpr Rep bottom() const { return y() + height(); }
@@ -37,16 +54,17 @@ struct rect {
 	void set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height);
 	void set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right);
 
-	constexpr Rep area() const { return sz.area(); }
-	constexpr bool empty() const { return sz.empty(); }
+	constexpr Rep area() const { return size_.area(); }
+	constexpr bool empty() const { return size_.empty(); }
 
 	bool contains(const point<Rep>& pt) const;
 
 	bool intersects(const rect& other) const;
 	void intersect(const rect& other);
 
-	point<Rep> origin;
-	size<Rep> sz;
+private:
+	point<Rep> origin_;
+	size<Rep> size_;
 };
 
 
@@ -57,8 +75,8 @@ constexpr rect<Rep>::rect()
 
 template<typename Rep>
 constexpr rect<Rep>::rect(const point<Rep>& origin, const size<Rep>& sz)
-	: origin(origin)
-	, size(sz) {
+	: origin_(origin)
+	, size_(sz) {
 }
 
 template<typename Rep>
@@ -74,15 +92,15 @@ constexpr rect<Rep>::rect(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep righ
 template<typename Rep>
 template<typename Rep2, typename>
 constexpr rect<Rep>::rect(const rect<Rep2>& other)
-	: origin(other.origin)
-	, height(other.height) {
+	: origin_(other.origin_)
+	, size_(other.size_) {
 }
 
 
 template<typename Rep>
 void rect<Rep>::set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height) {
-	origin.set(x, y);
-	sz.set(width, height);
+	origin_.set(x, y);
+	size_.set(width, height);
 }
 
 template<typename Rep>
@@ -134,12 +152,12 @@ void rect<Rep>::intersect(const rect& other) {
 
 
 template<typename Rep>
-constexpr bool operator==(const rect<Rep>& rhs, const rect<Rep>& lhs) {
-	return rhs.x == lhs.x && rhs.y == lhs.y && rhs.width == lhs.width && rhs.height == lhs.height;
+constexpr bool operator==(const rect<Rep>& lhs, const rect<Rep>& rhs) {
+	return lhs.origin() == rhs.origin() && lhs.get_size() == rhs.get_size();
 }
 
 template<typename Rep>
-constexpr bool operator!=(const rect<Rep>& rhs, const rect<Rep>& lhs) {
+constexpr bool operator!=(const rect<Rep>& lhs, const rect<Rep>& rhs) {
 	return !(rhs == lhs);
 }
 
