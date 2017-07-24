@@ -16,6 +16,8 @@ struct size {
 	constexpr Rep area() const { return width * height; }
 	constexpr bool empty() const;
 
+	void set(Rep new_width, Rep new_height);
+
 	void expand_to(const size& other);
 	void shrink_to(const size& other);
 
@@ -46,6 +48,13 @@ constexpr size<Rep>::size(const size<Rep2>& other)
 template<typename Rep>
 constexpr bool size<Rep>::empty() const {
 	return width == 0 || height == 0;
+}
+
+
+template<typename Rep>
+void size<Rep>::set(Rep new_width, Rep new_height) {
+	width = new_width;
+	height = new_height;
 }
 
 

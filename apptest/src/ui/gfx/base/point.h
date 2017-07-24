@@ -10,6 +10,8 @@ struct point {
 	template<typename Rep2, typename = std::enable_if_t<std::is_convertible_v<Rep2, Rep>>>
 	constexpr point(const point<Rep2>& other);
 
+	void set(Rep new_x, Rep new_y);
+
 	Rep x, y;
 };
 
@@ -30,6 +32,13 @@ template<typename Rep2, typename>
 constexpr point<Rep>::point(const point<Rep2>& other)
 	: x(other.x)
 	, y(other.y) {
+}
+
+
+template<typename Rep>
+void point<Rep>::set(Rep new_x, Rep new_y) {
+	x = new_x;
+	y = new_y;
 }
 
 

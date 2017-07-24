@@ -77,8 +77,8 @@ constexpr rect<Rep>::rect(const rect<Rep2>& other)
 
 template<typename Rep>
 void rect<Rep>::set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height) {
-	origin = {x, y};
-	sz = {width, height};
+	origin.set(x, y);
+	sz.set(width, height);
 }
 
 template<typename Rep>
@@ -95,7 +95,7 @@ void rect<Rep>::set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
 
 template<typename Rep>
 constexpr bool rect<Rep>::contains(const point<Rep>& pt) const {
-	return x() <= pt.x && pt.x < x() + width() && y() < pt.y && pt.y < y() + height();
+	return x() <= pt.x && pt.x < right() && y() <= pt.y && pt.y < bottom();
 }
 
 
