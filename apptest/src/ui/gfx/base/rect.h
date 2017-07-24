@@ -3,6 +3,7 @@
 #include "ui/gfx/base/point.h"
 #include "ui/gfx/base/size.h"
 #include "ui/gfx/base/util.h"
+#include <algorithm>
 #include <type_traits>
 
 namespace gfx {
@@ -39,7 +40,10 @@ struct rect {
 	constexpr Rep area() const { return sz.area(); }
 	constexpr bool empty() const { return sz.empty(); }
 
-	constexpr bool contains(const point<Rep>& pt) const;
+	bool contains(const point<Rep>& pt) const;
+
+	bool intersects(const rect& other) const;
+	void intersect(const rect& other);
 
 	point<Rep> origin;
 	size<Rep> sz;
@@ -94,8 +98,38 @@ void rect<Rep>::set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
 
 
 template<typename Rep>
-constexpr bool rect<Rep>::contains(const point<Rep>& pt) const {
+bool rect<Rep>::contains(const point<Rep>& pt) const {
 	return x() <= pt.x && pt.x < right() && y() <= pt.y && pt.y < bottom();
+}
+
+
+template<typename Rep>
+bool rect<Rep>::intersects(const rect& other) const {
+	if (empty() || other.empty()) {
+		return false;
+	}
+
+	return x() < other.right() && other.x() < right() && y() < other.bottom() && other.y() < bottom();
+}
+
+template<typename Rep>
+void rect<Rep>::intersect(const rect& other) {
+	if (empty() || other.empty()) {
+		set(by_xywh, 0, 0, 0, 0);
+		return;
+	}
+	
+	int new_left = std::max(x(), other.x());
+	int new_top = std::max(y(), other.y());
+	int new_right = std::min(right(), other.right());
+	int new_bottom = std::min(bottom(), other.bottom());
+
+	if (new_left >= new_right || new_top >= new_bottom) {  // no intersection
+		set(by_xywh, 0, 0, 0, 0);
+		return;
+	}
+
+	set(by_bounds, new_top, new_left, new_bottom, new_right);
 }
 
 
