@@ -9,9 +9,14 @@ namespace gfx {
 
 template<typename Rep>
 struct rect {
+	static constexpr struct by_xywh_tag {} by_xywh;
+	static constexpr struct by_bounds_tag {} by_bounds;
+
 	constexpr rect();
-	constexpr rect(Rep x, Rep y, Rep width, Rep height);
 	constexpr rect(const point<Rep>& origin, const size<Rep>& size);
+
+	constexpr rect(by_xywh_tag, Rep x, Rep y, Rep width, Rep height);
+	constexpr rect(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right);
 
 	template<typename Rep2, typename = std::enable_if_t<std::is_convertible_v<Rep2, Rep>>>
 	constexpr rect(const rect<Rep2>& other);
@@ -21,12 +26,20 @@ struct rect {
 	constexpr Rep width() const { return sz.width; }
 	constexpr Rep height() const { return sz.height; }
 
-	void set(Rep x, Rep y, Rep width, Rep height);
+	constexpr Rep right() const { return x() + width(); }
+	constexpr Rep bottom() const { return y() + height(); }
+
+	constexpr point<Rep> top_right() const { return {right(), y()}; }
+	constexpr point<Rep> bottom_right() const { return {right(), bottom()}; }
+	constexpr point<Rep> bottom_left() const { return {x(), bottom()}; }
+
+	void set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height);
+	void set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right);
 
 	constexpr Rep area() const { return sz.area(); }
 	constexpr bool empty() const { return sz.empty(); }
 
-	constexpr bool fill_contains(const point<Rep>& pt) const;
+	constexpr bool contains(const point<Rep>& pt) const;
 
 	point<Rep> origin;
 	size<Rep> sz;
@@ -39,14 +52,19 @@ constexpr rect<Rep>::rect()
 }
 
 template<typename Rep>
-constexpr rect<Rep>::rect(Rep x, Rep y, Rep width, Rep height)
-	: rect({x, y}, {width, height}) {
-}
-
-template<typename Rep>
 constexpr rect<Rep>::rect(const point<Rep>& origin, const size<Rep>& sz)
 	: origin(origin)
 	, size(sz) {
+}
+
+template<typename Rep>
+constexpr rect<Rep>::rect(by_xywh_tag, Rep x, Rep y, Rep width, Rep height) {
+	set(by_xywh, x, y, width, height);
+}
+
+template<typename Rep>
+constexpr rect<Rep>::rect(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
+	set(by_bounds, top, left, bottom, right);
 }
 
 template<typename Rep>
@@ -58,15 +76,26 @@ constexpr rect<Rep>::rect(const rect<Rep2>& other)
 
 
 template<typename Rep>
-void rect<Rep>::set(Rep x, Rep y, Rep width, Rep height) {
+void rect<Rep>::set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height) {
 	origin = {x, y};
 	sz = {width, height};
 }
 
+template<typename Rep>
+void rect<Rep>::set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
+	if (bottom < top) {
+		std::swap(bottom, top);
+	}
+	if (right < left) {
+		std::swap(right, left);
+	}
+	set(by_xywh, top, left, right - left, bottom - top);
+}
+
 
 template<typename Rep>
-constexpr bool rect<Rep>::fill_contains(const point<Rep>& pt) const {
-	return x < pt.x && pt.x < x + width && y < pt.y && pt.y < y + height;
+constexpr bool rect<Rep>::contains(const point<Rep>& pt) const {
+	return x() <= pt.x && pt.x < x() + width() && y() < pt.y && pt.y < y() + height();
 }
 
 

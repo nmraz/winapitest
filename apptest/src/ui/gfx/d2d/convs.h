@@ -4,7 +4,6 @@
 #include "ui/gfx/base/matrix.h"
 #include "ui/gfx/base/point.h"
 #include "ui/gfx/base/rect.h"
-#include <cmath>
 #include <d2d1_1.h>
 
 
@@ -31,19 +30,20 @@ constexpr pointf d2d_point_to_point(const D2D1_POINT_2F& pt) {
 
 constexpr D2D1_RECT_F rect_to_d2d_rect(const rectf& rc) {
 	return {
-		rc.x,
-		rc.y,
-		rc.x + rc.width,
-		rc.y + rc.height
+		rc.x(),
+		rc.y(),
+		rc.bottom(),
+		rc.right()
 	};
 }
 
 constexpr rectf d2d_rect_to_rect(const D2D1_RECT_F& rc) {
 	return {
+		rectf::by_bounds,
 		rc.top,
 		rc.left,
-		std::abs(rc.top - rc.bottom),
-		std::abs(rc.left - rc.right)
+		rc.bottom,
+		rc.right
 	};
 }
 
