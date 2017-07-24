@@ -22,6 +22,10 @@ constexpr bool operator!=(const color& rhs, const color& lhs) {
 }
 
 
+color lerp(color from, color to, double t);
+color alpha_blend(color foreground, color background, std::uint8_t alpha);
+
+
 namespace color_constants {
 
 constexpr color transparent{0x00, 0x00, 0x00, 0x00};
@@ -39,9 +43,4 @@ constexpr color cyan{0x00, 0xff, 0xff};
 constexpr color orange{0xff, 0xa5};
 
 }  // namespace color_constants
-
-
-color lerp(color from, color to, double t);
-color alpha_blend(color foreground, color background, std::uint8_t alpha);
-
 }  // namespace gfx
