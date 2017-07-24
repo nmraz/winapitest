@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/gfx/base/util.h"
+#include "ui/gfx/util.h"
 #include <cstdint>
 
 namespace gfx {

@@ -169,7 +169,7 @@
     <ClCompile Include="src\ui\event_loop_base.cpp" />
     <ClCompile Include="src\ui\gfx\animation\animation.cpp" />
     <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
-    <ClCompile Include="src\ui\gfx\base\color.cpp" />
+    <ClCompile Include="src\ui\gfx\color.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\error.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\main_event_loop.cpp" />
@@ -203,12 +203,12 @@
     <ClInclude Include="src\ui\event_loop_base.h" />
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
     <ClInclude Include="src\ui\gfx\animation\easing.h" />
-    <ClInclude Include="src\ui\gfx\base\color.h" />
-    <ClInclude Include="src\ui\gfx\base\matrix.h" />
-    <ClInclude Include="src\ui\gfx\base\point.h" />
-    <ClInclude Include="src\ui\gfx\base\rect.h" />
-    <ClInclude Include="src\ui\gfx\base\size.h" />
-    <ClInclude Include="src\ui\gfx\base\util.h" />
+    <ClInclude Include="src\ui\gfx\color.h" />
+    <ClInclude Include="src\ui\gfx\geom\matrix.h" />
+    <ClInclude Include="src\ui\gfx\geom\point.h" />
+    <ClInclude Include="src\ui\gfx\geom\rect.h" />
+    <ClInclude Include="src\ui\gfx\geom\size.h" />
+    <ClInclude Include="src\ui\gfx\util.h" />
     <ClInclude Include="src\ui\gfx\d2d\convs.h" />
     <ClInclude Include="src\ui\gfx\d2d\error.h" />
     <ClInclude Include="src\ui\gfx\d2d\factories.h" />

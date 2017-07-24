@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ui/gfx/base/point.h"
-#include "ui/gfx/base/size.h"
-#include "ui/gfx/base/util.h"
+#include "ui/gfx/geom/point.h"
+#include "ui/gfx/geom/size.h"
+#include "ui/gfx/util.h"
 #include <algorithm>
 #include <type_traits>
 
