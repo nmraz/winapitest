@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/assert.h"
 #include <algorithm>
 #include <type_traits>
 
@@ -20,6 +21,8 @@ struct size {
 
 	void expand_to(const size& other);
 	void shrink_to(const size& other);
+
+	void validate() const;
 
 	Rep width, height;
 };
@@ -68,6 +71,12 @@ template<typename Rep>
 void size<Rep>::shrink_to(const size& other) {
 	width = std::min(width, other.width);
 	height = std::min(height, other.height);
+}
+
+
+template<typename Rep>
+void size<Rep>::validate() const {
+	ASSERT(width >= 0 && height >= 0) << "Illegal size";
 }
 
 

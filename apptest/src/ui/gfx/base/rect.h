@@ -117,12 +117,16 @@ void rect<Rep>::set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
 
 template<typename Rep>
 bool rect<Rep>::contains(const point<Rep>& pt) const {
+	size_.validate();
+
 	return x() <= pt.x && pt.x < right() && y() <= pt.y && pt.y < bottom();
 }
 
 
 template<typename Rep>
 bool rect<Rep>::intersects(const rect& other) const {
+	size_.validate();
+
 	if (empty() || other.empty()) {
 		return false;
 	}
@@ -132,6 +136,8 @@ bool rect<Rep>::intersects(const rect& other) const {
 
 template<typename Rep>
 void rect<Rep>::intersect(const rect& other) {
+	size_.validate();
+
 	if (empty() || other.empty()) {
 		set(by_xywh, 0, 0, 0, 0);
 		return;
