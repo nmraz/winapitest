@@ -129,6 +129,7 @@ bool rect<Rep>::contains(const point<Rep>& pt) const {
 template<typename Rep>
 bool rect<Rep>::intersects(const rect& other) const {
 	validate();
+	other.validate();
 
 	if (empty() || other.empty()) {
 		return false;
@@ -140,6 +141,7 @@ bool rect<Rep>::intersects(const rect& other) const {
 template<typename Rep>
 void rect<Rep>::intersect(const rect& other) {
 	validate();
+	other.validate();
 
 	if (empty() || other.empty()) {
 		set(by_xywh, 0, 0, 0, 0);
