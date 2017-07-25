@@ -41,7 +41,7 @@ public:
 	constexpr const size<Rep>& get_size() const { return size_; }
 	void set_size(const size<Rep>& new_size) { size_ = new_size; }
 
-	constexpr const point<Rep> origin() const { return origin_; }
+	constexpr const point<Rep>& origin() const { return origin_; }
 	void set_origin(const point<Rep> new_origin) { origin_ = new_origin; }
 
 
