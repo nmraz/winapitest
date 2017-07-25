@@ -146,10 +146,10 @@ void rect<Rep>::intersect(const rect& other) {
 		return;
 	}
 	
-	int new_left = std::max(x(), other.x());
-	int new_top = std::max(y(), other.y());
-	int new_right = std::min(right(), other.right());
-	int new_bottom = std::min(bottom(), other.bottom());
+	Rep new_left = std::max(x(), other.x());
+	Rep new_top = std::max(y(), other.y());
+	Rep new_right = std::min(right(), other.right());
+	Rep new_bottom = std::min(bottom(), other.bottom());
 
 	if (new_left >= new_right || new_top >= new_bottom) {  // no intersection
 		set(by_xywh, 0, 0, 0, 0);
