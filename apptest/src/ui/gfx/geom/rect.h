@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/assert.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/size.h"
 #include "ui/gfx/util.h"
@@ -63,6 +64,8 @@ public:
 	void intersect(const rect& other);
 
 private:
+	void validate() const;
+
 	point<Rep> origin_;
 	size<Rep> size_;
 };
@@ -117,7 +120,7 @@ void rect<Rep>::set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
 
 template<typename Rep>
 bool rect<Rep>::contains(const point<Rep>& pt) const {
-	size_.validate();
+	validate();
 
 	return x() <= pt.x && pt.x < right() && y() <= pt.y && pt.y < bottom();
 }
@@ -125,7 +128,7 @@ bool rect<Rep>::contains(const point<Rep>& pt) const {
 
 template<typename Rep>
 bool rect<Rep>::intersects(const rect& other) const {
-	size_.validate();
+	validate();
 
 	if (empty() || other.empty()) {
 		return false;
@@ -136,7 +139,7 @@ bool rect<Rep>::intersects(const rect& other) const {
 
 template<typename Rep>
 void rect<Rep>::intersect(const rect& other) {
-	size_.validate();
+	validate();
 
 	if (empty() || other.empty()) {
 		set(by_xywh, 0, 0, 0, 0);
@@ -165,6 +168,14 @@ constexpr bool operator==(const rect<Rep>& lhs, const rect<Rep>& rhs) {
 template<typename Rep>
 constexpr bool operator!=(const rect<Rep>& lhs, const rect<Rep>& rhs) {
 	return !(rhs == lhs);
+}
+
+
+// PRIVATE
+
+template<typename Rep>
+void rect<Rep>::validate() const {
+	ASSERT(width() >= 0 && height() >= 0) << "Illegal rectangle size";
 }
 
 
