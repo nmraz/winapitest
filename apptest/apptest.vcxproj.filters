@@ -102,6 +102,9 @@
     <ClCompile Include="src\base\win\scoped_co_init.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\gfx\path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\logging\logging.h">
@@ -219,6 +222,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\win\scoped_co_init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\gfx\path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

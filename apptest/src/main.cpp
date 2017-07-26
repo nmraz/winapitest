@@ -10,6 +10,7 @@
 #include "base/win/scoped_co_init.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
+#include "ui/gfx/path.h"
 #include "ui/main_event_loop.h"
 
 namespace chrono = std::chrono;
@@ -59,6 +60,16 @@ int wmain(int argc, const wchar_t** argv) {
 		});
 	});
 
+
+	gfx::path p;
+	p.move_to({ 1, 2 });
+	p.line_to({ 3, 4 });
+	p.line_to({ 5, 6 });
+	LOG(info) << "Path length: " << p.length();
+	p.line_to({ 7.5f, 3.3f });
+	LOG(info) << "Path length: " << p.length();
+
+
 	gfx::animation anim(gfx::easing::ease_in);
 
 	anim.set_callback([&] (double value, bool done) {
@@ -76,6 +87,7 @@ int wmain(int argc, const wchar_t** argv) {
 		LOG(info) << "Entering";
 		anim.enter();
 	}, 400ms);
+
 
 	ui::main_event_loop loop;
 	loop.run();
