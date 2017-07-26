@@ -29,7 +29,7 @@ public:
 	com_ptr& operator=(com_ptr rhs);
 
 	T* get() const { return ptr_; }
-	void swap(com_ptr& other);
+	void swap(com_ptr& other) noexcept;
 	void release();
 
 	T* operator->() const;
@@ -95,7 +95,7 @@ com_ptr<T>& com_ptr<T>::operator=(com_ptr rhs) {
 
 
 template<typename T>
-void com_ptr<T>::swap(com_ptr& other) {
+void com_ptr<T>::swap(com_ptr& other) noexcept {
 	std::swap(ptr_, other.ptr_);
 }
 
@@ -161,6 +161,12 @@ inline bool operator!=(const com_ptr<T>& ptr, std::nullptr_t) {
 template<typename T>
 inline bool operator!=(std::nullptr_t, const com_ptr<T>& ptr) {
 	return ptr != nullptr;
+}
+
+
+template<typename T>
+inline void swap(com_ptr<T>& lhs, com_ptr<T>& rhs) noexcept {
+	lhs.swap(rhs);
 }
 
 }  // namespace base::win

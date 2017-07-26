@@ -19,7 +19,7 @@ public:
 	scoped_handle& operator=(scoped_handle rhs);
 
 	handle get() const { return handle_; }
-	void swap(scoped_handle& other);
+	void swap(scoped_handle& other) noexcept;
 	void release();
 
 	explicit operator bool() const;
@@ -27,5 +27,10 @@ public:
 private:
 	handle handle_;
 };
+
+
+inline void swap(scoped_handle& lhs, scoped_handle& rhs) {
+	lhs.swap(rhs);
+}
 
 }  // namespace base::win

@@ -22,7 +22,7 @@ public:
 	path(const path& rhs);
 	path(path&& rhs) noexcept;
 
-	void swap(path& other);
+	void swap(path& other) noexcept;
 	path& operator=(path rhs);
 	
 	void move_to(const pointf& to);
@@ -65,5 +65,10 @@ private:
 	pointf first_point_;
 	pointf last_point_;
 };
+
+
+inline void swap(path& lhs, path& rhs) noexcept {
+	lhs.swap(rhs);
+}
 
 }  // namespace gfx

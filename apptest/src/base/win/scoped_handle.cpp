@@ -37,7 +37,7 @@ scoped_handle& scoped_handle::operator=(scoped_handle rhs) {
 }
 
 
-void scoped_handle::swap(scoped_handle& other) {
+void scoped_handle::swap(scoped_handle& other) noexcept {
 	std::swap(handle_, other.handle_);
 }
 

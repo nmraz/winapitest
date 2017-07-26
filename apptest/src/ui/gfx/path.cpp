@@ -62,10 +62,15 @@ path::path(path&& rhs) noexcept
 }
 
 
-void path::swap(path& other) {
-	geom_.swap(other.geom_);
-	active_sink_.swap(other.active_sink_);
-	std::swap(first_point_, other.first_point_);
+void path::swap(path& other) noexcept {
+	using std::swap;
+
+	swap(geom_, other.geom_);
+	swap(active_sink_, other.active_sink_);
+	swap(in_figure_, other.in_figure_);
+
+	swap(first_point_, other.first_point_);
+	swap(last_point_, other.last_point_);
 }
 
 path& path::operator=(path rhs) {
