@@ -12,8 +12,8 @@ namespace gfx {
 template<typename Rep>
 class rect {
 public:
-	static constexpr struct by_xywh_tag {} by_xywh;
-	static constexpr struct by_bounds_tag {} by_bounds;
+	static constexpr struct by_xywh_tag {} by_xywh{};
+	static constexpr struct by_bounds_tag {} by_bounds{};
 
 	constexpr rect();
 	constexpr rect(const point<Rep>& origin, const size<Rep>& size);

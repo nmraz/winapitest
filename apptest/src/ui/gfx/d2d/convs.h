@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ui/gfx/base/color.h"
-#include "ui/gfx/base/matrix.h"
-#include "ui/gfx/base/point.h"
-#include "ui/gfx/base/rect.h"
+#include "ui/gfx/color.h"
+#include "ui/gfx/geom/matrix.h"
+#include "ui/gfx/geom/point.h"
+#include "ui/gfx/geom/rect.h"
 #include <d2d1_1.h>
 
 

@@ -82,7 +82,7 @@ std::string d2d_error_category::message(int code) const noexcept {
 	case d2d_errc::recreate_target:
 		return "the render target must be recreated";
 	case d2d_errc::unexpected_clip:
-		return  "cannot copy from clipped layer";
+		return "cannot copy from clipped layer";
 	case d2d_errc::scanner_failed:
 		return "geometry scanner failed";
 	case d2d_errc::shader_compilation_failed:
