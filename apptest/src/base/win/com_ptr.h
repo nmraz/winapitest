@@ -84,6 +84,7 @@ template<typename T>
 com_ptr<T>& com_ptr<T>::operator=(T* ptr) {
 	release();
 	ptr_ = ptr;
+	return *this;
 }
 
 template<typename T>
