@@ -7,6 +7,7 @@
 #include "base/timer.h"
 #include "base/thread/thread.h"
 #include "base/thread/thread_name.h"
+#include "base/win/scoped_co_init.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
 #include "ui/main_event_loop.h"
@@ -18,6 +19,8 @@ using millis = chrono::duration<double, std::milli>;
 
 int wmain(int argc, const wchar_t** argv) {
 	base::command_line cmd_line(argc, argv);
+
+	base::win::scoped_co_init init_com;
 
 	logging::init(std::make_unique<logging::stdout_sink>(), logging::level::trace, cmd_line.has_flag("logging-colorize"));
 	base::set_current_thread_name("Main");

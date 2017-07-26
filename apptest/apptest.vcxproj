@@ -164,6 +164,7 @@
     <ClCompile Include="src\base\unicode.cpp" />
     <ClCompile Include="src\base\win\last_error.cpp" />
     <ClCompile Include="src\base\win\message_window.cpp" />
+    <ClCompile Include="src\base\win\scoped_co_init.cpp" />
     <ClCompile Include="src\base\win\scoped_handle.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ui\event_loop_base.cpp" />
@@ -199,6 +200,7 @@
     <ClInclude Include="src\base\win\com_ptr.h" />
     <ClInclude Include="src\base\win\last_error.h" />
     <ClInclude Include="src\base\win\message_window.h" />
+    <ClInclude Include="src\base\win\scoped_co_init.h" />
     <ClInclude Include="src\base\win\scoped_handle.h" />
     <ClInclude Include="src\ui\event_loop_base.h" />
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
