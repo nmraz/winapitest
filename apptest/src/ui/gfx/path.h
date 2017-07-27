@@ -3,6 +3,7 @@
 #include "base/win/com_ptr.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/rect.h"
+#include "ui/gfx/geom/size.h"
 #include <d2d1_1.h>
 
 namespace gfx {
@@ -25,11 +26,17 @@ public:
 	void swap(path& other) noexcept;
 	path& operator=(path rhs);
 	
+
 	void move_to(const pointf& to);
 	void line_to(const pointf& to);
+	
 	void quad_to(const pointf& ctrl, const pointf& end);
 	void cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end);
+
+	void arc_to(const pointf& end, const sizef& radius, double rotation_angle,
+		bool large_arc = false, bool counter_clockwise = false);
 	
+
 	void close();
 	void outline();
 
