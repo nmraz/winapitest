@@ -4,6 +4,7 @@
 #include "ui/gfx/geom/matrix.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/rect.h"
+#include "ui/gfx/geom/size.h"
 #include <d2d1_1.h>
 
 
@@ -25,6 +26,15 @@ constexpr D2D1_POINT_2F point_to_d2d_point(const pointf& pt) {
 
 constexpr pointf d2d_point_to_point(const D2D1_POINT_2F& pt) {
 	return { pt.x, pt.y };
+}
+
+
+constexpr D2D1_SIZE_F size_to_d2d_size(const sizef& sz) {
+	return { sz.width, sz.height };
+}
+
+constexpr sizef size_to_d2d_size(const D2D1_SIZE_F& sz) {
+	return { sz.width, sz.height };
 }
 
 
