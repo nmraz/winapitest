@@ -19,10 +19,11 @@ auto create_path_geom() {
 }
 
 
-auto create_sink(const impl::d2d_path_geom_ptr& geom) {
+auto create_sink(const impl::d2d_path_geom_ptr& geom, fill_mode mode) {
 	impl::d2d_geom_sink_ptr sink;
 
 	impl::throw_if_failed(geom->Open(sink.addr()), "Failed to create path sink");
+	sink->SetFillMode(static_cast<D2D1_FILL_MODE>(mode));
 	return sink;
 }
 
@@ -41,22 +42,26 @@ void stream_geom(const impl::d2d_path_geom_ptr& path, const impl::d2d_geom_sink_
 
 path::path()
 	: geom_(create_path_geom())
-	, in_figure_(false) {
-	active_sink_ = create_sink(geom_);
+	, in_figure_(false)
+	, fill_mode_(fill_mode::winding) {
+	active_sink_ = create_sink(geom_, fill_mode_);
 }
 
 path::path(const path& rhs)
-	: path() {
+	: geom_(create_path_geom())
+	, in_figure_(false)
+	, fill_mode_(rhs.fill_mode_)
+	, first_point_(rhs.first_point_)
+	, last_point_(rhs.last_point_) {
+	active_sink_ = create_sink(geom_, fill_mode_);
 	stream_geom(rhs.geom_, active_sink_);
-
-	first_point_ = rhs.first_point_;
-	last_point_ = rhs.last_point_;
 }
 
 path::path(path&& rhs) noexcept
 	: geom_(std::move(rhs.geom_))
 	, active_sink_(std::move(rhs.active_sink_))
 	, in_figure_(rhs.in_figure_)
+	, fill_mode_(rhs.fill_mode_)
 	, first_point_(rhs.first_point_)
 	, last_point_(rhs.last_point_) {
 }
@@ -69,6 +74,8 @@ void path::swap(path& other) noexcept {
 	swap(active_sink_, other.active_sink_);
 	swap(in_figure_, other.in_figure_);
 
+	swap(fill_mode_, other.fill_mode_);
+
 	swap(first_point_, other.first_point_);
 	swap(last_point_, other.last_point_);
 }
@@ -76,6 +83,19 @@ void path::swap(path& other) noexcept {
 path& path::operator=(path rhs) {
 	rhs.swap(*this);
 	return *this;
+}
+
+
+void path::set_fill_mode(fill_mode mode) {
+	bool mode_changed = mode != fill_mode_;
+
+	fill_mode_ = mode;
+
+	if (mode_changed && active_sink_) {
+		// close and reopen the sink for fill mode to take effect
+		ensure_closed();
+		ensure_has_sink();
+	}
 }
 
 
@@ -146,7 +166,7 @@ void path::outline() {
 	ensure_closed();
 
 	auto new_geom = create_path_geom();
-	auto new_sink = create_sink(new_geom);
+	auto new_sink = create_sink(new_geom, fill_mode_);
 
 	impl::throw_if_failed(geom_->Outline(nullptr, new_sink.get()), "Failed to compute path outline");
 
@@ -160,12 +180,7 @@ void path::flush() {
 }
 
 void path::reset() {
-	geom_ = create_path_geom();
-
-	active_sink_ = create_sink(geom_);
-	in_figure_ = false;
-
-	first_point_ = last_point_ = pointf();
+	path().swap(*this);
 }
 
 
@@ -251,7 +266,7 @@ void path::ensure_has_sink() {
 	if (!active_sink_) {
 		// the active sink has been closed - we need a new sink and a new geometry
 		auto new_geom = create_path_geom();
-		auto new_sink = create_sink(new_geom);
+		auto new_sink = create_sink(new_geom, fill_mode_);
 
 		stream_geom(geom_, new_sink);
 

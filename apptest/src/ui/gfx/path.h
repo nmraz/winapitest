@@ -17,6 +17,12 @@ using d2d_geom_sink_ptr = base::win::com_ptr<ID2D1GeometrySink>;
 }  // namepsace impl
 
 
+enum class fill_mode {
+	winding = D2D1_FILL_MODE_WINDING,
+	even_odd = D2D1_FILL_MODE_ALTERNATE
+};
+
+
 class path {
 public:
 	path();
@@ -25,7 +31,9 @@ public:
 
 	void swap(path& other) noexcept;
 	path& operator=(path rhs);
-	
+
+	void set_fill_mode(fill_mode mode);
+	fill_mode get_fill_mode() const { return fill_mode_; }
 
 	void move_to(const pointf& to);
 	void line_to(const pointf& to);
@@ -68,6 +76,8 @@ private:
 
 	mutable impl::d2d_geom_sink_ptr active_sink_;
 	mutable bool in_figure_;
+
+	fill_mode fill_mode_;
 	
 	pointf first_point_;
 	pointf last_point_;
