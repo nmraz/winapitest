@@ -1,7 +1,7 @@
 #include "path.h"
 
+#include "base/win/last_error.h"
 #include "ui/gfx/d2d/convs.h"
-#include "ui/gfx/d2d/error.h"
 #include "ui/gfx/d2d/factories.h"
 #include <utility>
 
@@ -11,7 +11,7 @@ namespace {
 auto create_path_geom() {
 	impl::d2d_path_geom_ptr geom;
 
-	impl::throw_if_failed(
+	base::win::throw_if_failed(
 		impl::get_d2d_factory()->CreatePathGeometry(geom.addr()),
 		"Failed to create path geometry"
 	);
@@ -22,19 +22,19 @@ auto create_path_geom() {
 auto create_sink(const impl::d2d_path_geom_ptr& geom, fill_mode mode) {
 	impl::d2d_geom_sink_ptr sink;
 
-	impl::throw_if_failed(geom->Open(sink.addr()), "Failed to create path sink");
+	base::win::throw_if_failed(geom->Open(sink.addr()), "Failed to create path sink");
 	sink->SetFillMode(static_cast<D2D1_FILL_MODE>(mode));
 	return sink;
 }
 
 void close_sink(impl::d2d_geom_sink_ptr& sink) {
-	impl::throw_if_failed(sink->Close(), "Failed to close path sink");
+	base::win::throw_if_failed(sink->Close(), "Failed to close path sink");
 	sink = nullptr;
 }
 
 
 void stream_geom(const impl::d2d_path_geom_ptr& path, const impl::d2d_geom_sink_ptr& sink) {
-	impl::throw_if_failed(path->Stream(sink.get()), "Failed to copy path");
+	base::win::throw_if_failed(path->Stream(sink.get()), "Failed to copy path");
 }
 
 }  // namespace
@@ -168,7 +168,7 @@ void path::outline() {
 	auto new_geom = create_path_geom();
 	auto new_sink = create_sink(new_geom, fill_mode_);
 
-	impl::throw_if_failed(geom_->Outline(nullptr, new_sink.get()), "Failed to compute path outline");
+	base::win::throw_if_failed(geom_->Outline(nullptr, new_sink.get()), "Failed to compute path outline");
 
 	geom_.swap(new_geom);
 	active_sink_.swap(new_sink);
@@ -188,7 +188,7 @@ float path::length() const {
 	ensure_closed();
 
 	FLOAT length;
-	impl::throw_if_failed(geom_->ComputeLength(nullptr, &length), "Failed to compute path length");
+	base::win::throw_if_failed(geom_->ComputeLength(nullptr, &length), "Failed to compute path length");
 	return length;
 }
 
@@ -196,7 +196,7 @@ float path::area() const {
 	ensure_closed();
 
 	FLOAT area;
-	impl::throw_if_failed(geom_->ComputeArea(nullptr, &area), "Failed to compute path area");
+	base::win::throw_if_failed(geom_->ComputeArea(nullptr, &area), "Failed to compute path area");
 	return area;
 }
 
@@ -205,7 +205,7 @@ rectf path::bounds() const {
 	ensure_closed();
 
 	D2D1_RECT_F bounds;
-	impl::throw_if_failed(geom_->GetBounds(nullptr, &bounds), "Failed to compute path bounds");
+	base::win::throw_if_failed(geom_->GetBounds(nullptr, &bounds), "Failed to compute path bounds");
 	return impl::d2d_rect_to_rect(bounds);
 }
 
@@ -214,7 +214,7 @@ bool path::contains(const pointf& pt) const {
 	ensure_closed();
 
 	BOOL contained;
-	impl::throw_if_failed(
+	base::win::throw_if_failed(
 		geom_->FillContainsPoint(impl::point_to_d2d_point(pt), nullptr, &contained),
 		"Failed to hit test path"
 	);
@@ -226,7 +226,7 @@ pointf path::point_at(float dist) const {
 	ensure_closed();
 
 	D2D1_POINT_2F pt;
-	impl::throw_if_failed(
+	base::win::throw_if_failed(
 		geom_->ComputePointAtLength(dist, nullptr, &pt, nullptr),
 		"Failed to find point along path"
 	);
@@ -237,7 +237,7 @@ pointf path::tangent_at(float dist) const {
 	ensure_closed();
 
 	D2D1_POINT_2F tangent;
-	impl::throw_if_failed(
+	base::win::throw_if_failed(
 		geom_->ComputePointAtLength(dist, nullptr, nullptr, &tangent),
 		"Failed to find tangent to path"
 	);
