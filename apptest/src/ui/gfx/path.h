@@ -51,7 +51,7 @@ public:
 	void outline();
 	void intersect(const path& other);
 
-	void flush();
+	void flush() const;
 	void reset();
 
 	float length() const;

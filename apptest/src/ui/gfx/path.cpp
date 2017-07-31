@@ -194,7 +194,7 @@ void path::intersect(const path& other) {
 }
 
 
-void path::flush() {
+void path::flush() const {
 	ensure_closed();
 }
 
