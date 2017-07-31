@@ -26,6 +26,8 @@ enum class fill_mode {
 class path {
 public:
 	path();
+	explicit path(fill_mode mode);
+
 	path(const path& rhs);
 	path(path&& rhs) noexcept;
 

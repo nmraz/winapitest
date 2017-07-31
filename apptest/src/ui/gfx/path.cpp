@@ -41,9 +41,13 @@ void stream_geom(const impl::d2d_path_geom_ptr& path, const impl::d2d_geom_sink_
 
 
 path::path()
+	: path(fill_mode::winding) {
+}
+
+path::path(fill_mode mode)
 	: geom_(create_path_geom())
 	, in_figure_(false)
-	, fill_mode_(fill_mode::winding) {
+	, fill_mode_(mode) {
 	active_sink_ = create_sink(geom_, fill_mode_);
 }
 
