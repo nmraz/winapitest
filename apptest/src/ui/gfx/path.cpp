@@ -178,6 +178,21 @@ void path::outline() {
 	active_sink_.swap(new_sink);
 }
 
+void path::intersect(const path& other) {
+	ensure_closed();
+
+	auto new_geom = create_path_geom();
+	auto new_sink = create_sink(new_geom, fill_mode_);
+
+	base::win::throw_if_failed(
+		geom_->CombineWithGeometry(other.geom_.get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, new_sink.get()),
+		"Failed to intersect geometry"
+	);
+
+	geom_.swap(new_geom);
+	active_sink_.swap(new_sink);
+}
+
 
 void path::flush() {
 	ensure_closed();

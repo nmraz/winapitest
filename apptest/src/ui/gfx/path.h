@@ -49,6 +49,7 @@ public:
 
 	void close();
 	void outline();
+	void intersect(const path& other);
 
 	void flush();
 	void reset();
