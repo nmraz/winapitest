@@ -58,7 +58,7 @@ constexpr rectf d2d_rect_to_rect(const D2D1_RECT_F& rc) {
 }
 
 
-constexpr D2D1_MATRIX_3X2_F mat32_to_d2d_mat32(const mat32f& mat) {
+constexpr D2D1_MATRIX_3X2_F mat33_to_d2d_mat32(const mat33f& mat) {
 	return {
 		mat.get(0, 0), mat.get(0, 1),
 		mat.get(1, 0), mat.get(1, 1),
@@ -66,11 +66,11 @@ constexpr D2D1_MATRIX_3X2_F mat32_to_d2d_mat32(const mat32f& mat) {
 	};
 }
 
-constexpr mat32f d2d_mat32_to_mat32(const D2D1_MATRIX_3X2_F& mat) {
+constexpr mat33f d2d_mat32_to_mat33(const D2D1_MATRIX_3X2_F& mat) {
 	return {
-		mat._11, mat._12,
-		mat._21, mat._22,
-		mat._31, mat._32
+		mat._11, mat._12, 0,
+		mat._21, mat._22, 0,
+		mat._31, mat._32, 0
 	};
 }
 
