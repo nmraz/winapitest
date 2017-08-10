@@ -20,7 +20,7 @@ private:
 	void reschedule_timer();
 
 	base::win::message_window message_window_;
-	std::atomic<bool> woke_up_;
+	std::atomic<bool> posted_wake_up_;
 	std::optional<base::task::delay_type> cached_next_delay_;
 };
 

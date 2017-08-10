@@ -19,7 +19,7 @@ event_loop_base::event_loop_base()
 	: message_window_([this] (UINT msg, WPARAM wparam, LPARAM lparam) {
 		return handle_message(msg, wparam, lparam);
 	})
-	, woke_up_(false) {
+	, posted_wake_up_(false) {
 }
 
 
@@ -51,11 +51,11 @@ void event_loop_base::sleep(const std::optional<base::task::delay_type>& delay) 
 	}
 
 	::MsgWaitForMultipleObjects(0, nullptr, false, wait_time, QS_ALLINPUT);
-	woke_up_.store(false, std::memory_order_relaxed);
+	posted_wake_up_.store(false, std::memory_order_relaxed);
 }
 
 void event_loop_base::wake_up() {
-	if (woke_up_.exchange(true, std::memory_order_relaxed)) {  // already woke up
+	if (posted_wake_up_.exchange(true, std::memory_order_relaxed)) {  // already woke up
 		return;
 	}
 
@@ -66,7 +66,7 @@ void event_loop_base::wake_up() {
 // PRIVATE
 
 LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) {
-	woke_up_.store(false, std::memory_order_relaxed);
+	posted_wake_up_.store(false, std::memory_order_relaxed);
 	bool ran_task;
 
 	if (msg == WM_TIMER) {
