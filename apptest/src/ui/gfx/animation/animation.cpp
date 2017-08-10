@@ -9,9 +9,11 @@ using namespace std::chrono_literals;
 namespace gfx {
 namespace {
 
-constexpr auto animation_interval = 16ms;
+constexpr auto animation_interval = 16.66ms;
+
 base::timer animation_timer;
 int animation_count;
+
 
 base::slot_handle add_timer_listener(base::timer::callback_type callback) {
 	if (!animation_count++) {
@@ -22,11 +24,11 @@ base::slot_handle add_timer_listener(base::timer::callback_type callback) {
 
 void remove_timer_listener(base::slot_handle callback_handle) {
 	callback_handle.disconnect();
-	animation_count--;
-	if (!animation_count) {
+	if (!--animation_count) {
 		animation_timer.cancel();
 	}
 }
+
 }  // namespace
 
 
