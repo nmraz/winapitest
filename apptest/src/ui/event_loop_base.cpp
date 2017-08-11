@@ -69,11 +69,14 @@ LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) 
 	posted_wake_up_.store(false, std::memory_order_relaxed);
 	bool ran_task;
 
-	if (msg == WM_TIMER) {
-		ran_task = run_delayed_task();
-	} else if (msg == wake_msg) {
+	switch (msg) {
+	case wake_msg:
 		ran_task = run_pending_task();
-	} else {
+		break;
+	case WM_TIMER:
+		ran_task = run_delayed_task();
+		break;
+	default:
 		return ::DefWindowProcW(message_window_.get(), msg, wparam, lparam);
 	}
 
