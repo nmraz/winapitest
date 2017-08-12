@@ -26,12 +26,18 @@ event_loop_base::event_loop_base()
 
 bool event_loop_base::do_work() {
 	reschedule_timer();
+
 	MSG msg;
 	if (::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+
 		// we process task_runner tasks directly in this case
-		if (msg.hwnd == message_window_.get() && (msg.message == WM_TIMER || msg.message == wake_msg)) {
+		if (msg.hwnd == message_window_.get()) {
+			if (msg.message == wake_msg) {
+				clear_wake_flag();  // make sure that we can wake up again
+			}
 			return false;
 		}
+
 		if (msg.message == WM_QUIT) {
 			quit();
 			::PostQuitMessage(static_cast<int>(msg.lParam));  // in case we're in a nested loop
@@ -41,6 +47,7 @@ bool event_loop_base::do_work() {
 		process_message(msg);
 		return true;
 	}
+
 	return false;
 }
 
@@ -52,7 +59,6 @@ void event_loop_base::sleep(const std::optional<base::task::delay_type>& delay) 
 	}
 
 	::MsgWaitForMultipleObjects(0, nullptr, false, wait_time, QS_ALLINPUT);
-	posted_wake_up_.store(false, std::memory_order_relaxed);
 }
 
 void event_loop_base::wake_up() {
@@ -67,25 +73,28 @@ void event_loop_base::wake_up() {
 // PRIVATE
 
 LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) {
-	posted_wake_up_.store(false, std::memory_order_relaxed);
-	bool ran_task;
+	bool ran_task = false;
 
 	switch (msg) {
 	case wake_msg:
+		clear_wake_flag();
 		ran_task = run_pending_task();
 		break;
+		
 	case WM_TIMER:
 		ran_task = run_delayed_task();
 		break;
+
 	default:
-		return ::DefWindowProcW(message_window_.get(), msg, wparam, lparam);
+		return 0;
 	}
 
-	if (ran_task) {
-		wake_up();  // give ourselves another chance to run tasks
-	}
 	reschedule_timer();
 	return 0;
+}
+
+void event_loop_base::clear_wake_flag() {
+	posted_wake_up_.store(false, std::memory_order_relaxed);
 }
 
 void event_loop_base::reschedule_timer() {
