@@ -28,35 +28,34 @@ bool event_loop_base::do_work() {
 	reschedule_timer();
 
 	MSG msg;
-	if (::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
-
-		// we process task_runner tasks directly in this case
-		if (msg.hwnd == message_window_.get()) {
-			if (msg.message == wake_msg) {
-
-				// avoid starving normal window messages
-				if (!::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
-					return false;
-				}
-
-				clear_wake_flag();  // make sure that we can wake up again
-
-			} else {
-				return false;
-			}
-		}
-
-		if (msg.message == WM_QUIT) {
-			quit();
-			::PostQuitMessage(static_cast<int>(msg.lParam));  // in case we're in a nested loop
-			return false;
-		}
-
-		process_message(msg);
-		return true;
+	if (!::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+		return false;
 	}
 
-	return false;
+	// we process task_runner tasks directly in this case
+	if (msg.hwnd == message_window_.get()) {
+		if (msg.message == wake_msg) {
+
+			// avoid starving normal window messages
+			if (!::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+				return false;
+			}
+
+			clear_wake_flag();  // make sure that we can wake up again
+
+		} else {
+			return false;
+		}
+	}
+
+	if (msg.message == WM_QUIT) {
+		quit();
+		::PostQuitMessage(static_cast<int>(msg.lParam));  // in case we're in a nested loop
+		return false;
+	}
+
+	process_message(msg);
+	return true;
 }
 
 
@@ -100,23 +99,27 @@ LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) 
 	return 0;
 }
 
+
 void event_loop_base::clear_wake_flag() {
 	posted_wake_up_.store(false, std::memory_order_relaxed);
 }
 
+
 void event_loop_base::reschedule_timer() {
 	auto next_run_time = get_next_run_time();
 
-	if (next_run_time != current_next_run_time_) {
-		if (next_run_time) {
-			auto delay = std::max(*next_run_time - base::task::clock_type::now(), base::task::delay_type::zero());
-			::SetTimer(message_window_.get(), 1, get_win_wait_time(delay), nullptr);
-		} else {
-			::KillTimer(message_window_.get(), 1);
-		}
-
-		current_next_run_time_ = next_run_time;
+	if (next_run_time == current_next_run_time_) {
+		return;  // nothing has changed
 	}
+
+	if (next_run_time) {
+		auto delay = std::max(*next_run_time - base::task::clock_type::now(), base::task::delay_type::zero());
+		::SetTimer(message_window_.get(), 1, get_win_wait_time(delay), nullptr);
+	} else {
+		::KillTimer(message_window_.get(), 1);
+	}
+
+	current_next_run_time_ = next_run_time;
 }
 
 }  // namespace ui
