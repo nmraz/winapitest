@@ -2,6 +2,7 @@
 #include "base/asio/io_event_loop.h"
 #include "base/command_line.h"
 #include "base/event_loop/task_runner.h"
+#include "base/event_loop/next_tick.h"
 #include "base/logging/logging.h"
 #include "base/logging/logging_sinks.h"
 #include "base/timer.h"
@@ -43,7 +44,7 @@ int wmain(int argc, const wchar_t** argv) {
 		::MessageBoxW(nullptr, L"This is a message box", L"Message Box", MB_OK);
 	});
 
-	base::task_runner::current().post_task([&] {
+	base::next_tick([&] {
 		LOG(info) << "started";
 		start_time = chrono::steady_clock::now();
 
@@ -78,12 +79,12 @@ int wmain(int argc, const wchar_t** argv) {
 	anim.set_duration(500ms);
 	anim.enter();
 
-	base::task_runner::current().post_task([&] () {
+	base::set_timeout([&]() {
 		LOG(info) << "Leaving";
 		anim.leave();
 	}, 300ms);
 
-	base::task_runner::current().post_task([&]() {
+	base::set_timeout([&]() {
 		LOG(info) << "Entering";
 		anim.enter();
 	}, 400ms);

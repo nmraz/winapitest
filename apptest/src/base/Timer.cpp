@@ -1,6 +1,6 @@
 #include "timer.h"
 
-#include "base/event_loop/task_runner.h"
+#include "base/event_loop/next_tick.h"
 #include <utility>
 
 namespace base {
@@ -71,7 +71,7 @@ void timer::fire() {
 
 
 void timer::repost_task() {
-	task_runner::current().post_task([task = current_task_] { task->run(); }, interval_);
+	set_timeout([task = current_task_] { task->run(); }, interval_);
 }
 
 }  // namespace base

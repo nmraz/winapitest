@@ -150,6 +150,7 @@
     <ClCompile Include="src\base\assert.cpp" />
     <ClCompile Include="src\base\command_line.cpp" />
     <ClCompile Include="src\base\event_loop\event_loop.cpp" />
+    <ClCompile Include="src\base\event_loop\next_tick.cpp" />
     <ClCompile Include="src\base\event_loop\task_runner.cpp" />
     <ClCompile Include="src\base\event_loop\task.cpp" />
     <ClCompile Include="src\base\event_loop\task_event_loop.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="src\base\auto_restore.h" />
     <ClInclude Include="src\base\command_line.h" />
     <ClInclude Include="src\base\event_loop\event_loop.h" />
+    <ClInclude Include="src\base\event_loop\next_tick.h" />
     <ClInclude Include="src\base\event_loop\task_runner.h" />
     <ClInclude Include="src\base\event_loop\task.h" />
     <ClInclude Include="src\base\event_loop\task_event_loop.h" />

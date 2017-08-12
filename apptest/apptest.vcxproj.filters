@@ -105,6 +105,9 @@
     <ClCompile Include="src\ui\gfx\transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\base\event_loop\next_tick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\logging\logging.h">
@@ -225,6 +228,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\gfx\transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\next_tick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
