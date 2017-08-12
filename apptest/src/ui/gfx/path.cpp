@@ -144,7 +144,7 @@ void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end)
 	active_sink_->AddBezier(segment);
 }
 
-void path::arc_to(const pointf& end, const sizef& radius, double rotation_angle, bool large_arc, bool counter_clockwise) {
+void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, bool large_arc, bool counter_clockwise) {
 	ensure_in_figure();
 
 	last_point_ = end;
@@ -152,7 +152,7 @@ void path::arc_to(const pointf& end, const sizef& radius, double rotation_angle,
 	D2D1_ARC_SEGMENT segment = {
 		impl::point_to_d2d_point(end),
 		impl::size_to_d2d_size(radius),
-		static_cast<FLOAT>(rad_to_deg(rotation_angle)),
+		rad_to_deg(rotation_angle),
 		counter_clockwise ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE,
 		large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
 	};

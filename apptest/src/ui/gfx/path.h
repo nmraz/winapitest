@@ -43,7 +43,7 @@ public:
 	void quad_to(const pointf& ctrl, const pointf& end);
 	void cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end);
 
-	void arc_to(const pointf& end, const sizef& radius, double rotation_angle,
+	void arc_to(const pointf& end, const sizef& radius, float rotation_angle,
 		bool large_arc = false, bool counter_clockwise = false);
 	
 
