@@ -73,16 +73,15 @@ void event_loop_base::wake_up() {
 // PRIVATE
 
 LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) {
-	bool ran_task = false;
 
 	switch (msg) {
 	case wake_msg:
 		clear_wake_flag();
-		ran_task = run_pending_task();
+		run_pending_task();
 		break;
 		
 	case WM_TIMER:
-		ran_task = run_delayed_task();
+		run_delayed_task();
 		break;
 
 	default:
