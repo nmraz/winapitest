@@ -10,10 +10,12 @@ class task_runner;
 
 class event_loop : public non_copy_movable {
 public:
+	event_loop();
+	virtual ~event_loop() = default;
+
 	void run();
 	void quit();
 
-	virtual ~event_loop() = default;
 
 	virtual bool do_work();
 	virtual void sleep(const std::optional<task::delay_type>& delay) = 0;
@@ -34,7 +36,7 @@ private:
 	task_runner* get_runner() const;
 
 	bool should_quit_;
-	task_runner* runner_ = nullptr;
+	task_runner* runner_;
 };
 
 }  // namespace base

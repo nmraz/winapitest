@@ -14,6 +14,7 @@ thread_local int nesting_level = 0;
 }  // namespace
 
 
+
 struct event_loop::loop_pusher {
 	loop_pusher(event_loop* loop);
 	~loop_pusher();
@@ -38,10 +39,15 @@ void event_loop::loop_pusher::set_loop(event_loop* loop) {
 }
 
 
+
+event_loop::event_loop()
+	: runner_(&task_runner::current()) {
+}
+
+
 void event_loop::run() {
 	loop_pusher push(this);
 	auto_restore<int> restore_nesting(nesting_level);
-	auto_restore<task_runner*> restore_runner(runner_, &task_runner::current());
 
 	++nesting_level;
 	should_quit_ = false;
@@ -116,7 +122,7 @@ std::optional<task::run_time_type> event_loop::get_next_run_time() const {
 // PRIVATE
 
 task_runner* event_loop::get_runner() const {
-	ASSERT(runner_ && this == current_loop) << "Only the active event_loop can run tasks";
+	ASSERT(this == current_loop) << "Only the active event_loop can run tasks";
 	return runner_;
 }
 
