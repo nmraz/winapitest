@@ -79,8 +79,7 @@ void event_loop_base::wake_up() {
 
 // PRIVATE
 
-LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) {
-
+LRESULT event_loop_base::handle_message(UINT msg, WPARAM, LPARAM) {
 	switch (msg) {
 	case wake_msg:
 		clear_wake_flag();

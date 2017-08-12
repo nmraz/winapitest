@@ -73,7 +73,7 @@ int wmain(int argc, const wchar_t** argv) {
 	gfx::animation anim(gfx::easing::ease_in);
 
 	anim.set_callback([&] (double value, bool done) {
-		LOG(trace) << value;
+		LOG(trace) << value << (done ? " - done" : "");
 	});
 	anim.set_duration(500ms);
 	anim.enter();
