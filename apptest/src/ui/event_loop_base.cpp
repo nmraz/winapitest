@@ -33,9 +33,17 @@ bool event_loop_base::do_work() {
 		// we process task_runner tasks directly in this case
 		if (msg.hwnd == message_window_.get()) {
 			if (msg.message == wake_msg) {
+
+				// avoid starving normal window messages
+				if (!::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
+					return false;
+				}
+
 				clear_wake_flag();  // make sure that we can wake up again
+
+			} else {
+				return false;
 			}
-			return false;
 		}
 
 		if (msg.message == WM_QUIT) {
