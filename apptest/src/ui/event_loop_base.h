@@ -21,7 +21,7 @@ private:
 
 	base::win::message_window message_window_;
 	std::atomic<bool> posted_wake_up_;
-	std::optional<base::task::delay_type> cached_next_delay_;
+	std::optional<base::task::run_time_type> current_next_run_time_;
 };
 
 }  // namespace ui

@@ -25,13 +25,13 @@ public:
 protected:
 	bool run_pending_task();
 	bool run_delayed_task();
-	std::optional<task::delay_type> next_delay();
+	std::optional<task::run_time_type> get_next_run_time() const;
 
 private:
 	struct loop_pusher;
 
 	// Check that the loop is active and retrieve the current task_runner
-	task_runner* get_runner();
+	task_runner* get_runner() const;
 
 	bool should_quit_;
 	task_runner* runner_ = nullptr;

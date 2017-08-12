@@ -98,13 +98,12 @@ bool task_runner::run_delayed_task() {
 }
 
 
-std::optional<task::delay_type> task_runner::next_delay() const {
+std::optional<task::run_time_type> task_runner::get_next_run_time() const {
 	if (delayed_tasks_.empty()) {
 		return std::nullopt;
 	}
-	
-	task::delay_type delay = delayed_tasks_.top().run_time - task::clock_type::now();
-	return delay < task::delay_type::zero() ? task::delay_type::zero() : delay;
+
+	return delayed_tasks_.top().run_time;
 }
 
 

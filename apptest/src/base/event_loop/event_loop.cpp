@@ -3,6 +3,7 @@
 #include "base/assert.h"
 #include "base/auto_restore.h"
 #include "base/event_loop/task_runner.h"
+#include <algorithm>
 
 namespace base {
 namespace {
@@ -62,7 +63,15 @@ void event_loop::run() {
 		}
 
 		if (!ran_task) {
-			sleep(next_delay());
+			auto next_run_time = get_next_run_time();
+			if (next_run_time) {
+				auto delay = *next_run_time - task::clock_type::now();
+				if (delay > task::delay_type::zero()) {
+					sleep(delay);
+				}
+			} else {
+				sleep(std::nullopt);
+			}
 		}
 	}
 }
@@ -99,14 +108,14 @@ bool event_loop::run_delayed_task() {
 	return get_runner()->run_delayed_task();
 }
 
-std::optional<task::delay_type> event_loop::next_delay() {
-	return get_runner()->next_delay();
+std::optional<task::run_time_type> event_loop::get_next_run_time() const {
+	return get_runner()->get_next_run_time();
 }
 
 
 // PRIVATE
 
-task_runner* event_loop::get_runner() {
+task_runner* event_loop::get_runner() const {
 	ASSERT(runner_ && this == current_loop) << "Only the active event_loop can run tasks";
 	return runner_;
 }

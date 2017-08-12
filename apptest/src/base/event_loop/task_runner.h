@@ -40,7 +40,7 @@ private:
 
 	bool run_pending_task();
 	bool run_delayed_task();
-	std::optional<task::delay_type> next_delay() const;
+	std::optional<task::run_time_type> get_next_run_time() const;
 
 	task_queue task_queue_;
 	std::mutex task_lock_;  // protects task_queue_

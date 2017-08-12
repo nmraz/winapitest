@@ -1,5 +1,6 @@
 #include "event_loop_base.h"
 
+#include <algorithm>
 #include <Windows.h>
 
 namespace ui {
@@ -88,16 +89,17 @@ LRESULT event_loop_base::handle_message(UINT msg, WPARAM wparam, LPARAM lparam) 
 }
 
 void event_loop_base::reschedule_timer() {
-	auto delay = next_delay();
+	auto next_run_time = get_next_run_time();
 
-	if (delay != cached_next_delay_) {
-		if (delay) {
-			::SetTimer(message_window_.get(), 1, get_win_wait_time(*delay), nullptr);
+	if (next_run_time != current_next_run_time_) {
+		if (next_run_time) {
+			auto delay = std::max(*next_run_time - base::task::clock_type::now(), base::task::delay_type::zero());
+			::SetTimer(message_window_.get(), 1, get_win_wait_time(delay), nullptr);
 		} else {
 			::KillTimer(message_window_.get(), 1);
 		}
 
-		cached_next_delay_ = delay;
+		current_next_run_time_ = next_run_time;
 	}
 }
 
