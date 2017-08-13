@@ -17,8 +17,8 @@ DWORD get_win_wait_time(const base::task::delay_type& delay) {
 
 
 event_loop::event_loop()
-	: message_window_([this] (UINT msg, WPARAM wparam, LPARAM lparam) {
-		return handle_message(msg, wparam, lparam);
+	: message_window_([this] (UINT msg, WPARAM, LPARAM) {
+		return handle_message(msg);
 	})
 	, posted_wake_up_(false) {
 }
@@ -81,7 +81,7 @@ void event_loop::wake_up() {
 
 // PRIVATE
 
-LRESULT event_loop::handle_message(UINT msg, WPARAM, LPARAM) {
+LRESULT event_loop::handle_message(UINT msg) {
 	switch (msg) {
 	case wake_msg:
 		clear_wake_flag();

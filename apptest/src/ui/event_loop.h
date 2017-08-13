@@ -15,7 +15,7 @@ public:
 	void wake_up() override;
 
 private:
-	LRESULT handle_message(UINT msg, WPARAM wparam, LPARAM lparam);
+	LRESULT handle_message(UINT msg);
 	void clear_wake_flag();
 	void reschedule_timer();
 
