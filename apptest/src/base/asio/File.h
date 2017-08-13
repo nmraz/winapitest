@@ -24,7 +24,7 @@ public:
 
 	using offset_type = std::int64_t;
 
-	using complete_callback = std::function<void(unsigned long, const std::error_code&)>;
+	using complete_callback = std::function<void(const std::error_code&, unsigned long)>;
 
 	file() = default;
 	file(std::string_view name, int open_flags);

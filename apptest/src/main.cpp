@@ -55,7 +55,7 @@ int wmain(int argc, const wchar_t** argv) {
 			auto file = std::make_shared<base::file>("test.txt", base::file::out | base::file::create_always);
 			auto data = std::make_shared<std::string>(3000, 'h');
 
-			file->write(0, *data, [file, data](unsigned long written, const std::error_code& err) {
+			file->write(0, *data, [file, data](const std::error_code& err, unsigned long written) {
 				LOG(info) << "wrote " << written << " bytes of data: " << err.message();
 			});
 		});

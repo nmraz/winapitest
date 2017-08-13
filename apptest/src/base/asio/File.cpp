@@ -30,7 +30,7 @@ void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* ove
 	std::unique_ptr<overlappedex> overlapped_ex(static_cast<overlappedex*>(overlapped));
 	std::error_code ec(err, std::system_category());
 
-	overlapped_ex->callback(bytes_transferred, ec);
+	overlapped_ex->callback(ec, bytes_transferred);
 }
 
 }  // namespace
@@ -76,7 +76,7 @@ void file::read(offset_type offset, void* buf, unsigned long count, complete_cal
 	auto overlapped = make_overlapped(offset, std::move(callback));
 
 	if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-		overlapped->callback(0, win::last_error_code());
+		overlapped->callback(win::last_error_code(), 0);
 		return;
 	}
 	overlapped.release();
@@ -86,7 +86,7 @@ void file::write(offset_type offset, const void* buf, unsigned long count, compl
 	auto overlapped = make_overlapped(offset, std::move(callback));
 
 	if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-		overlapped->callback(0, win::last_error_code());
+		overlapped->callback(win::last_error_code(), 0);
 		return;
 	}
 	overlapped.release();
