@@ -1,4 +1,4 @@
-#include "event_loop_base.h"
+#include "event_loop.h"
 
 #include <algorithm>
 #include <Windows.h>
@@ -16,7 +16,7 @@ DWORD get_win_wait_time(const base::task::delay_type& delay) {
 }  // namepsace
 
 
-event_loop_base::event_loop_base()
+event_loop::event_loop()
 	: message_window_([this] (UINT msg, WPARAM wparam, LPARAM lparam) {
 		return handle_message(msg, wparam, lparam);
 	})
@@ -24,7 +24,7 @@ event_loop_base::event_loop_base()
 }
 
 
-bool event_loop_base::do_work() {
+bool event_loop::do_work() {
 	reschedule_timer();
 
 	MSG msg;
@@ -54,12 +54,14 @@ bool event_loop_base::do_work() {
 		return false;
 	}
 
-	process_message(msg);
+	::TranslateMessage(&msg);
+	::DispatchMessageW(&msg);
+
 	return true;
 }
 
 
-void event_loop_base::sleep(const std::optional<base::task::delay_type>& delay) {
+void event_loop::sleep(const std::optional<base::task::delay_type>& delay) {
 	DWORD wait_time = INFINITE;
 	if (delay) {
 		wait_time = get_win_wait_time(*delay);
@@ -68,7 +70,7 @@ void event_loop_base::sleep(const std::optional<base::task::delay_type>& delay) 
 	::MsgWaitForMultipleObjects(0, nullptr, false, wait_time, QS_ALLINPUT);
 }
 
-void event_loop_base::wake_up() {
+void event_loop::wake_up() {
 	if (posted_wake_up_.exchange(true, std::memory_order_relaxed)) {  // already woke up
 		return;
 	}
@@ -79,7 +81,7 @@ void event_loop_base::wake_up() {
 
 // PRIVATE
 
-LRESULT event_loop_base::handle_message(UINT msg, WPARAM, LPARAM) {
+LRESULT event_loop::handle_message(UINT msg, WPARAM, LPARAM) {
 	switch (msg) {
 	case wake_msg:
 		clear_wake_flag();
@@ -99,12 +101,12 @@ LRESULT event_loop_base::handle_message(UINT msg, WPARAM, LPARAM) {
 }
 
 
-void event_loop_base::clear_wake_flag() {
+void event_loop::clear_wake_flag() {
 	posted_wake_up_.store(false, std::memory_order_relaxed);
 }
 
 
-void event_loop_base::reschedule_timer() {
+void event_loop::reschedule_timer() {
 	auto next_run_time = get_next_run_time();
 
 	if (next_run_time == current_next_run_time_) {

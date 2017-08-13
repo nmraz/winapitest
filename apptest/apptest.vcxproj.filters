@@ -75,13 +75,7 @@
     <ClCompile Include="src\base\event_loop\task_runner_handle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\event_loop_base.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\win\message_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ui\main_event_loop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\gfx\animation\animation.cpp">
@@ -106,6 +100,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\base\event_loop\next_tick.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui\event_loop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -182,13 +179,7 @@
     <ClInclude Include="src\base\event_loop\task_runner_ref.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\event_loop_base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\base\win\message_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ui\main_event_loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\gfx\animation\animation.h">
@@ -231,6 +222,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\event_loop\next_tick.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\event_loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

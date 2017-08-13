@@ -12,7 +12,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
 #include "ui/gfx/path.h"
-#include "ui/main_event_loop.h"
+#include "ui/event_loop.h"
 
 namespace chrono = std::chrono;
 using namespace std::literals;
@@ -94,6 +94,6 @@ int wmain(int argc, const wchar_t** argv) {
 	}, 400ms);
 
 
-	ui::main_event_loop loop;
+	ui::event_loop loop;
 	loop.run();
 }

@@ -6,14 +6,13 @@
 
 namespace ui {
 
-class event_loop_base : public base::event_loop {
+class event_loop : public base::event_loop {
 public:
-	event_loop_base();
-	bool do_work() override final;
-	void sleep(const std::optional<base::task::delay_type>& delay) override final;
-	void wake_up() override final;
+	event_loop();
 
-	virtual void process_message(const MSG& msg) = 0;
+	bool do_work() override;
+	void sleep(const std::optional<base::task::delay_type>& delay) override;
+	void wake_up() override;
 
 private:
 	LRESULT handle_message(UINT msg, WPARAM wparam, LPARAM lparam);
