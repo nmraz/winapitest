@@ -19,6 +19,7 @@ base::slot_handle add_timer_listener(base::timer::callback_type callback) {
 	if (!animation_count++) {
 		animation_timer.set(animation_interval, true);
 	}
+
 	return animation_timer.on_fire(std::move(callback));
 }
 
@@ -64,7 +65,9 @@ void animation::leave() {
 }
 
 void animation::stop() {
-	remove_timer_listener(timer_slot_);
+	if (is_running()) {
+		remove_timer_listener(timer_slot_);
+	}
 }
 
 
