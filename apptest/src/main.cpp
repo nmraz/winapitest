@@ -64,11 +64,11 @@ int wmain(int argc, const wchar_t** argv) {
 
 	gfx::path p;
 	p.move_to({ 1, 2 });
+	p.line_to({ 3, 2 });
 	p.line_to({ 3, 4 });
-	p.line_to({ 5, 6 });
-	LOG(info) << "Path length: " << p.length();
-	p.line_to({ 7.5f, 3.3f });
-	LOG(info) << "Path length: " << p.length();
+	p.line_to({ 1, 4 });
+	p.quad_to({ 2, 3 }, { 1, 2 });
+	LOG(info) << "Path area: " << p.area();
 
 
 	gfx::animation anim(gfx::easing::ease_in);
