@@ -81,15 +81,16 @@ LRESULT event_loop::handle_message(UINT msg) {
 	switch (msg) {
 	case wake_msg:
 		clear_wake_flag();
+
 		run_pending_task();
+		run_delayed_task();
 		break;
 		
 	case WM_TIMER:
 		run_delayed_task();
+		// in case the WM_TIMER was early, we must force reschedule_timer to reschedule
+		current_next_run_time_ = std::nullopt;
 		break;
-
-	default:
-		return 0;
 	}
 
 	reschedule_timer();
@@ -110,8 +111,14 @@ void event_loop::reschedule_timer() {
 	}
 
 	if (next_run_time) {
-		auto delay = std::max(*next_run_time - base::task::clock_type::now(), base::task::delay_type::zero());
-		::SetTimer(message_window_.get(), 1, get_win_wait_time(delay), nullptr);
+		auto delay = *next_run_time - base::task::clock_type::now();
+		
+		if (delay > base::task::delay_type::zero()) {
+			::SetTimer(message_window_.get(), 1, get_win_wait_time(delay), nullptr);
+		} else {
+			wake_up();  // task overdue, run now
+		}
+
 	} else {
 		::KillTimer(message_window_.get(), 1);
 	}
