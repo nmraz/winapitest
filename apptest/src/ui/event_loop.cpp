@@ -34,12 +34,16 @@ bool event_loop::do_work() {
 
 	// we process task_runner tasks directly in this case
 	if (msg.hwnd == message_window_.get()) {
+		bool was_wake_msg = msg.message == wake_msg;
+
 		// avoid starving normal window messages
-		bool has_message = ::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE);
+		bool has_other_message = ::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE);
 
-		clear_wake_flag();  // make sure that we can wake up again
+		if (was_wake_msg) {
+			clear_wake_flag();  // make sure that we can wake up again
+		}
 
-		if (!has_message) {
+		if (!has_other_message) {
 			return false;
 		}
 	}
