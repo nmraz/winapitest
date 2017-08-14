@@ -90,7 +90,10 @@ LRESULT event_loop::handle_message(UINT msg) {
 
 	switch (msg) {
 	case wake_msg:
-		run_pending_task();
+		if (run_pending_task()) {
+			// there may be more pending tasks, so make sure to check
+			wake_up();
+		}
 		run_delayed_task();
 		break;
 		
