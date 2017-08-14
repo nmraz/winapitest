@@ -41,7 +41,6 @@ int wmain(int argc, const wchar_t** argv) {
 	timer2.on_fire([&] {
 		LOG(info) << "timer2: elapsed time: "
 			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
-		::MessageBoxW(nullptr, L"This is a message box", L"Message Box", MB_OK);
 	});
 
 	base::next_tick([&] {
@@ -59,6 +58,8 @@ int wmain(int argc, const wchar_t** argv) {
 				LOG(info) << "wrote " << written << " bytes of data: " << err.message();
 			});
 		});
+
+		::MessageBoxW(nullptr, L"This is a message box", L"Message Box", MB_OK);
 	});
 
 
