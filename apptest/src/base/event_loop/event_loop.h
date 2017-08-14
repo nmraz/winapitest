@@ -16,10 +16,11 @@ public:
 	void run();
 	void quit();
 
-
 	virtual bool do_work();
 	virtual void sleep(const std::optional<task::delay_type>& delay) = 0;
 	virtual void wake_up() = 0;
+
+	bool is_current() const;
 
 	static event_loop& current();
 	static bool is_nested();

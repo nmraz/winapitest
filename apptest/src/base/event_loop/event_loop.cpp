@@ -92,6 +92,11 @@ bool event_loop::do_work() {
 }
 
 
+bool event_loop::is_current() const {
+	return this == current_loop;
+}
+
+
 // static
 event_loop& event_loop::current() {
 	ASSERT(current_loop) << "No event loop running on this thread";
@@ -122,7 +127,7 @@ std::optional<task::run_time_type> event_loop::get_next_run_time() const {
 // PRIVATE
 
 task_runner* event_loop::get_runner() const {
-	ASSERT(this == current_loop) << "Only the active event_loop can run tasks";
+	ASSERT(is_current()) << "Only the active event_loop can run tasks";
 	return runner_;
 }
 
