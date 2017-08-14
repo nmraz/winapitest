@@ -37,11 +37,13 @@ bool event_loop::do_work() {
 		if (msg.message == wake_msg) {
 
 			// avoid starving normal window messages
-			if (!::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE)) {
-				return false;
-			}
+			bool has_message = ::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE);
 
 			clear_wake_flag();  // make sure that we can wake up again
+
+			if (!has_message) {
+				return false;
+			}
 
 		} else {
 			return false;
