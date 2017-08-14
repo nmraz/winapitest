@@ -78,10 +78,18 @@ void event_loop::wake_up() {
 // PRIVATE
 
 LRESULT event_loop::handle_message(UINT msg) {
+	if (msg == wake_msg) {
+		// this must *always* be cleared, even if we aren't doing anything else
+		clear_wake_flag();
+	}
+
+	if (!is_current()) {
+		return 0;  // let the current loop do the processing
+	}
+
+
 	switch (msg) {
 	case wake_msg:
-		clear_wake_flag();
-
 		run_pending_task();
 		run_delayed_task();
 		break;
