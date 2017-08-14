@@ -36,11 +36,13 @@ private:
 	using task_queue = std::queue<task>;
 	using delayed_task_queue = std::priority_queue<task>;
 
-	void set_loop(event_loop* loop);
-
 	bool run_pending_task();
 	bool run_delayed_task();
 	std::optional<task::run_time_type> get_next_run_time() const;
+
+	void swap_queues();
+
+	void set_loop(event_loop* loop);
 
 	task_queue task_queue_;
 	std::mutex task_lock_;  // protects task_queue_

@@ -57,21 +57,32 @@ task_runner_handle task_runner::handle() {
 }
 
 
-bool task_runner::run_pending_task() {
-	if (current_tasks_.empty()) {
-		std::lock_guard<std::mutex> hold(task_lock_);
-		task_queue_.swap(current_tasks_);
-	}
+// static
+task_runner& task_runner::current() {
+	static thread_local task_runner runner;
+	return runner;
+}
 
-	while (!current_tasks_.empty()) {
-		task current_task = std::move(current_tasks_.front());
-		current_tasks_.pop();
-		
-		if (current_task.run_time == task::run_time_type()) {
-			current_task.callback();
-			return true;
+
+// PRIVATE
+
+bool task_runner::run_pending_task() {
+	while (true) {
+		swap_queues();
+		if (current_tasks_.empty()) {
+			break;  // no more tasks, not even in the incoming queue
 		}
-		delayed_tasks_.push(std::move(current_task));
+
+		while (!current_tasks_.empty()) {
+			task current_task = std::move(current_tasks_.front());
+			current_tasks_.pop();
+
+			if (current_task.run_time == task::run_time_type()) {
+				current_task.callback();
+				return true;
+			}
+			delayed_tasks_.push(std::move(current_task));
+		}
 	}
 
 	return false;
@@ -107,14 +118,13 @@ std::optional<task::run_time_type> task_runner::get_next_run_time() const {
 }
 
 
-// static
-task_runner& task_runner::current() {
-	static thread_local task_runner runner;
-	return runner;
+void task_runner::swap_queues() {
+	if (current_tasks_.empty()) {
+		std::lock_guard<std::mutex> hold(task_lock_);
+		task_queue_.swap(current_tasks_);
+	}
 }
 
-
-// PRIVATE
 
 void task_runner::set_loop(event_loop* loop) {
 	std::lock_guard<std::mutex> hold(loop_lock_);
