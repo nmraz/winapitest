@@ -54,6 +54,8 @@ bool event_loop::do_work() {
 		return false;
 	}
 
+	wake_up();  // in case we enter a nested loop here
+
 	::TranslateMessage(&msg);
 	::DispatchMessageW(&msg);
 
