@@ -59,7 +59,11 @@ void task_runner_handle::post_task_with_caller(Cb&& callback) {
 
 template<typename Cb, typename Then>
 void task_runner_handle::do_post_task_and_then(Cb&& callback, Then&& then, std::true_type) {
-	post_task_with_caller([callback = std::forward<Cb>(callback), then = std::forward<Then>(then)](task_runner_handle caller) {
+	post_task_with_caller(
+		[
+			callback = std::forward<Cb>(callback),
+			then = std::forward<Then>(then)
+		] (task_runner_handle caller) mutable {
 		callback();
 		caller.post_task(std::forward<Then>(then));
 	});
@@ -67,7 +71,11 @@ void task_runner_handle::do_post_task_and_then(Cb&& callback, Then&& then, std::
 
 template<typename Cb, typename Then>
 void task_runner_handle::do_post_task_and_then(Cb&& callback, Then&& then, std::false_type) {
-	post_task_with_caller([callback = std::forward<Cb>(callback), then = std::forward<Then>(then)](task_runner_handle caller) {
+	post_task_with_caller(
+		[
+			callback = std::forward<Cb>(callback),
+			then = std::forward<Then>(then)
+		] (task_runner_handle caller) mutable {
 		caller.post_task([then = std::forward<Then>(then), tmp = callback()] {
 			then(std::move(tmp));
 		});
