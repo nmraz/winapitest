@@ -180,6 +180,7 @@ void path::outline() {
 
 void path::intersect(const path& other) {
 	ensure_closed();
+	other.ensure_closed();
 
 	auto new_geom = create_path_geom();
 	auto new_sink = create_sink(new_geom, fill_mode_);
