@@ -195,7 +195,7 @@ void path::intersect(const path& other) {
 
 
 void path::reset() {
-	path().swap(*this);
+	path(fill_mode_).swap(*this);
 }
 
 
