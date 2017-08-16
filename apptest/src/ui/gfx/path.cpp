@@ -194,10 +194,6 @@ void path::intersect(const path& other) {
 }
 
 
-void path::flush() const {
-	ensure_closed();
-}
-
 void path::reset() {
 	path().swap(*this);
 }
