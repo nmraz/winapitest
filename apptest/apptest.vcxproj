@@ -210,6 +210,7 @@
     <ClInclude Include="src\base\event_loop\task_event_loop.h" />
     <ClInclude Include="src\base\event_loop\task_runner_handle.h" />
     <ClInclude Include="src\base\event_loop\task_runner_ref.h" />
+    <ClInclude Include="src\base\finally.h" />
     <ClInclude Include="src\base\logging\logging.h" />
     <ClInclude Include="src\base\logging\logging_sinks.h" />
     <ClInclude Include="src\base\non_copyable.h" />
