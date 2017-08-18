@@ -67,7 +67,7 @@ private:
 	friend impl::path_renderer;
 
 	void begin_figure();
-	void end_figure() const;
+	void end_figure(D2D1_FIGURE_END end_mode) const;
 
 	void ensure_has_sink();
 
