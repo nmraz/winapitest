@@ -2,6 +2,7 @@
 
 #include "base/assert.h"
 #include "base/auto_restore.h"
+#include "base/finally.h"
 #include "base/non_copyable.h"
 #include "base/signal/slot_handle.h"
 #include <algorithm>
@@ -70,6 +71,7 @@ slot_handle signal<Args...>::connect(slot_type slot) {
 
 template<typename... Args>
 void signal<Args...>::operator()(Args... args) {
+	auto call_tidy = finally([this] { tidy(); });
 	{
 		auto_restore<int> restore(emit_depth_);
 		++emit_depth_;
@@ -82,8 +84,6 @@ void signal<Args...>::operator()(Args... args) {
 			}
 		}
 	}
-
-	tidy();
 }
 
 
