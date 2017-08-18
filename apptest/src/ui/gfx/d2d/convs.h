@@ -70,7 +70,7 @@ constexpr mat33f d2d_mat32_to_mat33(const D2D1_MATRIX_3X2_F& mat) {
 	return {
 		mat._11, mat._12, 0,
 		mat._21, mat._22, 0,
-		mat._31, mat._32, 0
+		mat._31, mat._32, 1
 	};
 }
 
