@@ -1,5 +1,6 @@
 #include "path.h"
 
+#include "base/assert.h"
 #include "base/win/last_error.h"
 #include "ui/gfx/d2d/convs.h"
 #include "ui/gfx/d2d/factories.h"
@@ -18,7 +19,6 @@ auto create_path_geom() {
 	return geom;
 }
 
-
 auto create_sink(const impl::d2d_path_geom_ptr& geom, fill_mode mode) {
 	impl::d2d_geom_sink_ptr sink;
 
@@ -27,11 +27,18 @@ auto create_sink(const impl::d2d_path_geom_ptr& geom, fill_mode mode) {
 	return sink;
 }
 
+auto create_replacement_geom(fill_mode mode) {
+	auto new_geom = create_path_geom();
+	auto new_sink = create_sink(new_geom, mode);
+
+	return std::make_pair(std::move(new_geom), std::move(new_sink));
+}
+
+
 void close_sink(impl::d2d_geom_sink_ptr& sink) {
 	base::win::throw_if_failed(sink->Close(), "Failed to close path sink");
 	sink = nullptr;
 }
-
 
 void stream_geom(const impl::d2d_path_geom_ptr& path, const impl::d2d_geom_sink_ptr& sink) {
 	base::win::throw_if_failed(path->Stream(sink.get()), "Failed to copy path");
@@ -168,29 +175,25 @@ void path::close() {
 void path::outline() {
 	ensure_closed();
 
-	auto new_geom = create_path_geom();
-	auto new_sink = create_sink(new_geom, fill_mode_);
+	auto [new_geom, new_sink] = create_replacement_geom(fill_mode_);
 
 	base::win::throw_if_failed(geom_->Outline(nullptr, new_sink.get()), "Failed to compute path outline");
 
-	geom_.swap(new_geom);
-	active_sink_.swap(new_sink);
+	replace_geom(new_geom, new_sink);
 }
 
 void path::intersect(const path& other) {
 	ensure_closed();
 	other.ensure_closed();
 
-	auto new_geom = create_path_geom();
-	auto new_sink = create_sink(new_geom, fill_mode_);
+	auto [new_geom, new_sink] = create_replacement_geom(fill_mode_);
 
 	base::win::throw_if_failed(
 		geom_->CombineWithGeometry(other.geom_.get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, new_sink.get()),
 		"Failed to intersect geometry"
 	);
 
-	geom_.swap(new_geom);
-	active_sink_.swap(new_sink);
+	replace_geom(new_geom, new_sink);
 }
 
 
@@ -280,13 +283,11 @@ void path::end_figure(D2D1_FIGURE_END end_mode) const {
 void path::ensure_has_sink() {
 	if (!active_sink_) {
 		// the active sink has been closed - we need a new sink and a new geometry
-		auto new_geom = create_path_geom();
-		auto new_sink = create_sink(new_geom, fill_mode_);
+		auto [new_geom, new_sink] = create_replacement_geom(fill_mode_);
 
 		stream_geom(geom_, new_sink);
 
-		geom_.swap(new_geom);
-		active_sink_.swap(new_sink);
+		replace_geom(new_geom, new_sink);
 	}
 }
 
@@ -301,6 +302,14 @@ void path::ensure_closed() const {
 		end_figure(D2D1_FIGURE_END_OPEN);
 		close_sink(active_sink_);
 	}
+}
+
+
+void path::replace_geom(impl::d2d_path_geom_ptr& new_geom, impl::d2d_geom_sink_ptr& new_sink) {
+	ASSERT(!active_sink_) << "Discarding unclosed sink";
+
+	geom_.swap(new_geom);
+	active_sink_.swap(new_sink);
 }
 
 }  // namepsace gfx
