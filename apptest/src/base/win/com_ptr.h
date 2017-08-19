@@ -35,7 +35,7 @@ public:
 	T* operator->() const;
 
 	T** addr();
-	void** void_addr() { return static_cast<void**>(addr()); }
+	void** void_addr() { return reinterpret_cast<void**>(addr()); }
 	IUnknown** unknown_addr() { return reinterpret_cast<IUnknown**>(addr()); }
 
 	template<typename U>
