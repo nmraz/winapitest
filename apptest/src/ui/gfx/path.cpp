@@ -51,12 +51,11 @@ path::path(fill_mode mode)
 }
 
 path::path(const path& rhs)
-	: in_figure_(false)
+	: geom_(rhs.geom())
+	, in_figure_(false)
 	, fill_mode_(rhs.fill_mode_)
 	, first_point_(rhs.first_point_)
 	, last_point_(rhs.last_point_) {
-	recreate_geom();
-	stream_geom(rhs.geom_, active_sink_);
 }
 
 path::path(path&& rhs) noexcept
