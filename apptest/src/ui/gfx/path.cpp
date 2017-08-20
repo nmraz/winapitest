@@ -27,13 +27,6 @@ auto create_sink(const impl::d2d_path_geom_ptr& geom, fill_mode mode) {
 	return sink;
 }
 
-auto create_replacement_geom(fill_mode mode) {
-	auto new_geom = create_path_geom();
-	auto new_sink = create_sink(new_geom, mode);
-
-	return std::make_pair(std::move(new_geom), std::move(new_sink));
-}
-
 
 void close_sink(impl::d2d_geom_sink_ptr& sink) {
 	base::win::throw_if_failed(sink->Close(), "Failed to close path sink");
@@ -52,19 +45,17 @@ path::path()
 }
 
 path::path(fill_mode mode)
-	: geom_(create_path_geom())
-	, in_figure_(false)
+	: in_figure_(false)
 	, fill_mode_(mode) {
-	active_sink_ = create_sink(geom_, fill_mode_);
+	recreate_geom();
 }
 
 path::path(const path& rhs)
-	: geom_(create_path_geom())
-	, in_figure_(false)
+	: in_figure_(false)
 	, fill_mode_(rhs.fill_mode_)
 	, first_point_(rhs.first_point_)
 	, last_point_(rhs.last_point_) {
-	active_sink_ = create_sink(geom_, fill_mode_);
+	recreate_geom();
 	stream_geom(rhs.geom_, active_sink_);
 }
 
@@ -120,27 +111,21 @@ void path::move_to(const pointf& to) {
 }
 
 void path::line_to(const pointf& to) {
-	ensure_in_figure();
-
 	last_point_ = to;
-	active_sink_->AddLine(impl::point_to_d2d_point(to));
+	sink()->AddLine(impl::point_to_d2d_point(to));
 }
 
 void path::quad_to(const pointf& ctrl, const pointf& end) {
-	ensure_in_figure();
-
 	last_point_ = end;
 
 	D2D1_QUADRATIC_BEZIER_SEGMENT segment = {
 		impl::point_to_d2d_point(ctrl),
 		impl::point_to_d2d_point(end)
 	};
-	active_sink_->AddQuadraticBezier(segment);
+	sink()->AddQuadraticBezier(segment);
 }
 
 void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end) {
-	ensure_in_figure();
-
 	last_point_ = end;
 
 	D2D1_BEZIER_SEGMENT segment = {
@@ -148,12 +133,10 @@ void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end)
 		impl::point_to_d2d_point(ctrl2),
 		impl::point_to_d2d_point(end)
 	};
-	active_sink_->AddBezier(segment);
+	sink()->AddBezier(segment);
 }
 
 void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, bool large_arc, bool counter_clockwise) {
-	ensure_in_figure();
-
 	last_point_ = end;
 
 	D2D1_ARC_SEGMENT segment = {
@@ -163,7 +146,7 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 		counter_clockwise ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE,
 		large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
 	};
-	active_sink_->AddArc(segment);
+	sink()->AddArc(segment);
 }
 
 
@@ -173,27 +156,17 @@ void path::close() {
 }
 
 void path::outline() {
-	ensure_closed();
-
-	auto [new_geom, new_sink] = create_replacement_geom(fill_mode_);
-
-	base::win::throw_if_failed(geom_->Outline(nullptr, new_sink.get()), "Failed to compute path outline");
-
-	replace_geom(new_geom, new_sink);
+	auto old_geom = recreate_geom();
+	base::win::throw_if_failed(old_geom->Outline(nullptr, sink().get()), "Failed to compute path outline");
 }
 
 void path::intersect(const path& other) {
-	ensure_closed();
-	other.ensure_closed();
-
-	auto [new_geom, new_sink] = create_replacement_geom(fill_mode_);
+	auto old_geom = recreate_geom();
 
 	base::win::throw_if_failed(
-		geom_->CombineWithGeometry(other.geom_.get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, new_sink.get()),
+		old_geom->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, sink().get()),
 		"Failed to intersect geometry"
 	);
-
-	replace_geom(new_geom, new_sink);
 }
 
 
@@ -203,37 +176,29 @@ void path::reset() {
 
 
 float path::length() const {
-	ensure_closed();
-
 	FLOAT length;
-	base::win::throw_if_failed(geom_->ComputeLength(nullptr, &length), "Failed to compute path length");
+	base::win::throw_if_failed(geom()->ComputeLength(nullptr, &length), "Failed to compute path length");
 	return length;
 }
 
 float path::area() const {
-	ensure_closed();
-
 	FLOAT area;
-	base::win::throw_if_failed(geom_->ComputeArea(nullptr, &area), "Failed to compute path area");
+	base::win::throw_if_failed(geom()->ComputeArea(nullptr, &area), "Failed to compute path area");
 	return area;
 }
 
 
 rectf path::bounds() const {
-	ensure_closed();
-
 	D2D1_RECT_F bounds;
-	base::win::throw_if_failed(geom_->GetBounds(nullptr, &bounds), "Failed to compute path bounds");
+	base::win::throw_if_failed(geom()->GetBounds(nullptr, &bounds), "Failed to compute path bounds");
 	return impl::d2d_rect_to_rect(bounds);
 }
 
 
 bool path::contains(const pointf& pt) const {
-	ensure_closed();
-
 	BOOL contained;
 	base::win::throw_if_failed(
-		geom_->FillContainsPoint(impl::point_to_d2d_point(pt), nullptr, &contained),
+		geom()->FillContainsPoint(impl::point_to_d2d_point(pt), nullptr, &contained),
 		"Failed to hit test path"
 	);
 	return static_cast<bool>(contained);
@@ -241,22 +206,18 @@ bool path::contains(const pointf& pt) const {
 
 
 pointf path::point_at(float dist) const {
-	ensure_closed();
-
 	D2D1_POINT_2F pt;
 	base::win::throw_if_failed(
-		geom_->ComputePointAtLength(dist, nullptr, &pt, nullptr),
+		geom()->ComputePointAtLength(dist, nullptr, &pt, nullptr),
 		"Failed to find point along path"
 	);
 	return impl::d2d_point_to_point(pt);
 }
 
 pointf path::tangent_at(float dist) const {
-	ensure_closed();
-
 	D2D1_POINT_2F tangent;
 	base::win::throw_if_failed(
-		geom_->ComputePointAtLength(dist, nullptr, nullptr, &tangent),
+		geom()->ComputePointAtLength(dist, nullptr, nullptr, &tangent),
 		"Failed to find tangent to path"
 	);
 	return impl::d2d_point_to_point(tangent);
@@ -264,6 +225,17 @@ pointf path::tangent_at(float dist) const {
 
 
 // PRIVATE
+
+const impl::d2d_path_geom_ptr& path::geom() const {
+	ensure_closed();
+	return geom_;
+}
+
+const impl::d2d_geom_sink_ptr& path::sink() {
+	ensure_has_sink();
+	return active_sink_;
+}
+
 
 void path::begin_figure() {
 	if (!in_figure_) {
@@ -283,11 +255,8 @@ void path::end_figure(D2D1_FIGURE_END end_mode) const {
 void path::ensure_has_sink() {
 	if (!active_sink_) {
 		// the active sink has been closed - we need a new sink and a new geometry
-		auto [new_geom, new_sink] = create_replacement_geom(fill_mode_);
-
-		stream_geom(geom_, new_sink);
-
-		replace_geom(new_geom, new_sink);
+		auto old_geom = recreate_geom();
+		stream_geom(old_geom, sink());
 	}
 }
 
@@ -305,11 +274,14 @@ void path::ensure_closed() const {
 }
 
 
-void path::replace_geom(impl::d2d_path_geom_ptr& new_geom, impl::d2d_geom_sink_ptr& new_sink) {
-	ASSERT(!active_sink_) << "Discarding unclosed sink";
+impl::d2d_path_geom_ptr path::recreate_geom() {
+	ensure_closed();
 
-	geom_.swap(new_geom);
-	active_sink_.swap(new_sink);
+	auto new_geom = create_path_geom();
+	active_sink_ = create_sink(new_geom, fill_mode_);
+	new_geom.swap(geom_);
+
+	return new_geom;
 }
 
 }  // namepsace gfx

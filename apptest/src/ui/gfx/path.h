@@ -66,6 +66,9 @@ public:
 private:
 	friend impl::path_renderer;
 
+	const impl::d2d_path_geom_ptr& geom() const;
+	const impl::d2d_geom_sink_ptr& sink();
+
 	void begin_figure();
 	void end_figure(D2D1_FIGURE_END end_mode) const;
 
@@ -74,7 +77,7 @@ private:
 	void ensure_in_figure();
 	void ensure_closed() const;
 
-	void replace_geom(impl::d2d_path_geom_ptr& new_geom, impl::d2d_geom_sink_ptr& new_sink);
+	impl::d2d_path_geom_ptr recreate_geom();
 
 	impl::d2d_path_geom_ptr geom_;
 
