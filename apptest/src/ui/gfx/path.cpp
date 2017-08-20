@@ -110,34 +110,32 @@ void path::move_to(const pointf& to) {
 }
 
 void path::line_to(const pointf& to) {
-	last_point_ = to;
 	sink()->AddLine(impl::point_to_d2d_point(to));
+	last_point_ = to;
 }
 
 void path::quad_to(const pointf& ctrl, const pointf& end) {
-	last_point_ = end;
-
 	D2D1_QUADRATIC_BEZIER_SEGMENT segment = {
 		impl::point_to_d2d_point(ctrl),
 		impl::point_to_d2d_point(end)
 	};
+
 	sink()->AddQuadraticBezier(segment);
+	last_point_ = end;
 }
 
 void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end) {
-	last_point_ = end;
-
 	D2D1_BEZIER_SEGMENT segment = {
 		impl::point_to_d2d_point(ctrl1),
 		impl::point_to_d2d_point(ctrl2),
 		impl::point_to_d2d_point(end)
 	};
+
 	sink()->AddBezier(segment);
+	last_point_ = end;
 }
 
 void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, bool large_arc, bool counter_clockwise) {
-	last_point_ = end;
-
 	D2D1_ARC_SEGMENT segment = {
 		impl::point_to_d2d_point(end),
 		impl::size_to_d2d_size(radius),
@@ -145,7 +143,9 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 		counter_clockwise ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE,
 		large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
 	};
+
 	sink()->AddArc(segment);
+	last_point_ = end;
 }
 
 
