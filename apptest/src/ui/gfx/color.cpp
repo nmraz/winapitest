@@ -7,10 +7,10 @@ namespace gfx {
 color lerp(color from, color to, double t) {
 	t = std::clamp(t, 0.0, 1.0);
 
-	int r = static_cast<int>(from.r + (static_cast<int>(to.r) - from.r) * t);
-	int g = static_cast<int>(from.g + (static_cast<int>(to.g) - from.g) * t);
-	int b = static_cast<int>(from.b + (static_cast<int>(to.b) - from.b) * t);
-	int a = static_cast<int>(from.a + (static_cast<int>(to.a) - from.a) * t);
+	int r = static_cast<int>(from.r + (to.r - from.r) * t);
+	int g = static_cast<int>(from.g + (to.g - from.g) * t);
+	int b = static_cast<int>(from.b + (to.b - from.b) * t);
+	int a = static_cast<int>(from.a + (to.a - from.a) * t);
 
 	return {
 		static_cast<std::uint8_t>(r),
