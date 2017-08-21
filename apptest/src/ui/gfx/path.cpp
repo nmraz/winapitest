@@ -278,9 +278,8 @@ impl::d2d_path_geom_ptr path::recreate_geom() {
 
 	auto new_geom = create_path_geom();
 	active_sink_ = create_sink(new_geom, fill_mode_);
-	new_geom.swap(geom_);
-
-	return new_geom;
+	
+	return std::exchange(geom_, std::move(new_geom));
 }
 
 }  // namepsace gfx
