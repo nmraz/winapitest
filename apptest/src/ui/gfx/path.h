@@ -67,7 +67,9 @@ private:
 	friend impl::path_renderer;
 
 	const impl::d2d_path_geom_ptr& geom() const;
-	const impl::d2d_geom_sink_ptr& sink();
+
+	const impl::d2d_geom_sink_ptr& streaming_sink();
+	const impl::d2d_geom_sink_ptr& figure_sink();
 
 	void begin_figure();
 	void end_figure(D2D1_FIGURE_END end_mode) const;

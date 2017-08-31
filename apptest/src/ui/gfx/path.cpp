@@ -110,7 +110,7 @@ void path::move_to(const pointf& to) {
 }
 
 void path::line_to(const pointf& to) {
-	sink()->AddLine(impl::point_to_d2d_point(to));
+	figure_sink()->AddLine(impl::point_to_d2d_point(to));
 	last_point_ = to;
 }
 
@@ -120,7 +120,7 @@ void path::quad_to(const pointf& ctrl, const pointf& end) {
 		impl::point_to_d2d_point(end)
 	};
 
-	sink()->AddQuadraticBezier(segment);
+	figure_sink()->AddQuadraticBezier(segment);
 	last_point_ = end;
 }
 
@@ -131,7 +131,7 @@ void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end)
 		impl::point_to_d2d_point(end)
 	};
 
-	sink()->AddBezier(segment);
+	figure_sink()->AddBezier(segment);
 	last_point_ = end;
 }
 
@@ -144,7 +144,7 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 		large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
 	};
 
-	sink()->AddArc(segment);
+	figure_sink()->AddArc(segment);
 	last_point_ = end;
 }
 
@@ -156,14 +156,14 @@ void path::close() {
 
 void path::outline() {
 	auto old_geom = recreate_geom();
-	base::win::throw_if_failed(old_geom->Outline(nullptr, sink().get()), "Failed to compute path outline");
+	base::win::throw_if_failed(old_geom->Outline(nullptr, streaming_sink().get()), "Failed to compute path outline");
 }
 
 void path::intersect(const path& other) {
 	auto old_geom = recreate_geom();
 
 	base::win::throw_if_failed(
-		old_geom->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, sink().get()),
+		old_geom->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, streaming_sink().get()),
 		"Failed to intersect geometry"
 	);
 }
@@ -230,8 +230,13 @@ const impl::d2d_path_geom_ptr& path::geom() const {
 	return geom_;
 }
 
-const impl::d2d_geom_sink_ptr& path::sink() {
+const impl::d2d_geom_sink_ptr& path::streaming_sink() {
 	ensure_has_sink();
+	return active_sink_;
+}
+
+const impl::d2d_geom_sink_ptr& path::figure_sink() {
+	ensure_in_figure();
 	return active_sink_;
 }
 
@@ -255,7 +260,7 @@ void path::ensure_has_sink() {
 	if (!active_sink_) {
 		// the active sink has been closed - we need a new sink and a new geometry
 		auto old_geom = recreate_geom();
-		stream_geom(old_geom, sink());
+		stream_geom(old_geom, streaming_sink());
 	}
 }
 

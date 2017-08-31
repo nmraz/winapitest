@@ -68,6 +68,7 @@ int wmain(int argc, const wchar_t** argv) {
 	p.line_to({ 3, 2 });
 	p.line_to({ 3, 4 });
 	p.line_to({ 1, 4 });
+	LOG(info) << "Path area: " << p.area();
 	p.quad_to({ 2, 3 }, { 1, 2 });
 	LOG(info) << "Path area: " << p.area();
 
