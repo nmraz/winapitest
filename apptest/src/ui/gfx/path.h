@@ -75,8 +75,6 @@ private:
 	void end_figure(D2D1_FIGURE_END end_mode) const;
 
 	void ensure_has_sink();
-
-	void ensure_in_figure();
 	void ensure_closed() const;
 
 	impl::d2d_path_geom_ptr recreate_geom();

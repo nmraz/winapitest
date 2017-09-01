@@ -232,11 +232,13 @@ const impl::d2d_path_geom_ptr& path::geom() const {
 
 const impl::d2d_geom_sink_ptr& path::streaming_sink() {
 	ensure_has_sink();
+	end_figure(D2D1_FIGURE_END_OPEN);
 	return active_sink_;
 }
 
 const impl::d2d_geom_sink_ptr& path::figure_sink() {
-	ensure_in_figure();
+	ensure_has_sink();
+	begin_figure();
 	return active_sink_;
 }
 
@@ -262,12 +264,6 @@ void path::ensure_has_sink() {
 		auto old_geom = recreate_geom();
 		stream_geom(old_geom, streaming_sink());
 	}
-}
-
-
-void path::ensure_in_figure() {
-	ensure_has_sink();
-	begin_figure();
 }
 
 void path::ensure_closed() const {
