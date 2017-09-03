@@ -72,7 +72,7 @@ private:
 	const impl::d2d_geom_sink_ptr& figure_sink();
 
 	void begin_figure();
-	void end_figure(D2D1_FIGURE_END end_mode) const;
+	void end_figure() const;
 
 	void ensure_has_sink();
 	void ensure_closed() const;

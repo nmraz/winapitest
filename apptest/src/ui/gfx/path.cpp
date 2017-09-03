@@ -102,7 +102,7 @@ void path::set_fill_mode(fill_mode mode) {
 
 void path::move_to(const pointf& to) {
 	ensure_has_sink();
-	end_figure(D2D1_FIGURE_END_OPEN);
+	end_figure();
 
 	first_point_ = last_point_ = to;
 	
@@ -150,8 +150,9 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 
 
 void path::close() {
-	last_point_ = first_point_;
-	end_figure(D2D1_FIGURE_END_CLOSED);
+	if (last_point_ != first_point_) {
+		line_to(first_point_);
+	}
 }
 
 void path::outline() {
@@ -232,7 +233,7 @@ const impl::d2d_path_geom_ptr& path::geom() const {
 
 const impl::d2d_geom_sink_ptr& path::streaming_sink() {
 	ensure_has_sink();
-	end_figure(D2D1_FIGURE_END_OPEN);
+	end_figure();
 	return active_sink_;
 }
 
@@ -250,9 +251,9 @@ void path::begin_figure() {
 	}
 }
 
-void path::end_figure(D2D1_FIGURE_END end_mode) const {
+void path::end_figure() const {
 	if (in_figure_) {
-		active_sink_->EndFigure(end_mode);
+		active_sink_->EndFigure(D2D1_FIGURE_END_OPEN);
 		in_figure_ = false;
 	}
 }
@@ -268,7 +269,7 @@ void path::ensure_has_sink() {
 
 void path::ensure_closed() const {
 	if (active_sink_) {
-		end_figure(D2D1_FIGURE_END_OPEN);
+		end_figure();
 		close_sink(active_sink_);
 	}
 }
