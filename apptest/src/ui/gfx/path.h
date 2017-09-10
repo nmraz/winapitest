@@ -48,8 +48,8 @@ public:
 	
 	void close();
 
-	path outline();
-	path intersect(const path& other);
+	path outline() const;
+	path intersect(const path& other) const;
 
 	void reset();
 

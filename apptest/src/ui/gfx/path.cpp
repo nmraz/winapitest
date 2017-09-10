@@ -155,14 +155,14 @@ void path::close() {
 	}
 }
 
-path path::outline() {
+path path::outline() const {
 	path ret;
 	base::win::throw_if_failed(geom()->Outline(nullptr, ret.streaming_sink().get()), "Failed to compute path outline");
 
 	return ret;
 }
 
-path path::intersect(const path& other) {
+path path::intersect(const path& other) const {
 	path ret;
 	base::win::throw_if_failed(
 		geom()->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, ret.streaming_sink().get()),
