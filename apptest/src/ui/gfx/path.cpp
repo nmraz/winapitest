@@ -155,18 +155,21 @@ void path::close() {
 	}
 }
 
-void path::outline() {
-	auto old_geom = recreate_geom();
-	base::win::throw_if_failed(old_geom->Outline(nullptr, streaming_sink().get()), "Failed to compute path outline");
+path path::outline() {
+	path ret;
+	base::win::throw_if_failed(geom()->Outline(nullptr, ret.streaming_sink().get()), "Failed to compute path outline");
+
+	return ret;
 }
 
-void path::intersect(const path& other) {
-	auto old_geom = recreate_geom();
-
+path path::intersect(const path& other) {
+	path ret;
 	base::win::throw_if_failed(
-		old_geom->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, streaming_sink().get()),
+		geom()->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, ret.streaming_sink().get()),
 		"Failed to intersect geometry"
 	);
+
+	return ret;
 }
 
 

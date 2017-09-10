@@ -46,10 +46,10 @@ public:
 	void arc_to(const pointf& end, const sizef& radius, float rotation_angle,
 		bool large_arc = false, bool counter_clockwise = false);
 	
-
 	void close();
-	void outline();
-	void intersect(const path& other);
+
+	path outline();
+	path intersect(const path& other);
 
 	void reset();
 
