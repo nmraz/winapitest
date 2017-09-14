@@ -9,8 +9,6 @@
 namespace gfx {
 namespace impl {
 
-class path_renderer;
-
 using d2d_path_geom_ptr = base::win::com_ptr<ID2D1PathGeometry>;
 using d2d_geom_sink_ptr = base::win::com_ptr<ID2D1GeometrySink>;
 
@@ -63,11 +61,9 @@ public:
 	pointf point_at(float dist) const;
 	pointf tangent_at(float dist) const;
 
-private:
-	friend impl::path_renderer;
-
 	const impl::d2d_path_geom_ptr& geom() const;
 
+private:
 	const impl::d2d_geom_sink_ptr& streaming_sink();
 	const impl::d2d_geom_sink_ptr& figure_sink();
 

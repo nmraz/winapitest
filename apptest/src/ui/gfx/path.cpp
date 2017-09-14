@@ -226,13 +226,13 @@ pointf path::tangent_at(float dist) const {
 	return impl::d2d_point_to_point(tangent);
 }
 
-
-// PRIVATE
-
 const impl::d2d_path_geom_ptr& path::geom() const {
 	ensure_closed();
 	return geom_;
 }
+
+
+// PRIVATE
 
 const impl::d2d_geom_sink_ptr& path::streaming_sink() {
 	ensure_has_sink();
