@@ -75,10 +75,10 @@ int wmain(int argc, const wchar_t** argv) {
 
 	gfx::animation anim(gfx::easing::ease_in);
 
-	anim.set_callback([&](double value, bool done) {
+	anim.set_callback([&](double value) {
 		LOG(trace) << value;
 
-		if (done) {
+		if (!anim.is_running()) {
 			LOG(info) << "Done";
 		}
 	});

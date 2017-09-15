@@ -52,7 +52,7 @@ void animation::animate_to(double target_progress) {
 void animation::jump_to(double progress) {
 	stop();
 	progress_ = progress;
-	callback_(progress_, true);
+	callback_(progress_);
 }
 
 
@@ -87,14 +87,14 @@ void animation::start() {
 void animation::on_progress() {
 	auto elapsed_time = std::chrono::steady_clock::now() - start_time_;
 	double relative_progress = std::min(elapsed_time / computed_duration_, 1.0);
-	bool done = relative_progress == 1.0;
-
-	progress_ = initial_progress_ + (target_progress_ - initial_progress_) * easing_(relative_progress);
-	callback_(progress_, done);
-
-	if (done) {
+	
+	if (relative_progress == 1.0) {
 		stop();
 	}
+
+	progress_ = initial_progress_ + (target_progress_ - initial_progress_) * easing_(relative_progress);
+
+	callback_(progress_);
 }
 
 

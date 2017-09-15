@@ -9,7 +9,7 @@ namespace gfx {
 
 class animation : public base::non_copy_movable {
 public:
-	using progress_callback = std::function<void(double value, bool done)>;
+	using progress_callback = std::function<void(double value)>;
 	using easing_func = std::function<double(double prog)>;
 
 	using duration_type = std::chrono::duration<double, std::milli>;
