@@ -46,6 +46,8 @@ public:
 	
 	void close();
 
+	void add_path(const path& other);
+
 	path outline() const;
 	path intersect(const path& other) const;
 

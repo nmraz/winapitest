@@ -148,6 +148,11 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 	last_point_ = end;
 }
 
+void path::add_path(const path& other) {
+	stream_geom(other.geom(), streaming_sink());
+	first_point_ = last_point_ = other.last_point_;
+}
+
 
 void path::close() {
 	if (last_point_ != first_point_) {
