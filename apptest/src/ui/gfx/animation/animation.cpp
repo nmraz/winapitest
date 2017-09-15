@@ -9,7 +9,7 @@ using namespace std::chrono_literals;
 namespace gfx {
 namespace {
 
-constexpr auto animation_interval = 16.66ms;
+constexpr auto animation_interval = 1.s / 60;
 
 base::timer animation_timer;
 int animation_count;
