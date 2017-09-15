@@ -28,7 +28,9 @@ public:
 
 	void enter();
 	void leave();
+
 	void stop();
+	void reset() { jump_to(0.0); }
 
 	bool is_running() const { return timer_slot_.connected(); }
 
