@@ -9,7 +9,7 @@
 namespace gfx {
 namespace impl {
 
-using d2d_path_geom_ptr = base::win::com_ptr<ID2D1PathGeometry>;
+using d2d_path_geom_ptr = base::win::com_ptr<ID2D1PathGeometry1>;
 using d2d_geom_sink_ptr = base::win::com_ptr<ID2D1GeometrySink>;
 
 }  // namepsace impl
