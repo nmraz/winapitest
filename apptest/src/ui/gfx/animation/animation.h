@@ -1,11 +1,17 @@
 #pragma once
 
 #include "base/non_copyable.h"
-#include "base/signal/slot_handle.h"
+#include "base/event_loop/task.h"
 #include <chrono>
 #include <functional>
 
 namespace gfx {
+namespace impl {
+
+struct animation_controller;
+
+}  // namespace impl
+
 
 class animation : public base::non_copy_movable {
 public:
@@ -32,16 +38,18 @@ public:
 	void stop();
 	void reset() { jump_to(0.0); }
 
-	bool is_running() const { return timer_slot_.connected(); }
+	bool is_running() const { return is_running_; }
 
 private:
+	friend impl::animation_controller;
+
 	void start();
-	void on_progress();
+	void step(const base::task::run_time_type& now);
 
 	progress_callback callback_;
 	easing_func easing_;
 
-	base::slot_handle timer_slot_;
+	bool is_running_ = false;
 
 	double progress_ = 0.0;
 	double initial_progress_;

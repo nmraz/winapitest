@@ -1,41 +1,75 @@
 #include "animation.h"
 
+#include "base/assert.h"
 #include "base/timer.h"
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 using namespace std::chrono_literals;
 
-namespace gfx {
-namespace {
-
 constexpr auto animation_interval = 1.s / 60;
 
-base::timer animation_timer;
-int animation_count;
+namespace gfx {
+namespace impl {
 
+struct animation_controller {
+	animation_controller();
 
-base::slot_handle add_timer_listener(base::timer::callback_type callback) {
-	if (!animation_count++) {
-		animation_timer.set(animation_interval, true);
-	}
+	void start_animation(animation* anim);
+	void stop_animation(animation* anim);
 
-	return animation_timer.on_fire(std::move(callback));
+	void on_tick();
+
+	base::timer timer_;
+	std::vector<animation*> animations_;
+};
+
+animation_controller::animation_controller() {
+	timer_.on_fire([this] { on_tick(); });
 }
 
-void remove_timer_listener(base::slot_handle callback_handle) {
-	callback_handle.disconnect();
-	if (!--animation_count) {
-		animation_timer.cancel();
+
+void animation_controller::start_animation(animation* anim) {
+	if (animations_.empty()) {
+		timer_.set(animation_interval, true);
+	}
+
+	animations_.push_back(anim);
+}
+
+void animation_controller::stop_animation(animation* anim) {
+	auto anim_pos = std::find(animations_.begin(), animations_.end(), anim);
+
+	ASSERT(anim_pos != animations_.end()) << "Animation not running";
+	animations_.erase(anim_pos);
+
+	if (animations_.empty()) {
+		timer_.cancel();
 	}
 }
+
+
+void animation_controller::on_tick() {
+	auto now = base::task::clock_type::now();
+
+	for (animation* anim : animations_) {
+		anim->step(now);
+	}
+}
+
+}  // namespace impl
+
+namespace {
+
+impl::animation_controller anim_controller;
 
 }  // namespace
 
 
 animation::animation(easing_func easing, progress_callback callback)
-	: easing_(std::move(easing))
-	, callback_(std::move(callback)) {
+	: callback_(std::move(callback))
+	, easing_(std::move(easing)) {
 }
 
 animation::~animation() {
@@ -66,8 +100,9 @@ void animation::leave() {
 }
 
 void animation::stop() {
-	if (is_running()) {
-		remove_timer_listener(timer_slot_);
+	if (is_running_) {
+		anim_controller.stop_animation(this);
+		is_running_ = false;
 	}
 }
 
@@ -79,14 +114,17 @@ void animation::start() {
 		jump_to(target_progress_);
 		return;
 	}
-	start_time_ = std::chrono::steady_clock::now();
-	if (!is_running()) {
-		timer_slot_ = add_timer_listener([this] { on_progress(); });
+
+	start_time_ = base::task::clock_type::now();
+
+	if (!is_running_) {
+		anim_controller.start_animation(this);
+		is_running_ = true;
 	}
 }
 
-void animation::on_progress() {
-	auto elapsed_time = std::chrono::steady_clock::now() - start_time_;
+void animation::step(const base::task::run_time_type& now) {
+	auto elapsed_time = now - start_time_;
 	double relative_progress = std::min(elapsed_time / computed_duration_, 1.0);
 	
 	if (relative_progress == 1.0) {
@@ -97,6 +135,5 @@ void animation::on_progress() {
 
 	callback_(progress_);
 }
-
 
 }  // namespace gfx
