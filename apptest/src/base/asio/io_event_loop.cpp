@@ -14,7 +14,7 @@ io_event_loop::io_event_loop()
 }
 
 
-void io_event_loop::sleep(const std::optional<task::delay_type>& delay) {
+void io_event_loop::sleep(const task::delay_type* delay) {
 	DWORD wait_time = INFINITE;
 	if (delay) {
 		auto millis = std::chrono::ceil<std::chrono::milliseconds>(*delay);

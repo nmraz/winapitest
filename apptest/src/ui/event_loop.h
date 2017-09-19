@@ -11,7 +11,7 @@ public:
 	event_loop();
 
 	bool do_work() override;
-	void sleep(const std::optional<base::task::delay_type>& delay) override;
+	void sleep(const base::task::delay_type* delay) override;
 	void wake_up() override;
 
 private:

@@ -2,7 +2,7 @@
 
 namespace base {
 
-void task_event_loop::sleep(const std::optional<task::delay_type>& delay) {
+void task_event_loop::sleep(const task::delay_type* delay) {
 	std::unique_lock<std::mutex> hold(wake_up_lock_);
 
 	if (delay) {

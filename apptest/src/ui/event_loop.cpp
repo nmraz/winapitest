@@ -63,7 +63,7 @@ bool event_loop::do_work() {
 }
 
 
-void event_loop::sleep(const std::optional<base::task::delay_type>& delay) {
+void event_loop::sleep(const base::task::delay_type* delay) {
 	DWORD wait_time = INFINITE;
 	if (delay) {
 		wait_time = get_win_wait_time(*delay);

@@ -73,10 +73,10 @@ void event_loop::run() {
 			if (next_run_time) {
 				auto delay = *next_run_time - task::clock_type::now();
 				if (delay > task::delay_type::zero()) {
-					sleep(delay);
+					sleep(&delay);
 				}
 			} else {
-				sleep(std::nullopt);
+				sleep(nullptr);
 			}
 		}
 	}

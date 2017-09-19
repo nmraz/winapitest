@@ -17,7 +17,7 @@ public:
 	void quit();
 
 	virtual bool do_work();
-	virtual void sleep(const std::optional<task::delay_type>& delay) = 0;
+	virtual void sleep(const task::delay_type* delay) = 0;
 	virtual void wake_up() = 0;
 
 	bool is_current() const;
