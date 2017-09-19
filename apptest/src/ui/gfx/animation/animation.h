@@ -15,7 +15,7 @@ public:
 	using duration_type = std::chrono::duration<double, std::milli>;
 
 
-	explicit animation(easing_func easing);
+	explicit animation(easing_func easing, progress_callback callback = nullptr);
 	~animation();
 
 	void set_duration(const duration_type& duration) { duration_ = duration; }
