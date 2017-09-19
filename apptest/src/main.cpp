@@ -12,7 +12,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
 #include "ui/gfx/path.h"
-#include "ui/event_loop.h"
+#include "ui/ui_event_loop.h"
 
 namespace chrono = std::chrono;
 using namespace std::literals;

@@ -102,7 +102,7 @@
     <ClCompile Include="src\base\event_loop\next_tick.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\event_loop.cpp">
+    <ClCompile Include="src\ui\ui_event_loop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -224,10 +224,10 @@
     <ClInclude Include="src\base\event_loop\next_tick.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\event_loop.h">
+    <ClInclude Include="src\base\finally.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\finally.h">
+    <ClInclude Include="src\ui\ui_event_loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

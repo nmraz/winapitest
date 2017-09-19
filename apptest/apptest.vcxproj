@@ -184,12 +184,7 @@
     <ClCompile Include="src\base\win\scoped_co_init.cpp" />
     <ClCompile Include="src\base\win\scoped_handle.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\ui\event_loop.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)ui_event_loop</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)ui_event_loop</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)ui_event_loop</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)ui_event_loop</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="src\ui\ui_event_loop.cpp" />
     <ClCompile Include="src\ui\gfx\animation\animation.cpp" />
     <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
     <ClCompile Include="src\ui\gfx\color.cpp" />
@@ -226,7 +221,7 @@
     <ClInclude Include="src\base\win\message_window.h" />
     <ClInclude Include="src\base\win\scoped_co_init.h" />
     <ClInclude Include="src\base\win\scoped_handle.h" />
-    <ClInclude Include="src\ui\event_loop.h" />
+    <ClInclude Include="src\ui\ui_event_loop.h" />
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
     <ClInclude Include="src\ui\gfx\animation\easing.h" />
     <ClInclude Include="src\ui\gfx\color.h" />
