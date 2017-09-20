@@ -11,6 +11,8 @@ public:
 	using wnd_proc = std::function<LRESULT(UINT, WPARAM, LPARAM)>;
 
 	message_window(wnd_proc proc);
+	~message_window();
+
 	HWND get() { return hwnd_; }
 
 private:

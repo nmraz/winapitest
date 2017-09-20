@@ -39,6 +39,9 @@ message_window::message_window(wnd_proc proc)
 	}
 }
 
+message_window::~message_window() {
+	::DestroyWindow(hwnd_);
+}
 
 // PRIVATE
 
