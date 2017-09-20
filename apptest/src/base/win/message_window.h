@@ -14,7 +14,8 @@ public:
 	HWND get() { return hwnd_; }
 
 private:
-	static ATOM register_class();
+	struct class_registrar;
+
 	static LRESULT CALLBACK main_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept;
 
 	HWND hwnd_;

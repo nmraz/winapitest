@@ -3,32 +3,40 @@
 #include "base/win/last_error.h"
 #include <utility>
 
+
+constexpr const wchar_t* wnd_class_name = L"BaseMessageWnd";
+
 namespace base::win {
+
+struct message_window::class_registrar {
+	class_registrar();
+	~class_registrar();
+};
+
+message_window::class_registrar::class_registrar() {
+	WNDCLASSEXW wnd_class = {};
+	wnd_class.cbSize = sizeof(WNDCLASSEXW);
+	wnd_class.lpfnWndProc = &main_wnd_proc;
+	wnd_class.hInstance = ::GetModuleHandleW(nullptr);
+	wnd_class.lpszClassName = wnd_class_name;
+	if (!::RegisterClassExW(&wnd_class)) {
+		throw_last_error("Failed to register class");
+	}
+}
+
+message_window::class_registrar::~class_registrar() {
+	::UnregisterClassW(wnd_class_name, ::GetModuleHandleW(nullptr));
+}
+
 
 message_window::message_window(wnd_proc proc)
 	: wnd_proc_(std::move(proc)) {
-	ATOM wnd_class = register_class();
-	hwnd_ = ::CreateWindowExW(0, MAKEINTATOM(wnd_class), nullptr, 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, ::GetModuleHandleW(nullptr), this);
+	static class_registrar registrar;
+	hwnd_ = ::CreateWindowExW(0, wnd_class_name, nullptr, 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, ::GetModuleHandleW(nullptr), this);
 }
 
 
 // PRIVATE
-
-ATOM message_window::register_class() {
-	static ATOM atom = 0;
-	if (!atom) {
-		WNDCLASSEXW wnd_class = {};
-		wnd_class.cbSize = sizeof(WNDCLASSEXW);
-		wnd_class.lpfnWndProc = &main_wnd_proc;
-		wnd_class.hInstance = ::GetModuleHandleW(nullptr);
-		wnd_class.lpszClassName = L"BASE_MESSAGE_WND";
-		atom = ::RegisterClassExW(&wnd_class);
-		if (!atom) {
-			throw_last_error("Failed to register class");
-		}
-	}
-	return atom;
-}
 
 LRESULT CALLBACK message_window::main_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept {
 	message_window* target = nullptr;
