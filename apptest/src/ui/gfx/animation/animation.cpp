@@ -14,21 +14,14 @@ namespace gfx {
 namespace impl {
 
 struct animation_controller {
-	animation_controller();
-
 	void start_animation(animation* anim);
 	void stop_animation(animation* anim);
 
 	void on_tick();
 
-	base::timer timer_;
+	base::timer timer_{ [this] { on_tick(); } };
 	std::vector<animation*> animations_;
 };
-
-animation_controller::animation_controller() {
-	timer_.on_fire([this] { on_tick(); });
-}
-
 
 void animation_controller::start_animation(animation* anim) {
 	if (animations_.empty()) {

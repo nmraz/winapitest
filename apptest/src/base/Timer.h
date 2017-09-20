@@ -2,18 +2,17 @@
 
 #include "base/event_loop/task.h"
 #include "base/non_copyable.h"
-#include "base/signal/signal.h"
 #include <chrono>
+#include <functional>
 #include <memory>
 
 namespace base {
 
 class timer : public non_copy_movable {
-	using fire_signal = signal<>;
-
 public:
-	using callback_type = fire_signal::slot_type;
+	using callback_type = std::function<void()>;
 	
+	explicit timer(callback_type callback = nullptr);
 	~timer();
 
 	template<typename Rep, typename Period>
@@ -22,7 +21,7 @@ public:
 
 	bool is_running() const;
 
-	slot_handle on_fire(callback_type slot);
+	void set_callback(callback_type callback);
 
 private:
 	struct posted_task;
@@ -35,7 +34,7 @@ private:
 	task::delay_type interval_;
 
 	std::shared_ptr<posted_task> current_task_;
-	fire_signal fire_signal_;
+	callback_type callback_;
 };
 
 template<typename Rep, typename Period>

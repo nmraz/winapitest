@@ -32,13 +32,13 @@ int wmain(int argc, const wchar_t** argv) {
 
 	chrono::steady_clock::time_point start_time;
 
-	timer1.on_fire([&] {
+	timer1.set_callback([&] {
 		LOG(info) << "timer1: elapsed time: "
 			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
 		base::task_runner::current().post_quit();
 	});
 
-	timer2.on_fire([&] {
+	timer2.set_callback([&] {
 		LOG(info) << "timer2: elapsed time: "
 			<< millis(chrono::steady_clock::now() - start_time).count() << "ms";
 	});

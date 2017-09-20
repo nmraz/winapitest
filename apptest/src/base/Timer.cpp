@@ -22,6 +22,10 @@ void timer::posted_task::run() {
 }
 
 
+timer::timer(callback_type callback)
+	: callback_(std::move(callback)) {
+}
+
 timer::~timer() {
 	cancel();
 }
@@ -39,8 +43,8 @@ bool timer::is_running() const {
 }
 
 
-slot_handle timer::on_fire(callback_type slot) {
-	return fire_signal_.connect(std::move(slot));
+void timer::set_callback(callback_type callback) {
+	callback_ = std::move(callback);
 }
 
 
@@ -62,7 +66,7 @@ void timer::fire() {
 		repost_task();
 	}
 
-	fire_signal_();
+	callback_();
 
 	if (!repeating_) {
 		current_task_ = nullptr;  // no need to cancel() here, as the task will never run again
