@@ -32,7 +32,11 @@ message_window::class_registrar::~class_registrar() {
 message_window::message_window(wnd_proc proc)
 	: wnd_proc_(std::move(proc)) {
 	static class_registrar registrar;
+
 	hwnd_ = ::CreateWindowExW(0, wnd_class_name, nullptr, 0, 0, 0, 0, 0, HWND_MESSAGE, nullptr, ::GetModuleHandleW(nullptr), this);
+	if (!hwnd_) {
+		throw_last_error("Failed to create window");
+	}
 }
 
 
