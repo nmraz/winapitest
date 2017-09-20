@@ -12,8 +12,7 @@
 #define ASSERT(COND) ASSERT_IMPL(true)
 #endif
 
-namespace base {
-namespace impl {
+namespace base::impl {
 
 class failed_assertion {
 public:
@@ -36,5 +35,4 @@ struct assert_voidify {
 	void operator|(const failed_assertion&) {}
 };
 
-}  // namespace impl
-}  // namespace base
+}  // namespace base::impl

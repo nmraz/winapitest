@@ -3,8 +3,7 @@
 #include "base/logging/logging.h"
 #include <intrin.h>
 
-namespace base {
-namespace impl {
+namespace base::impl {
 
 failed_assertion::failed_assertion(const char* file, int line, const char* cond, const char* func)
 	: file_(file)
@@ -17,5 +16,4 @@ failed_assertion::~failed_assertion() {
 	__debugbreak();
 }
 
-}  // namespace impl
-}  // namespace base
+}  // namespace base::impl

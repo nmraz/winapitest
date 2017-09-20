@@ -3,7 +3,6 @@
 #include "base/win/last_error.h"
 #include <utility>
 
-
 constexpr const wchar_t* wnd_class_name = L"BaseMessageWnd";
 
 namespace base::win {
