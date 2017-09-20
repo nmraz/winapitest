@@ -230,6 +230,9 @@
     <ClInclude Include="src\ui\ui_event_loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\win\com_impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />

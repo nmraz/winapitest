@@ -216,6 +216,7 @@
     <ClInclude Include="src\base\thread\thread_name.h" />
     <ClInclude Include="src\base\timer.h" />
     <ClInclude Include="src\base\unicode.h" />
+    <ClInclude Include="src\base\win\com_impl.h" />
     <ClInclude Include="src\base\win\com_ptr.h" />
     <ClInclude Include="src\base\win\last_error.h" />
     <ClInclude Include="src\base\win\message_window.h" />
