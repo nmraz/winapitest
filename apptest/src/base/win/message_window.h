@@ -2,13 +2,14 @@
 
 #include "base/non_copyable.h"
 #include <functional>
+#include <optional>
 #include <Windows.h>
 
 namespace base::win {
 
 class message_window : public non_copy_movable {
 public:
-	using wnd_proc = std::function<LRESULT(UINT, WPARAM, LPARAM)>;
+	using wnd_proc = std::function<std::optional<LRESULT>(UINT, WPARAM, LPARAM)>;
 
 	message_window(wnd_proc proc);
 	~message_window();

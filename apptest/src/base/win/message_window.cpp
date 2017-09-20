@@ -56,10 +56,11 @@ LRESULT CALLBACK message_window::main_wnd_proc(HWND hwnd, UINT msg, WPARAM wpara
 	}
 
 	if (target) {
-		return target->wnd_proc_(msg, wparam, lparam);
-	} else {
-		return ::DefWindowProcW(hwnd, msg, wparam, lparam);
+		if (auto ret = target->wnd_proc_(msg, wparam, lparam)) {
+			return *ret;
+		}
 	}
+	return ::DefWindowProcW(hwnd, msg, wparam, lparam);
 }
 
 }  // namespace base::win
