@@ -147,13 +147,13 @@ public:
 	const impl::d2d_path_geom_ptr& d2d_geom() const;
 	impl::d2d_geom_sink_ptr d2d_sink();
 
+	void invalidate_d2d_geom();
 	void stream_to(ID2D1GeometrySink* sink) const;
 
 private:
 	verb_list& verbs();
 	const verb_list& verbs() const;
 
-	void invalidate_d2d_geom();
 
 	verb_list verbs_;
 	fill_mode fill_mode_ = fill_mode::winding;
