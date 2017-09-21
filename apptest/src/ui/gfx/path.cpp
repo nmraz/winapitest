@@ -1,6 +1,8 @@
 #include "path.h"
 
 #include "base/assert.h"
+#include "base/win/com_impl.h"
+#include "base/win/exception_boundary.h"
 #include "base/win/last_error.h"
 #include "ui/gfx/d2d/convs.h"
 #include "ui/gfx/d2d/factories.h"
@@ -19,277 +21,438 @@ auto create_path_geom() {
 	return geom;
 }
 
-auto create_sink(const impl::d2d_path_geom_ptr& geom, fill_mode mode) {
-	impl::d2d_geom_sink_ptr sink;
 
-	base::win::throw_if_failed(geom->Open(sink.addr()), "Failed to create path sink");
-	sink->SetFillMode(static_cast<D2D1_FILL_MODE>(mode));
-	return sink;
+class path_d2d_sink : public base::win::com_impl<ID2D1GeometrySink> {
+public:
+	using ptr = base::win::com_ptr<path_d2d_sink>;
+
+	STDMETHOD_(void, SetFillMode)(D2D1_FILL_MODE mode) override;
+
+	STDMETHOD_(void, BeginFigure)(D2D1_POINT_2F pt, D2D1_FIGURE_BEGIN) override;
+	STDMETHOD_(void, EndFigure)(D2D1_FIGURE_END end_mode) override;
+
+	STDMETHOD_(void, SetSegmentFlags)(D2D1_PATH_SEGMENT) override {}
+
+	STDMETHOD_(void, AddLine)(D2D1_POINT_2F to) override;
+	STDMETHOD_(void, AddBezier)(const D2D1_BEZIER_SEGMENT* bezier) override;
+	STDMETHOD_(void, AddQuadraticBezier)(const D2D1_QUADRATIC_BEZIER_SEGMENT* bezier) override;
+	STDMETHOD_(void, AddArc)(const D2D1_ARC_SEGMENT* arc) override;
+
+	STDMETHOD_(void, AddLines)(const D2D1_POINT_2F* points, UINT count) override;
+	STDMETHOD_(void, AddBeziers)(const D2D1_BEZIER_SEGMENT* beziers, UINT count) override;
+	STDMETHOD_(void, AddQuadraticBeziers)(const D2D1_QUADRATIC_BEZIER_SEGMENT* beziers, UINT count) override;
+
+	STDMETHOD(Close)() override;
+
+	static ptr create(path* p);
+
+private:
+	path_d2d_sink(path* p);
+
+	template<typename F>
+	void run_in_boundary(F&& f) noexcept {
+		if (FAILED(hr_)) {
+			return;
+		}
+		hr_ = base::win::exception_boundary(std::forward<F>(f));
+	}
+
+	path* path_;
+	HRESULT hr_ = S_OK;
+};
+
+
+STDMETHODIMP_(void) path_d2d_sink::SetFillMode(D2D1_FILL_MODE mode) {
+	run_in_boundary([&] {
+		path_->set_fill_mode(static_cast<fill_mode>(mode));
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::BeginFigure(D2D1_POINT_2F pt, D2D1_FIGURE_BEGIN) {
+	run_in_boundary([&] {
+		path_->move_to(impl::d2d_point_to_point(pt));
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::EndFigure(D2D1_FIGURE_END end_mode) {
+	run_in_boundary([&] {
+		if (end_mode == D2D1_FIGURE_END_CLOSED) {
+			path_->close();
+		}
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::AddLine(D2D1_POINT_2F to) {
+	run_in_boundary([&] {
+		path_->line_to(impl::d2d_point_to_point(to));
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::AddBezier(const D2D1_BEZIER_SEGMENT* bezier) {
+	run_in_boundary([&] {
+		path_->cubic_to(
+			impl::d2d_point_to_point(bezier->point1),
+			impl::d2d_point_to_point(bezier->point2),
+			impl::d2d_point_to_point(bezier->point3)
+		);
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::AddQuadraticBezier(const D2D1_QUADRATIC_BEZIER_SEGMENT* bezier) {
+	run_in_boundary([&] {
+		path_->quad_to(
+			impl::d2d_point_to_point(bezier->point1),
+			impl::d2d_point_to_point(bezier->point2)
+		);
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::AddArc(const D2D1_ARC_SEGMENT* arc) {
+	run_in_boundary([&] {
+		path_->arc_to(
+			impl::d2d_point_to_point(arc->point),
+			impl::d2d_size_to_size(arc->size),
+			arc->rotationAngle,
+			arc->arcSize == D2D1_ARC_SIZE_LARGE,
+			arc->sweepDirection == D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE
+		);
+	});
 }
 
 
-void close_sink(impl::d2d_geom_sink_ptr& sink) {
-	base::win::throw_if_failed(sink->Close(), "Failed to close path sink");
-	sink = nullptr;
+STDMETHODIMP_(void) path_d2d_sink::AddLines(const D2D1_POINT_2F* points, UINT count) {
+	run_in_boundary([&] {
+		for (std::size_t i = 0; i < count; ++i) {
+			path_->line_to(impl::d2d_point_to_point(points[i]));
+		}
+	});
 }
 
-void stream_geom(const impl::d2d_path_geom_ptr& path, const impl::d2d_geom_sink_ptr& sink) {
-	base::win::throw_if_failed(path->Stream(sink.get()), "Failed to copy path");
+STDMETHODIMP_(void) path_d2d_sink::AddBeziers(const D2D1_BEZIER_SEGMENT* beziers, UINT count) {
+	run_in_boundary([&] {
+		for (std::size_t i = 0; i < count; ++i) {
+			path_->cubic_to(
+				impl::d2d_point_to_point(beziers[i].point1),
+				impl::d2d_point_to_point(beziers[i].point2),
+				impl::d2d_point_to_point(beziers[i].point3)
+			);
+		}
+	});
+}
+
+STDMETHODIMP_(void) path_d2d_sink::AddQuadraticBeziers(const D2D1_QUADRATIC_BEZIER_SEGMENT* beziers, UINT count) {
+	run_in_boundary([&] {
+		for (std::size_t i = 0; i < count; ++i) {
+			path_->quad_to(
+				impl::d2d_point_to_point(beziers[i].point1),
+				impl::d2d_point_to_point(beziers[i].point2)
+			);
+		}
+	});
+}
+
+
+STDMETHODIMP path_d2d_sink::Close() {
+	return hr_;
+}
+
+
+path_d2d_sink::ptr path_d2d_sink::create(path* p) {
+	return ptr(new path_d2d_sink(p));
+}
+
+path_d2d_sink::path_d2d_sink(path* p)
+	: path_(p) {
 }
 
 }  // namespace
 
 
-path::path()
-	: path(fill_mode::winding) {
+path_verb& path::operator[](std::size_t idx) {
+	ASSERT(idx < size()) << "Out of bounds access";
+	return verbs()[idx];
 }
 
-path::path(fill_mode mode)
-	: in_figure_(false)
-	, fill_mode_(mode) {
-	recreate_geom();
+const path_verb& path::operator[](std::size_t idx) const {
+	ASSERT(idx < size()) << "Out of bounds access";
+	return verbs()[idx];
 }
 
-path::path(const path& rhs)
-	: geom_(rhs.geom())
-	, in_figure_(false)
-	, fill_mode_(rhs.fill_mode_)
-	, first_point_(rhs.first_point_)
-	, last_point_(rhs.last_point_) {
+
+path_verb& path::front() {
+	ASSERT(!empty()) << "Accessing nonexistent path verb";
+	return verbs().front();
 }
 
-path::path(path&& rhs) noexcept
-	: geom_(std::move(rhs.geom_))
-	, active_sink_(std::move(rhs.active_sink_))
-	, in_figure_(rhs.in_figure_)
-	, fill_mode_(rhs.fill_mode_)
-	, first_point_(rhs.first_point_)
-	, last_point_(rhs.last_point_) {
+const path_verb& path::front() const {
+	ASSERT(!empty()) << "Accessing nonexistent path verb";
+	return verbs().front();
+}
+
+path_verb& path::back() {
+	ASSERT(!empty()) << "Accessing nonexistent path verb";
+	return verbs().back();
+}
+
+const path_verb& path::back() const {
+	ASSERT(!empty()) << "Accessing nonexistent path verb";
+	return verbs().back();
 }
 
 
 void path::swap(path& other) noexcept {
 	using std::swap;
 
-	swap(geom_, other.geom_);
-	swap(active_sink_, other.active_sink_);
-	swap(in_figure_, other.in_figure_);
-
+	swap(verbs_, other.verbs_);
 	swap(fill_mode_, other.fill_mode_);
-
-	swap(first_point_, other.first_point_);
-	swap(last_point_, other.last_point_);
-}
-
-path& path::operator=(path rhs) {
-	rhs.swap(*this);
-	return *this;
+	swap(d2d_geom_, other.d2d_geom_);
 }
 
 
 void path::set_fill_mode(fill_mode mode) {
-	bool mode_changed = mode != fill_mode_;
-
-	fill_mode_ = mode;
-
-	if (mode_changed && active_sink_) {
-		// close and reopen the sink for fill mode to take effect
-		ensure_closed();
-		ensure_has_sink();
+	if (mode != fill_mode_) {
+		invalidate_d2d_geom();
+		fill_mode_ = mode;
 	}
 }
 
 
 void path::move_to(const pointf& to) {
-	ensure_has_sink();
-	end_figure();
+	push_back(path_verbs::move{ to });
+}
 
-	first_point_ = last_point_ = to;
-	
-	begin_figure();
+void path::close() {
+	push_back(path_verbs::close{});
 }
 
 void path::line_to(const pointf& to) {
-	figure_sink()->AddLine(impl::point_to_d2d_point(to));
-	last_point_ = to;
+	push_back(path_verbs::line{ to });
 }
 
 void path::quad_to(const pointf& ctrl, const pointf& end) {
-	D2D1_QUADRATIC_BEZIER_SEGMENT segment = {
-		impl::point_to_d2d_point(ctrl),
-		impl::point_to_d2d_point(end)
-	};
-
-	figure_sink()->AddQuadraticBezier(segment);
-	last_point_ = end;
+	push_back(path_verbs::quad{ ctrl, end });
 }
 
 void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end) {
-	D2D1_BEZIER_SEGMENT segment = {
-		impl::point_to_d2d_point(ctrl1),
-		impl::point_to_d2d_point(ctrl2),
-		impl::point_to_d2d_point(end)
-	};
-
-	figure_sink()->AddBezier(segment);
-	last_point_ = end;
+	push_back(path_verbs::cubic{ ctrl1, ctrl2, end });
 }
 
 void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, bool large_arc, bool counter_clockwise) {
-	D2D1_ARC_SEGMENT segment = {
-		impl::point_to_d2d_point(end),
-		impl::size_to_d2d_size(radius),
-		rad_to_deg(rotation_angle),
-		counter_clockwise ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE,
-		large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
-	};
-
-	figure_sink()->AddArc(segment);
-	last_point_ = end;
+	push_back(path_verbs::arc{ end, radius, rotation_angle, large_arc, counter_clockwise });
 }
+
 
 void path::add_path(const path& other) {
-	stream_geom(other.geom(), streaming_sink());
-	first_point_ = last_point_ = other.last_point_;
+	auto& cur_verbs = verbs();
+	cur_verbs.insert(cur_verbs.end(), other.verbs().begin(), other.verbs().end());
 }
 
-
-void path::close() {
-	if (last_point_ != first_point_) {
-		line_to(first_point_);
-	}
-}
 
 path path::outline() const {
 	path ret;
-	base::win::throw_if_failed(geom()->Outline(nullptr, ret.streaming_sink().get()), "Failed to compute path outline");
-
+	base::win::throw_if_failed(
+		d2d_geom()->Outline(nullptr, ret.d2d_sink().get()),
+		"Failed to compute path outline"
+	);
 	return ret;
 }
 
 path path::intersect(const path& other) const {
 	path ret;
 	base::win::throw_if_failed(
-		geom()->CombineWithGeometry(other.geom().get(), D2D1_COMBINE_MODE_INTERSECT, nullptr, ret.streaming_sink().get()),
-		"Failed to intersect geometry"
+		d2d_geom()->CombineWithGeometry(
+			other.d2d_geom().get(),
+			D2D1_COMBINE_MODE_INTERSECT,
+			nullptr,
+			ret.d2d_sink().get()
+		),
+		"Failed to intersect paths"
 	);
-
 	return ret;
 }
 
 
-void path::reset() {
-	path(fill_mode_).swap(*this);
-}
-
-
 float path::length() const {
-	FLOAT length;
-	base::win::throw_if_failed(geom()->ComputeLength(nullptr, &length), "Failed to compute path length");
-	return length;
+	float ret;
+	base::win::throw_if_failed(
+		d2d_geom()->ComputeLength(nullptr, &ret),
+		"Failed to compute path length"
+	);
+	return ret;
 }
 
 float path::area() const {
-	FLOAT area;
-	base::win::throw_if_failed(geom()->ComputeArea(nullptr, &area), "Failed to compute path area");
-	return area;
+	float ret;
+	base::win::throw_if_failed(
+		d2d_geom()->ComputeArea(nullptr, &ret),
+		"Failed to compute path area"
+	);
+	return ret;
 }
-
 
 rectf path::bounds() const {
-	D2D1_RECT_F bounds;
-	base::win::throw_if_failed(geom()->GetBounds(nullptr, &bounds), "Failed to compute path bounds");
-	return impl::d2d_rect_to_rect(bounds);
-}
-
-
-bool path::contains(const pointf& pt) const {
-	BOOL contained;
+	D2D1_RECT_F ret;
 	base::win::throw_if_failed(
-		geom()->FillContainsPoint(impl::point_to_d2d_point(pt), nullptr, &contained),
-		"Failed to hit test path"
+		d2d_geom()->GetBounds(nullptr, &ret),
+		"Failed to compute path bounds"
 	);
-	return static_cast<bool>(contained);
+	return impl::d2d_rect_to_rect(ret);
 }
-
 
 pointf path::point_at(float dist) const {
-	D2D1_POINT_2F pt;
+	D2D1_POINT_2F ret;
 	base::win::throw_if_failed(
-		geom()->ComputePointAtLength(dist, nullptr, &pt, nullptr),
-		"Failed to find point along path"
+		d2d_geom()->ComputePointAtLength(dist, nullptr, &ret, nullptr),
+		"Failed to compute point on path"
 	);
-	return impl::d2d_point_to_point(pt);
+	return impl::d2d_point_to_point(ret);
 }
 
 pointf path::tangent_at(float dist) const {
-	D2D1_POINT_2F tangent;
+	D2D1_POINT_2F ret;
 	base::win::throw_if_failed(
-		geom()->ComputePointAtLength(dist, nullptr, nullptr, &tangent),
-		"Failed to find tangent to path"
+		d2d_geom()->ComputePointAtLength(dist, nullptr, nullptr, &ret),
+		"Failed to compute tangent to path"
 	);
-	return impl::d2d_point_to_point(tangent);
+	return impl::d2d_point_to_point(ret);
 }
 
-const impl::d2d_path_geom_ptr& path::geom() const {
-	ensure_closed();
-	return geom_;
+bool path::contains(const pointf& pt) const {
+	BOOL ret;
+	base::win::throw_if_failed(
+		d2d_geom()->FillContainsPoint(impl::point_to_d2d_point(pt), nullptr, &ret),
+		"Failed to hit-test path"
+	);
+	return ret;
+}
+
+
+const impl::d2d_path_geom_ptr& path::d2d_geom() const {
+	if (!d2d_geom_) {
+		d2d_geom_ = create_path_geom();
+		impl::d2d_geom_sink_ptr sink;
+		base::win::throw_if_failed(d2d_geom_->Open(sink.addr()), "Failed to open path sink");
+		stream_to(sink.get());
+	}
+	return d2d_geom_;
+}
+
+impl::d2d_geom_sink_ptr path::d2d_sink() {
+	return path_d2d_sink::create(this);
+}
+
+
+void path::stream_to(ID2D1GeometrySink* sink) const {
+	struct streaming_visitor {
+		streaming_visitor(ID2D1GeometrySink* sink)
+			: sink(sink) {
+		}
+
+		void ensure_in_figure() {
+			if (!in_figure) {
+				(*this)(path_verbs::move{ last_point });
+			}
+		}
+
+		void operator()(const path_verbs::move& move) {
+			if (in_figure) {
+				sink->EndFigure(D2D1_FIGURE_END_OPEN);
+			}
+
+			sink->BeginFigure(impl::point_to_d2d_point(move.to), D2D1_FIGURE_BEGIN_FILLED);
+
+			last_move_to = last_point = move.to;
+			in_figure = true;
+		}
+
+		void operator()(const path_verbs::close&) {
+			if (!in_figure) {
+				return;
+			}
+
+			sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+
+			last_point = last_move_to;
+			in_figure = false;
+		}
+
+		void operator()(const path_verbs::line& line) {
+			ensure_in_figure();
+			sink->AddLine(impl::point_to_d2d_point(line.to));
+			last_point = line.to;
+		}
+
+		void operator()(const path_verbs::quad& quad) {
+			ensure_in_figure();
+			sink->AddQuadraticBezier({
+				impl::point_to_d2d_point(quad.ctrl),
+				impl::point_to_d2d_point(quad.end)
+			});
+			last_point = quad.end;
+		}
+
+		void operator()(const path_verbs::cubic& cubic) {
+			ensure_in_figure();
+			sink->AddBezier({
+				impl::point_to_d2d_point(cubic.ctrl1),
+				impl::point_to_d2d_point(cubic.ctrl2),
+				impl::point_to_d2d_point(cubic.end)
+			});
+			last_point = cubic.end;
+		}
+
+		void operator()(const path_verbs::arc& arc) {
+			ensure_in_figure();
+			sink->AddArc({
+				impl::point_to_d2d_point(arc.end),
+				impl::size_to_d2d_size(arc.radius),
+				arc.rotation_angle,
+				arc.counter_clockwise ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE,
+				arc.large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
+			});
+			last_point = arc.end;
+		}
+
+		void close() {
+			if (in_figure) {
+				sink->EndFigure(D2D1_FIGURE_END_OPEN);
+			}
+			base::win::throw_if_failed(sink->Close(), "Failed to stream path to sink");
+		}
+
+
+		ID2D1GeometrySink* sink;
+		bool in_figure = false;
+
+		pointf last_point;
+		pointf last_move_to;
+	};
+
+	sink->SetFillMode(static_cast<D2D1_FILL_MODE>(fill_mode_));
+
+	streaming_visitor visitor(sink);
+	for (const auto& verb : *this) {
+		std::visit(visitor, verb);
+	}
+
+	visitor.close();
 }
 
 
 // PRIVATE
 
-const impl::d2d_geom_sink_ptr& path::streaming_sink() {
-	ensure_has_sink();
-	end_figure();
-	return active_sink_;
+path::verb_list& path::verbs() {
+	// the path may be modified externally, so discard our current geometry
+	invalidate_d2d_geom();
+	return verbs_;
 }
 
-const impl::d2d_geom_sink_ptr& path::figure_sink() {
-	ensure_has_sink();
-	begin_figure();
-	return active_sink_;
+const path::verb_list& path::verbs() const {
+	return verbs_;
 }
 
-
-void path::begin_figure() {
-	if (!in_figure_) {
-		active_sink_->BeginFigure(impl::point_to_d2d_point(last_point_), D2D1_FIGURE_BEGIN_FILLED);
-		in_figure_ = true;
-	}
-}
-
-void path::end_figure() const {
-	if (in_figure_) {
-		active_sink_->EndFigure(D2D1_FIGURE_END_OPEN);
-		in_figure_ = false;
-	}
-}
-
-
-void path::ensure_has_sink() {
-	if (!active_sink_) {
-		// the active sink has been closed - we need a new sink and a new geometry
-		auto old_geom = recreate_geom();
-		stream_geom(old_geom, streaming_sink());
-	}
-}
-
-void path::ensure_closed() const {
-	if (active_sink_) {
-		end_figure();
-		close_sink(active_sink_);
-	}
-}
-
-
-impl::d2d_path_geom_ptr path::recreate_geom() {
-	ensure_closed();
-
-	auto new_geom = create_path_geom();
-	active_sink_ = create_sink(new_geom, fill_mode_);
-	
-	return std::exchange(geom_, std::move(new_geom));
+void path::invalidate_d2d_geom() {
+	d2d_geom_ = nullptr;
 }
 
 }  // namepsace gfx
