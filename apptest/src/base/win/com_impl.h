@@ -8,7 +8,7 @@ namespace base::win {
 namespace impl {
 
 template<typename... Bases, typename T>
-HRESULT query_interface(T* obj, REFIID iid, void** out);
+HRESULT query_interface([[maybe_unused]] T* obj, [[maybe_unused]] REFIID iid, void** out);
 
 template<typename First, typename... Rest, typename T>
 inline HRESULT query_first_interface(T* obj, REFIID iid, void** out) {
@@ -23,7 +23,7 @@ inline HRESULT query_first_interface(T* obj, REFIID iid, void** out) {
 }
 
 template<typename... Bases, typename T>
-inline HRESULT query_interface(T* obj, REFIID iid, void** out) {
+inline HRESULT query_interface([[maybe_unused]] T* obj, [[maybe_unused]] REFIID iid, void** out) {
 	if constexpr (sizeof...(Bases) > 0) {
 		return query_first_interface(obj, iid, out);
 	} else {
