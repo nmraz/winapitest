@@ -23,6 +23,16 @@ enum class fill_mode {
 	even_odd = D2D1_FILL_MODE_ALTERNATE
 };
 
+enum class arc_size {
+	large_arc = D2D1_ARC_SIZE_LARGE,
+	small_arc = D2D1_ARC_SIZE_SMALL
+};
+
+enum class arc_dir {
+	clockwise = D2D1_SWEEP_DIRECTION_CLOCKWISE,
+	counter_clockwise = D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE
+};
+
 
 namespace path_verbs {
 
@@ -51,8 +61,8 @@ struct arc {
 	pointf end;
 	sizef radius;
 	float rotation_angle;
-	bool large_arc;
-	bool counter_clockwise;
+	arc_size size;
+	arc_dir dir;
 };
 
 }  // namespace path_verbs
@@ -120,7 +130,7 @@ public:
 	void quad_to(const pointf& ctrl, const pointf& end);
 	void cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end);
 	void arc_to(const pointf& end, const sizef& radius, float rotation_angle,
-		bool large_arc = false, bool counter_clockwise = false);
+		arc_size size = arc_size::small_arc, arc_dir dir = arc_dir::clockwise);
 	
 	void add_path(const path& other);
 

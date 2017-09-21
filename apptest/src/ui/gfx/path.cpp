@@ -113,8 +113,8 @@ STDMETHODIMP_(void) path_d2d_sink::AddArc(const D2D1_ARC_SEGMENT* arc) {
 			impl::d2d_point_to_point(arc->point),
 			impl::d2d_size_to_size(arc->size),
 			arc->rotationAngle,
-			arc->arcSize == D2D1_ARC_SIZE_LARGE,
-			arc->sweepDirection == D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE
+			static_cast<arc_size>(arc->arcSize),
+			static_cast<arc_dir>(arc->sweepDirection)
 		);
 	});
 }
@@ -237,8 +237,8 @@ void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end)
 	push_back(path_verbs::cubic{ ctrl1, ctrl2, end });
 }
 
-void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, bool large_arc, bool counter_clockwise) {
-	push_back(path_verbs::arc{ end, radius, rotation_angle, large_arc, counter_clockwise });
+void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, arc_size size, arc_dir dir) {
+	push_back(path_verbs::arc{ end, radius, rotation_angle, size, dir });
 }
 
 
@@ -407,8 +407,8 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 				impl::point_to_d2d_point(arc.end),
 				impl::size_to_d2d_size(arc.radius),
 				arc.rotation_angle,
-				arc.counter_clockwise ? D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE : D2D1_SWEEP_DIRECTION_CLOCKWISE,
-				arc.large_arc ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL
+				static_cast<D2D1_SWEEP_DIRECTION>(arc.dir),
+				static_cast<D2D1_ARC_SIZE>(arc.size)
 			});
 			last_point = arc.end;
 		}
