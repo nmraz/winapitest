@@ -22,7 +22,7 @@ auto create_path_geom() {
 }
 
 
-class path_d2d_sink : public base::win::com_impl<ID2D1GeometrySink> {
+class path_d2d_sink : public base::win::com_impl<ID2D1GeometrySink, ID2D1SimplifiedGeometrySink> {
 public:
 	using ptr = base::win::com_ptr<path_d2d_sink>;
 

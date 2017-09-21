@@ -43,15 +43,13 @@ HRESULT query_interface(T* obj, REFIID iid, void** out) {
 
 
 template<typename T>
-class com_impl : public T {
+class com_impl_base : public T {
 public:
 	STDMETHOD_(ULONG, AddRef)() override;
 	STDMETHOD_(ULONG, Release)() override;
 
-	STDMETHOD(QueryInterface)(REFIID iid, void** out) override;
-
 protected:
-	virtual ~com_impl() {}
+	virtual ~com_impl_base() {}
 
 private:
 	std::atomic<ULONG> ref_count_;
@@ -59,12 +57,12 @@ private:
 
 
 template<typename T>
-STDMETHODIMP_(ULONG) com_impl<T>::AddRef() {
+STDMETHODIMP_(ULONG) com_impl_base<T>::AddRef() {
 	return ref_count_.fetch_add(1, std::memory_order_relaxed);
 }
 
 template<typename T>
-STDMETHODIMP_(ULONG) com_impl<T>::Release() {
+STDMETHODIMP_(ULONG) com_impl_base<T>::Release() {
 	ULONG new_count = ref_count_.fetch_sub(1, std::memory_order_acq_rel);
 	if (!new_count) {
 		delete this;
@@ -74,9 +72,16 @@ STDMETHODIMP_(ULONG) com_impl<T>::Release() {
 }
 
 
-template<typename T>
-STDMETHODIMP com_impl<T>::QueryInterface(REFIID iid, void** out) {
-	return query_interface<IUnknown, T>(this, iid, out);
+template<typename T, typename... Bases>
+class com_impl : public com_impl_base<T> {
+public:
+	STDMETHOD(QueryInterface)(REFIID iid, void** out) override;
+};
+
+
+template<typename T, typename... Bases>
+STDMETHODIMP com_impl<T, Bases...>::QueryInterface(REFIID iid, void** out) {
+	return query_interface<IUnknown, Bases..., T>(this, iid, out);
 }
 
 }  // namespace base::win
