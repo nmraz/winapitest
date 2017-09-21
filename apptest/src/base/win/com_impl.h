@@ -45,6 +45,8 @@ HRESULT query_interface(T* obj, REFIID iid, void** out) {
 template<typename T>
 class com_impl_base : public T {
 public:
+	static_assert(std::is_base_of_v<IUnknown, T>, "T must be a COM interface");
+
 	STDMETHOD_(ULONG, AddRef)() override;
 	STDMETHOD_(ULONG, Release)() override;
 
