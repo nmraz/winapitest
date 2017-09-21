@@ -40,22 +40,67 @@ struct move {
 	pointf to;
 };
 
+constexpr bool operator==(const move& lhs, const move& rhs) {
+	return lhs.to == rhs.to;
+}
+
+constexpr bool operator!=(const move& lhs, const move& rhs) {
+	return !(lhs == rhs);
+}
+
+
 struct close {};
+
+constexpr bool operator==(const close&, const close&) {
+	return true;
+}
+
+constexpr bool operator!=(const close&, const close&) {
+	return false;
+}
+
 
 struct line {
 	pointf to;
 };
+
+constexpr bool operator==(const line& lhs, const line& rhs) {
+	return lhs.to == rhs.to;
+}
+
+constexpr bool operator!=(const line& lhs, const line& rhs) {
+	return !(lhs == rhs);
+}
+
 
 struct quad {
 	pointf ctrl;
 	pointf end;
 };
 
+constexpr bool operator==(const quad& lhs, const quad& rhs) {
+	return lhs.ctrl == rhs.ctrl && lhs.end == rhs.end;
+}
+
+constexpr bool operator!=(const quad& lhs, const quad& rhs) {
+	return !(lhs == rhs);
+}
+
+
 struct cubic {
 	pointf ctrl1;
 	pointf ctrl2;
 	pointf end;
 };
+
+constexpr bool operator==(const cubic& lhs, const cubic& rhs) {
+	return lhs.ctrl1 == rhs.ctrl1 && lhs.ctrl2 == rhs.ctrl2 && lhs.end == rhs.end;
+}
+
+constexpr bool operator!=(const cubic& lhs, const cubic& rhs) {
+	return !(lhs == rhs);
+}
+
 
 struct arc {
 	pointf end;
@@ -64,6 +109,15 @@ struct arc {
 	arc_size size;
 	arc_dir dir;
 };
+
+constexpr bool operator==(const arc& lhs, const arc& rhs) {
+	return lhs.end == rhs.end && lhs.radius == rhs.radius && lhs.rotation_angle == rhs.rotation_angle
+		&& lhs.size == rhs.size && lhs.dir == rhs.dir;
+}
+
+constexpr bool operator!=(const arc& lhs, const arc& rhs) {
+	return !(lhs == rhs);
+}
 
 }  // namespace path_verbs
 
@@ -165,5 +219,8 @@ private:
 inline void swap(path& lhs, path& rhs) noexcept {
 	lhs.swap(rhs);
 }
+
+bool operator==(const path& lhs, const path& rhs);
+bool operator!=(const path& lhs, const path& rhs);
 
 }  // namespace gfx

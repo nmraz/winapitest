@@ -455,4 +455,15 @@ void path::invalidate_d2d_geom() {
 	d2d_geom_ = nullptr;
 }
 
+
+// NONMEMBER
+
+bool operator==(const path& lhs, const path& rhs) {
+	return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+}
+
+bool operator!=(const path& lhs, const path& rhs) {
+	return !(lhs == rhs);
+}
+
 }  // namepsace gfx
