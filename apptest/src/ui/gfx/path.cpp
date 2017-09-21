@@ -350,7 +350,7 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 
 		void ensure_in_figure() {
 			if (!in_figure) {
-				(*this)(path_verbs::move{ last_point });
+				(*this)(path_verbs::move{ last_move_to });
 			}
 		}
 
@@ -361,7 +361,7 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 
 			sink->BeginFigure(impl::point_to_d2d_point(move.to), D2D1_FIGURE_BEGIN_FILLED);
 
-			last_move_to = last_point = move.to;
+			last_move_to = move.to;
 			in_figure = true;
 		}
 
@@ -372,14 +372,12 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 
 			sink->EndFigure(D2D1_FIGURE_END_CLOSED);
 
-			last_point = last_move_to;
 			in_figure = false;
 		}
 
 		void operator()(const path_verbs::line& line) {
 			ensure_in_figure();
 			sink->AddLine(impl::point_to_d2d_point(line.to));
-			last_point = line.to;
 		}
 
 		void operator()(const path_verbs::quad& quad) {
@@ -388,7 +386,6 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 				impl::point_to_d2d_point(quad.ctrl),
 				impl::point_to_d2d_point(quad.end)
 			});
-			last_point = quad.end;
 		}
 
 		void operator()(const path_verbs::cubic& cubic) {
@@ -398,7 +395,6 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 				impl::point_to_d2d_point(cubic.ctrl2),
 				impl::point_to_d2d_point(cubic.end)
 			});
-			last_point = cubic.end;
 		}
 
 		void operator()(const path_verbs::arc& arc) {
@@ -410,7 +406,6 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 				static_cast<D2D1_SWEEP_DIRECTION>(arc.dir),
 				static_cast<D2D1_ARC_SIZE>(arc.size)
 			});
-			last_point = arc.end;
 		}
 
 		void close() {
@@ -424,7 +419,6 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 		ID2D1GeometrySink* sink;
 		bool in_figure = false;
 
-		pointf last_point;
 		pointf last_move_to;
 	};
 
