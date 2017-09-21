@@ -1,17 +1,22 @@
 #pragma once
 
 #include <atomic>
+#include <type_traits>
 #include <Unknwn.h>
 
 namespace base::win {
+namespace impl {
 
 template<typename... Bases, typename T>
 HRESULT query_interface(T* obj, REFIID iid, void** out);
 
 template<typename First, typename... Rest, typename T>
-inline HRESULT do_query_interface(T* obj, REFIID iid, void** out) {
+inline HRESULT query_first_interface(T* obj, REFIID iid, void** out) {
+	static_assert(std::is_base_of_v<First, T>, "Queryable object must derive from all query types");
+
 	if (iid == __uuidof(First)) {
 		*out = static_cast<First*>(obj);
+		obj->AddRef();
 		return S_OK;
 	}
 	return query_interface<Rest...>(obj, iid, out);
@@ -20,11 +25,20 @@ inline HRESULT do_query_interface(T* obj, REFIID iid, void** out) {
 template<typename... Bases, typename T>
 inline HRESULT query_interface(T* obj, REFIID iid, void** out) {
 	if constexpr (sizeof...(Bases) > 0) {
-		return do_query_interface(obj, iid, out);
+		return query_first_interface(obj, iid, out);
 	} else {
 		*out = nullptr;
 		return E_NOTIMPL;
 	}
+}
+
+}  // namespace impl
+
+template<typename... Bases, typename T>
+HRESULT query_interface(T* obj, REFIID iid, void** out) {
+	static_assert(std::is_base_of_v<IUnknown, T>, "Queryable object must derive from IUnknown");
+
+	return impl::query_interface(obj, iid, out);
 }
 
 
