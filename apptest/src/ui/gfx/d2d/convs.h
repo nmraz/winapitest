@@ -33,7 +33,7 @@ constexpr D2D1_SIZE_F size_to_d2d_size(const sizef& sz) {
 	return { sz.width, sz.height };
 }
 
-constexpr sizef size_to_d2d_size(const D2D1_SIZE_F& sz) {
+constexpr sizef d2d_size_to_size(const D2D1_SIZE_F& sz) {
 	return { sz.width, sz.height };
 }
 
