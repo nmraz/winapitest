@@ -28,7 +28,7 @@ inline HRESULT query_interface([[maybe_unused]] T* obj, [[maybe_unused]] REFIID 
 		return query_first_interface(obj, iid, out);
 	} else {
 		*out = nullptr;
-		return E_NOTIMPL;
+		return E_NOINTERFACE;
 	}
 }
 
