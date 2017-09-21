@@ -31,10 +31,10 @@ inline HRESULT query_interface(T* obj, REFIID iid, void** out) {
 template<typename T>
 class com_impl : public T {
 public:
-	ULONG STDMETHODCALLTYPE AddRef() override;
-	ULONG STDMETHODCALLTYPE Release() override;
+	STDMETHOD_(ULONG, AddRef)() override;
+	STDMETHOD_(ULONG, Release)() override;
 
-	STDMETHODIMP QueryInterface(REFIID iid, void** out) override;
+	STDMETHOD(QueryInterface)(REFIID iid, void** out) override;
 
 protected:
 	virtual ~com_impl() {}
