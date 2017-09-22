@@ -12,8 +12,6 @@ HRESULT query_interface([[maybe_unused]] T* obj, [[maybe_unused]] REFIID iid, vo
 
 template<typename First, typename... Rest, typename T>
 inline HRESULT query_first_interface(T* obj, REFIID iid, void** out) {
-	static_assert(std::is_base_of_v<First, T>, "Queryable object must derive from all query types");
-
 	if (iid == __uuidof(First)) {
 		*out = static_cast<First*>(obj);
 		obj->AddRef();
