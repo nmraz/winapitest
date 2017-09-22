@@ -52,7 +52,7 @@ protected:
 	virtual ~com_impl_base() {}
 
 private:
-	std::atomic<ULONG> ref_count_;
+	std::atomic<ULONG> ref_count_ = 1;
 };
 
 
