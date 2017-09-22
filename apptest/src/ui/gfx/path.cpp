@@ -257,6 +257,19 @@ path path::outline() const {
 	return ret;
 }
 
+path path::transform(const mat33f& tform) const {
+	path ret;
+	base::win::throw_if_failed(
+		d2d_geom()->Simplify(
+			D2D1_GEOMETRY_SIMPLIFICATION_OPTION_CUBICS_AND_LINES,
+			impl::mat33_to_d2d_mat32(tform),
+			ret.d2d_sink().get()
+		),
+		"Failed to transform path"
+	);
+	return ret;
+}
+
 path path::combine(const path& other, path_op op) const {
 	path ret;
 	base::win::throw_if_failed(

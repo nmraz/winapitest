@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/win/com_ptr.h"
+#include "ui/gfx/geom/matrix.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/rect.h"
 #include "ui/gfx/geom/size.h"
@@ -205,6 +206,7 @@ public:
 	void add_path(const path& other);
 
 	path outline() const;
+	path transform(const mat33f& tform) const;
 	path combine(const path& other, path_op op) const;
 
 	float length() const;
