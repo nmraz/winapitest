@@ -31,6 +31,13 @@ enum class path_op {
 	symmetric_diff = D2D1_COMBINE_MODE_XOR
 };
 
+enum class path_relation {
+	disjoint = D2D1_GEOMETRY_RELATION_DISJOINT,
+	contained = D2D1_GEOMETRY_RELATION_IS_CONTAINED,
+	contains = D2D1_GEOMETRY_RELATION_CONTAINS,
+	overlap = D2D1_GEOMETRY_RELATION_OVERLAP
+};
+
 
 enum class arc_size {
 	large_arc = D2D1_ARC_SIZE_LARGE,
@@ -205,6 +212,8 @@ public:
 	rectf bounds() const;
 	pointf point_at(float dist) const;
 	pointf tangent_at(float dist) const;
+
+	path_relation compare(const path& other) const;
 	bool contains(const pointf& pt) const;
 
 	const impl::d2d_path_geom_ptr& d2d_geom() const;

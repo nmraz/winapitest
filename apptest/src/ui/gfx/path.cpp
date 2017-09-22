@@ -317,6 +317,16 @@ pointf path::tangent_at(float dist) const {
 	return impl::d2d_point_to_point(ret);
 }
 
+
+path_relation path::compare(const path& other) const {
+	D2D1_GEOMETRY_RELATION ret;
+	base::win::throw_if_failed(
+		d2d_geom()->CompareWithGeometry(other.d2d_geom().get(), nullptr, &ret),
+		"Failed to compare paths"
+	);
+	return static_cast<path_relation>(ret);
+}
+
 bool path::contains(const pointf& pt) const {
 	BOOL ret;
 	base::win::throw_if_failed(
