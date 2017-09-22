@@ -453,7 +453,7 @@ void path::invalidate_d2d_geom() {
 // NONMEMBER
 
 bool operator==(const path& lhs, const path& rhs) {
-	return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	return lhs.get_fill_mode() == rhs.get_fill_mode() && std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 bool operator!=(const path& lhs, const path& rhs) {
