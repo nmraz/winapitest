@@ -211,7 +211,7 @@ void path::swap(path& other) noexcept {
 
 void path::set_fill_mode(fill_mode mode) {
 	if (mode != fill_mode_) {
-		invalidate_d2d_geom();
+		mark_dirty();
 		fill_mode_ = mode;
 	}
 }
@@ -437,7 +437,7 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
 
 path::verb_list& path::verbs() {
 	// the path may be modified externally, so discard our current geometry
-	invalidate_d2d_geom();
+	mark_dirty();
 	return verbs_;
 }
 
@@ -445,7 +445,7 @@ const path::verb_list& path::verbs() const {
 	return verbs_;
 }
 
-void path::invalidate_d2d_geom() {
+void path::mark_dirty() {
 	d2d_geom_ = nullptr;
 }
 

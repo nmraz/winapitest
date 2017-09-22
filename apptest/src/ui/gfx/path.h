@@ -210,7 +210,7 @@ public:
 	const impl::d2d_path_geom_ptr& d2d_geom() const;
 	impl::d2d_geom_sink_ptr d2d_sink();
 
-	void invalidate_d2d_geom();
+	void mark_dirty();
 	void stream_to(ID2D1GeometrySink* sink) const;
 
 private:
