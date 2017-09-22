@@ -23,6 +23,15 @@ enum class fill_mode {
 	even_odd = D2D1_FILL_MODE_ALTERNATE
 };
 
+
+enum class path_op {
+	combine = D2D1_COMBINE_MODE_UNION,
+	intersect = D2D1_COMBINE_MODE_INTERSECT,
+	diff = D2D1_COMBINE_MODE_EXCLUDE,
+	symmetric_diff = D2D1_COMBINE_MODE_XOR
+};
+
+
 enum class arc_size {
 	large_arc = D2D1_ARC_SIZE_LARGE,
 	small_arc = D2D1_ARC_SIZE_SMALL
@@ -189,7 +198,7 @@ public:
 	void add_path(const path& other);
 
 	path outline() const;
-	path intersect(const path& other) const;
+	path combine(const path& other, path_op op) const;
 
 	float length() const;
 	float area() const;

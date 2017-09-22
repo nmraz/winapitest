@@ -257,16 +257,16 @@ path path::outline() const {
 	return ret;
 }
 
-path path::intersect(const path& other) const {
+path path::combine(const path& other, path_op op) const {
 	path ret;
 	base::win::throw_if_failed(
 		d2d_geom()->CombineWithGeometry(
 			other.d2d_geom().get(),
-			D2D1_COMBINE_MODE_INTERSECT,
+			static_cast<D2D1_COMBINE_MODE>(op),
 			nullptr,
 			ret.d2d_sink().get()
 		),
-		"Failed to intersect paths"
+		"Failed to combine paths"
 	);
 	return ret;
 }
