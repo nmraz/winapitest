@@ -118,4 +118,23 @@ constexpr bool operator!=(const point<Rep>& lhs, const point<Rep>& rhs) {
 using pointf = point<float>;
 using pointi = point<int>;
 
+
+constexpr float dot(const pointf& lhs, const pointf& rhs) {
+	return lhs.x * rhs.x + lhs.y * rhs.y;
+}
+
+constexpr float mag_squared(const pointf& pt) {
+	return dot(pt, pt);
+}
+
+float mag(const pointf& pt);
+float angle(const pointf& pt);
+pointf to_unit(const pointf& pt);
+
+pointf point_for_angle(float angle, float rx, float ry);
+
+inline pointf point_for_angle(float angle, float radius = 1.f) {
+	return point_for_angle(angle, radius, radius);
+}
+
 }  // namespace gfx
