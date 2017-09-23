@@ -252,7 +252,7 @@ void path::add_path(const path& other) {
 		move_to({ 0, 0 });
 	}
 
-	verbs().insert(verbs().end(), other.verbs().begin(), other.verbs().end());
+	insert(end(), other.verbs().begin(), other.verbs().end());
 }
 
 

@@ -185,7 +185,11 @@ public:
 	const path_verb& back() const;
 
 	void push_back(path_verb verb) { verbs().push_back(std::move(verb)); }
+
+	template<typename Iter>
+	iterator insert(const_iterator where, Iter first, Iter last) { return verbs().insert(where, first, last); }
 	iterator insert(const_iterator where, path_verb verb) { return verbs().insert(where, std::move(verb)); }
+
 	iterator erase(const_iterator where) { return verbs().erase(where); }
 	iterator erase(const_iterator first, const_iterator last) { return verbs().erase(first, last); }
 	void clear() { verbs().clear(); }
