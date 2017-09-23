@@ -241,6 +241,10 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 	push_back(path_verbs::arc{ end, radius, rotation_angle, size, dir });
 }
 
+void path::arc_to(const pointf& end, float radius, float rotation_angle, arc_size size, arc_dir dir) {
+	arc_to(end, { radius, radius }, rotation_angle, size, dir);
+}
+
 
 void path::add_path(const path& other) {
 	if (other.empty()) {

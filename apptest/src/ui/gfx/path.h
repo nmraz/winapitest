@@ -204,7 +204,10 @@ public:
 	void line_to(const pointf& to);
 	void quad_to(const pointf& ctrl, const pointf& end);
 	void cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end);
+
 	void arc_to(const pointf& end, const sizef& radius, float rotation_angle,
+		arc_size size = arc_size::small_arc, arc_dir dir = arc_dir::clockwise);
+	void arc_to(const pointf& end, float radius, float rotation_angle,
 		arc_size size = arc_size::small_arc, arc_dir dir = arc_dir::clockwise);
 	
 	void add_path(const path& other);
