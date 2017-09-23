@@ -243,8 +243,16 @@ void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, 
 
 
 void path::add_path(const path& other) {
-	auto& cur_verbs = verbs();
-	cur_verbs.insert(cur_verbs.end(), other.verbs().begin(), other.verbs().end());
+	if (other.empty()) {
+		return;
+	}
+
+	// make sure that we don't keep extending some other contour
+	if (!std::holds_alternative<path_verbs::move>(other.front())) {
+		move_to({ 0, 0 });
+	}
+
+	verbs().insert(verbs().end(), other.verbs().begin(), other.verbs().end());
 }
 
 
