@@ -3,8 +3,16 @@
 namespace gfx {
 
 template<typename T>
-constexpr T pi = T(3.141592653589);
+constexpr T pi = T(3.14159265358979323846264338327950288L);
 
+template <typename T>
+constexpr T two_pi = T(6.28318530717958647692528676655900577L);
+
+template <typename T>
+constexpr T half_pi = T(1.57079632679489661923132169163975144L);
+
+template <typename T>
+constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432L);
 
 template<typename T>
 constexpr inline T lerp(T from, T to, double t) {
