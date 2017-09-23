@@ -52,8 +52,8 @@ public:
 	constexpr point<Rep> bottom_right() const { return {right(), bottom()}; }
 	constexpr point<Rep> bottom_left() const { return {x(), bottom()}; }
 
-	void set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height);
-	void set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right);
+	void set_xywh(Rep x, Rep y, Rep width, Rep height);
+	void set_bounds(Rep top, Rep left, Rep bottom, Rep right);
 
 	constexpr Rep area() const { return size_.area(); }
 	constexpr bool empty() const { return size_.empty(); }
@@ -84,12 +84,12 @@ constexpr rect<Rep>::rect(const point<Rep>& origin, const size<Rep>& sz)
 
 template<typename Rep>
 constexpr rect<Rep>::rect(by_xywh_tag, Rep x, Rep y, Rep width, Rep height) {
-	set(by_xywh, x, y, width, height);
+	set_xywh(x, y, width, height);
 }
 
 template<typename Rep>
 constexpr rect<Rep>::rect(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
-	set(by_bounds, top, left, bottom, right);
+	set_bounds(top, left, bottom, right);
 }
 
 template<typename Rep>
@@ -101,20 +101,20 @@ constexpr rect<Rep>::rect(const rect<Rep2>& other)
 
 
 template<typename Rep>
-void rect<Rep>::set(by_xywh_tag, Rep x, Rep y, Rep width, Rep height) {
+void rect<Rep>::set_xywh(Rep x, Rep y, Rep width, Rep height) {
 	origin_.set(x, y);
 	size_.set(width, height);
 }
 
 template<typename Rep>
-void rect<Rep>::set(by_bounds_tag, Rep top, Rep left, Rep bottom, Rep right) {
+void rect<Rep>::set_bounds(Rep top, Rep left, Rep bottom, Rep right) {
 	if (bottom < top) {
 		std::swap(bottom, top);
 	}
 	if (right < left) {
 		std::swap(right, left);
 	}
-	set(by_xywh, top, left, right - left, bottom - top);
+	set_xywh(top, left, right - left, bottom - top);
 }
 
 
@@ -144,7 +144,7 @@ void rect<Rep>::intersect(const rect& other) {
 	other.validate();
 
 	if (empty() || other.empty()) {
-		set(by_xywh, 0, 0, 0, 0);
+		set_xywh(0, 0, 0, 0);
 		return;
 	}
 	
@@ -154,11 +154,11 @@ void rect<Rep>::intersect(const rect& other) {
 	Rep new_bottom = std::min(bottom(), other.bottom());
 
 	if (new_left >= new_right || new_top >= new_bottom) {  // no intersection
-		set(by_xywh, 0, 0, 0, 0);
+		set_xywh(0, 0, 0, 0);
 		return;
 	}
 
-	set(by_bounds, new_top, new_left, new_bottom, new_right);
+	set_bounds(new_top, new_left, new_bottom, new_right);
 }
 
 
