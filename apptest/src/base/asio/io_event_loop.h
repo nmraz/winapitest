@@ -7,13 +7,13 @@ namespace base {
 
 class io_event_loop : public event_loop {
 public:
-	io_event_loop();
+  io_event_loop();
 
-	void sleep(const task::delay_type* delay) override;
-	void wake_up() override;
+  void sleep(const task::delay_type* delay) override;
+  void wake_up() override;
 
 private:
-	win::scoped_handle wake_up_evt_;
+  win::scoped_handle wake_up_evt_;
 };
 
 }  // namespace base

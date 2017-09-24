@@ -10,34 +10,34 @@ class task_runner;
 
 class event_loop : public non_copy_movable {
 public:
-	event_loop();
-	virtual ~event_loop() = default;
+  event_loop();
+  virtual ~event_loop() = default;
 
-	void run();
-	void quit();
+  void run();
+  void quit();
 
-	virtual bool do_work();
-	virtual void sleep(const task::delay_type* delay) = 0;
-	virtual void wake_up() = 0;
+  virtual bool do_work();
+  virtual void sleep(const task::delay_type* delay) = 0;
+  virtual void wake_up() = 0;
 
-	bool is_current() const;
+  bool is_current() const;
 
-	static event_loop& current();
-	static bool is_nested();
+  static event_loop& current();
+  static bool is_nested();
 
 protected:
-	bool run_pending_task();
-	bool run_delayed_task();
-	std::optional<task::run_time_type> get_next_run_time() const;
+  bool run_pending_task();
+  bool run_delayed_task();
+  std::optional<task::run_time_type> get_next_run_time() const;
 
 private:
-	struct loop_pusher;
+  struct loop_pusher;
 
-	// Check that the loop is active and retrieve the current task_runner
-	task_runner* get_runner() const;
+  // Check that the loop is active and retrieve the current task_runner
+  task_runner* get_runner() const;
 
-	bool should_quit_;
-	task_runner* runner_;
+  bool should_quit_;
+  task_runner* runner_;
 };
 
 }  // namespace base

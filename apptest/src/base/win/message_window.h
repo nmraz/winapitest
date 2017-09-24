@@ -9,20 +9,20 @@ namespace base::win {
 
 class message_window : public non_copy_movable {
 public:
-	using wnd_proc = std::function<std::optional<LRESULT>(UINT, WPARAM, LPARAM)>;
+  using wnd_proc = std::function<std::optional<LRESULT>(UINT, WPARAM, LPARAM)>;
 
-	message_window(wnd_proc proc);
-	~message_window();
+  message_window(wnd_proc proc);
+  ~message_window();
 
-	HWND get() { return hwnd_; }
+  HWND get() { return hwnd_; }
 
 private:
-	struct class_registrar;
+  struct class_registrar;
 
-	static LRESULT CALLBACK main_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept;
+  static LRESULT CALLBACK main_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) noexcept;
 
-	HWND hwnd_;
-	wnd_proc wnd_proc_;
+  HWND hwnd_;
+  wnd_proc wnd_proc_;
 };
 
 }  // namespace base::win

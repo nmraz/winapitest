@@ -4,39 +4,39 @@ namespace gfx {
 
 template<typename Rep, int M, int N>
 struct matrix {
-	Rep data[M][N];
+  Rep data[M][N];
 
-	constexpr Rep& get(int row, int col);
-	constexpr const Rep& get(int row, int col) const;
+  constexpr Rep& get(int row, int col);
+  constexpr const Rep& get(int row, int col) const;
 };
 
 
 template<typename Rep, int M, int N>
 constexpr Rep& matrix<Rep, M, N>::get(int row, int col) {
-	return data[row][col];
+  return data[row][col];
 }
 
 template<typename Rep, int M, int N>
 constexpr const Rep& matrix<Rep, M, N>::get(int row, int col) const {
-	return data[row][col];
+  return data[row][col];
 }
 
 
 template<typename Rep, int M, int N, int P>
 constexpr matrix<Rep, M, P> operator*(const matrix<Rep, M, N>& lhs, const matrix<Rep, N, P>& rhs) {
-	matrix<Rep, M, P> ret{};
+  matrix<Rep, M, P> ret{};
 
-	for (int i = 0; i < M; ++i) {
-		for (int j = 0; j < P; ++j) {
-			Rep total = 0;
-			for (int k = 0; k < N; ++k) {
-				total += lhs.get(i, k) * rhs.get(k, j);
-			}
-			ret.get(i, j) = total;
-		}
-	}
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < P; ++j) {
+      Rep total = 0;
+      for (int k = 0; k < N; ++k) {
+        total += lhs.get(i, k) * rhs.get(k, j);
+      }
+      ret.get(i, j) = total;
+    }
+  }
 
-	return ret;
+  return ret;
 }
 
 

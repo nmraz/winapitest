@@ -11,11 +11,11 @@ namespace gfx::transform {
 // A, followed by B".
 
 constexpr mat33f identity() {
-	return {
-		1, 0, 0,
-		0, 1, 0,
-		0, 0, 1
-	};
+  return {
+    1, 0, 0,
+    0, 1, 0,
+    0, 0, 1
+  };
 }
 
 mat33f translate(float dx, float dy);

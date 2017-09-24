@@ -16,32 +16,32 @@ using disptach_tag_for = dispatch_tag<decltype(std::declval<F>()())>;
 
 template<typename F>
 inline HRESULT call_f(F&& f, dispatch_tag<HRESULT>) {
-	return std::forward<F>(f)();
+  return std::forward<F>(f)();
 }
 
 template<typename F, typename Ret>
 inline HRESULT call_f(F&& f, dispatch_tag<Ret>) {
-	std::forward<F>(f)();
-	return S_OK;
+  std::forward<F>(f)();
+  return S_OK;
 }
 
 }  // namespace except_bound_impl
 
 template<typename F>
 HRESULT exception_boundary(F&& f) noexcept {
-	try {
-		return except_bound_impl::call_f(std::forward<F>(f), except_bound_impl::disptach_tag_for<F>{});
-	} catch (const std::bad_alloc&) {
-		return E_OUTOFMEMORY;
-	} catch (const std::system_error& e) {
-		auto code = e.code();
-		if (code.category() == std::system_category()) {
-			return HRESULT_FROM_WIN32(code.value());
-		}
-		return E_FAIL;
-	} catch (...) {
-		return E_FAIL;
-	}
+  try {
+    return except_bound_impl::call_f(std::forward<F>(f), except_bound_impl::disptach_tag_for<F>{});
+  } catch (const std::bad_alloc&) {
+    return E_OUTOFMEMORY;
+  } catch (const std::system_error& e) {
+    auto code = e.code();
+    if (code.category() == std::system_category()) {
+      return HRESULT_FROM_WIN32(code.value());
+    }
+    return E_FAIL;
+  } catch (...) {
+    return E_FAIL;
+  }
 }
 
 }  // namespace base::win

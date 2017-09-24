@@ -6,19 +6,19 @@
 namespace gfx {
 
 struct color {
-	std::uint8_t r;
-	std::uint8_t g;
-	std::uint8_t b;
-	std::uint8_t a = 0xff;
+  std::uint8_t r;
+  std::uint8_t g;
+  std::uint8_t b;
+  std::uint8_t a = 0xff;
 };
 
 
 constexpr bool operator==(const color& rhs, const color& lhs) {
-	return rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b && rhs.a == lhs.a;
+  return rhs.r == lhs.r && rhs.g == lhs.g && rhs.b == lhs.b && rhs.a == lhs.a;
 }
 
 constexpr bool operator!=(const color& rhs, const color& lhs) {
-	return !(rhs == lhs);
+  return !(rhs == lhs);
 }
 
 
