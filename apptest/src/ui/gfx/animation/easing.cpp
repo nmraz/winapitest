@@ -1,5 +1,6 @@
 #include "easing.h"
 
+#include "ui/gfx/util.h"
 #include <cmath>
 
 namespace gfx::easing {
@@ -9,8 +10,7 @@ double linear(double p) {
 }
 
 double ease(double p) {
-	constexpr double pi_over_2 = 1.57079633;
-	return std::sin(p * pi_over_2);
+	return std::sin(p * half_pi<double>);
 }
 
 double ease_in(double p) {
