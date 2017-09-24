@@ -10,6 +10,8 @@ namespace base::win {
 template<typename T>
 class com_ptr {
 public:
+	static_assert(std::is_base_of_v<IUnknown, T>, "T must be a COM interface");
+
 	constexpr com_ptr()
 		: ptr_(nullptr) {}
 	constexpr com_ptr(std::nullptr_t)
