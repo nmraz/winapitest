@@ -190,7 +190,7 @@
     <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
     <ClCompile Include="src\ui\gfx\color.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
-    <ClCompile Include="src\ui\gfx\path.cpp" />
+    <ClCompile Include="src\ui\gfx\geom\path.cpp" />
     <ClCompile Include="src\ui\gfx\transform.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -232,7 +232,7 @@
     <ClInclude Include="src\ui\gfx\geom\point.h" />
     <ClInclude Include="src\ui\gfx\geom\rect.h" />
     <ClInclude Include="src\ui\gfx\geom\size.h" />
-    <ClInclude Include="src\ui\gfx\path.h" />
+    <ClInclude Include="src\ui\gfx\geom\path.h" />
     <ClInclude Include="src\ui\gfx\transform.h" />
     <ClInclude Include="src\ui\gfx\util.h" />
     <ClInclude Include="src\ui\gfx\d2d\convs.h" />
