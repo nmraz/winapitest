@@ -377,6 +377,10 @@ impl::d2d_geom_sink_ptr path::d2d_sink() {
 }
 
 
+void path::mark_dirty() {
+  d2d_geom_ = nullptr;
+}
+
 void path::stream_to(ID2D1GeometrySink* sink) const {
   struct streaming_visitor {
     streaming_visitor(ID2D1GeometrySink* sink)
@@ -478,10 +482,6 @@ path::verb_list& path::verbs() {
 
 const path::verb_list& path::verbs() const {
   return verbs_;
-}
-
-void path::mark_dirty() {
-  d2d_geom_ = nullptr;
 }
 
 
