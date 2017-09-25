@@ -4,43 +4,35 @@
 
 namespace gfx {
 
-color lerp(color from, color to, double t) {
-  t = std::clamp(t, 0.0, 1.0);
-
-  int r = static_cast<int>(from.r + (to.r - from.r) * t);
-  int g = static_cast<int>(from.g + (to.g - from.g) * t);
-  int b = static_cast<int>(from.b + (to.b - from.b) * t);
-  int a = static_cast<int>(from.a + (to.a - from.a) * t);
-
+color lerp(const color& from, const color& to, double t) {
   return {
-    static_cast<std::uint8_t>(r),
-    static_cast<std::uint8_t>(g),
-    static_cast<std::uint8_t>(b),
-    static_cast<std::uint8_t>(a)
+    from.r() + (to.r() - from.r()) * t,
+    from.g() + (to.g() - from.g()) * t,
+    from.b() + (to.b() - from.b()) * t,
+    from.a() + (to.a() - from.a()) * t
   };
 }
 
-color alpha_blend(color foreground, color background, std::uint8_t alpha) {
-  if (alpha == 0) {
+color alpha_blend(const color& foreground, const color& background, float alpha) {
+  if (alpha == 0.f) {
     return background;
-  }
-  if (alpha == 255) {
+  } else if (alpha == 1.f) {
     return foreground;
   }
 
-  double norm = (foreground.a * alpha + background.a * (255 - alpha)) / 255.0;
+  double norm = foreground.a() * alpha + background.a() * (1 - alpha);
   if (norm == 0.0) {
-    return color_constants::transparent;  // both colors are transparent
+    return color{};
   }
 
-  double fg_weight = foreground.a * alpha / norm;
-  double bg_weight = background.a * (255 - alpha) / norm;
+  double fg_weight = foreground.a() * alpha / norm;
+  double bg_weight = background.a() * alpha / norm;
 
   return {
-    static_cast<std::uint8_t>((foreground.r * fg_weight + background.r * bg_weight) / 255.0),
-    static_cast<std::uint8_t>((foreground.g * fg_weight + background.g * bg_weight) / 255.0),
-    static_cast<std::uint8_t>((foreground.b * fg_weight + background.b * bg_weight) / 255.0),
-    static_cast<std::uint8_t>(norm)
+    foreground.r() * fg_weight + background.r() * bg_weight,
+    foreground.g() * fg_weight + background.g() * bg_weight,
+    foreground.b() * fg_weight + background.b() * bg_weight,
+    norm
   };
 }
 

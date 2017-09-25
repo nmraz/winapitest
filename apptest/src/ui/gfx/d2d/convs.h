@@ -12,10 +12,10 @@ namespace gfx::impl {
 
 constexpr D2D1_COLOR_F color_to_d2d_color(color col) {
   return {
-    col.r / 255.f,
-    col.g / 255.f,
-    col.b / 255.f,
-    col.a / 255.f
+    col.r(),
+    col.g(),
+    col.b(),
+    col.a()
   };
 }
 
