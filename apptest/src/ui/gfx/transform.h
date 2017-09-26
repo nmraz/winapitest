@@ -50,6 +50,16 @@ constexpr mat33f centered_about(const mat33f& tform, const pointf& center) {
 }
 
 
+constexpr bool is_affine(const mat33f& tform) {
+  return tform.get(0, 2) == 0 && tform.get(1, 2) == 0 && tform.get(2, 2) == 1;
+}
+
+constexpr bool is_scale_translate(const mat33f& tform) {
+  return tform.get(0, 1) == 0 && tform.get(0, 2) == 0 && tform.get(1, 0) == 0
+    && tform.get(1, 2) == 0 && tform.get(2, 2) == 1;
+}
+
+
 constexpr pointf apply(const mat33f& tform, const pointf& pt) {
   // postmultiply `pt` by `tform`
 
