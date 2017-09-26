@@ -1,10 +1,12 @@
 #pragma once
 
+#include "base/assert.h"
 #include "ui/gfx/color.h"
 #include "ui/gfx/geom/matrix.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/rect.h"
 #include "ui/gfx/geom/size.h"
+#include "ui/gfx/transform.h"
 #include <d2d1_1.h>
 
 
@@ -59,6 +61,8 @@ constexpr rectf d2d_rect_to_rect(const D2D1_RECT_F& rc) {
 
 
 constexpr D2D1_MATRIX_3X2_F mat33_to_d2d_mat32(const mat33f& mat) {
+  ASSERT(transform::is_affine(mat)) << "Direct2D requires affine transforms";
+
   return {
     mat.get(0, 0), mat.get(0, 1),
     mat.get(1, 0), mat.get(1, 1),
