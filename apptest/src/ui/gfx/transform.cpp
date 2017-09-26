@@ -34,7 +34,7 @@ mat33f rotate(float theta) {
 
   return {
     cos_theta,  sin_theta,  0,
-    -sin_theta, -cos_theta, 0,
+    -sin_theta, cos_theta,  0,
     0,          0,          1
   };
 }
