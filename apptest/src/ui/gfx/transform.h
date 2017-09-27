@@ -61,6 +61,34 @@ constexpr inline bool is_scale_translate(const mat33f& tform) {
 }
 
 
+constexpr float determinant(const mat33f& tform) {
+  ASSERT(is_affine(tform)) << "This only works for affine transforms";
+  return tform.get(0, 0) * tform.get(1, 1) - tform.get(0, 1) * tform.get(1, 0);
+}
+
+constexpr inline bool is_invertible(const mat33f& tform) {
+  return determinant(tform) != 0.f;
+}
+
+constexpr mat33f invert(const mat33f& tform) {
+  float det = determinant(tform);
+  ASSERT(det != 0.f) << "Transform not invertible";
+
+  double inv_det = 1.0 / det;
+  return {
+    static_cast<float>(tform.get(1, 1) * inv_det),
+    static_cast<float>(-tform.get(0, 1) * inv_det),
+    0.f,
+    static_cast<float>(-tform.get(1, 0) * inv_det),
+    static_cast<float>(tform.get(0, 0) * inv_det), 
+    0.f,
+    static_cast<float>((tform.get(1, 0) * tform.get(2, 1) - tform.get(1, 1) * tform.get(2, 0)) * inv_det),
+    static_cast<float>(-(tform.get(0, 0) * tform.get(2, 1) - tform.get(0, 1) * tform.get(2, 0)) * inv_det),
+    1.f
+  };
+}
+
+
 constexpr pointf apply(const mat33f& tform, const pointf& pt) {
   ASSERT(is_affine(tform)) << "Direct2D requires affine transforms";
 
