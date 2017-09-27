@@ -7,6 +7,7 @@
 #include "ui/gfx/d2d/convs.h"
 #include "ui/gfx/d2d/factories.h"
 #include "ui/gfx/transform.h"
+#include "ui/gfx/util.h"
 #include <utility>
 
 namespace gfx {
@@ -113,7 +114,7 @@ STDMETHODIMP_(void) path_d2d_sink::AddArc(const D2D1_ARC_SEGMENT* arc) {
     path_->arc_to(
       impl::d2d_point_to_point(arc->point),
       impl::d2d_size_to_size(arc->size),
-      arc->rotationAngle,
+      deg_to_rad(arc->rotationAngle),
       static_cast<arc_size>(arc->arcSize),
       static_cast<sweep_dir>(arc->sweepDirection)
     );
@@ -471,7 +472,7 @@ void path::stream_to(ID2D1GeometrySink* sink) const {
       sink->AddArc({
         impl::point_to_d2d_point(arc.end),
         impl::size_to_d2d_size(arc.radius),
-        arc.rotation_angle,
+        rad_to_deg(arc.rotation_angle),
         static_cast<D2D1_SWEEP_DIRECTION>(arc.dir),
         static_cast<D2D1_ARC_SIZE>(arc.size)
       });
