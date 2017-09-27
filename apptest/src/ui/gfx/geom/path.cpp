@@ -275,6 +275,35 @@ void path::add_rect(const rectf& rc, sweep_dir dir) {
   close();
 }
 
+void path::add_round_rect(const round_rect& rrect, sweep_dir dir) {
+  pointf rx_offset{ rrect.radius().width, 0 };
+  pointf ry_offset{ 0, rrect.radius().height };
+
+  if (dir == sweep_dir::clockwise) {
+    // start drawing from the top of the bottom-left corner
+    move_to(rrect.bounds().bottom_left() - ry_offset);
+    line_to(rrect.bounds().origin() + ry_offset);
+    arc_to(rrect.bounds().origin() + rx_offset, rrect.radius());
+    line_to(rrect.bounds().top_right() - rx_offset);
+    arc_to(rrect.bounds().top_right() + ry_offset, rrect.radius());
+    line_to(rrect.bounds().bottom_right() - ry_offset);
+    arc_to(rrect.bounds().bottom_right() - rx_offset, rrect.radius());
+    line_to(rrect.bounds().bottom_left() + rx_offset);
+    arc_to(rrect.bounds().bottom_left() - ry_offset, rrect.radius());
+  } else {
+    // start drawing from the bottom of the top-left corner
+    move_to(rrect.bounds().origin() + ry_offset);
+    line_to(rrect.bounds().bottom_left() - ry_offset);
+    arc_to(rrect.bounds().bottom_left() + rx_offset, rrect.radius());
+    line_to(rrect.bounds().bottom_right() - rx_offset);
+    arc_to(rrect.bounds().bottom_right() - ry_offset, rrect.radius());
+    line_to(rrect.bounds().top_right() + ry_offset);
+    arc_to(rrect.bounds().top_right() - rx_offset, rrect.radius());
+    line_to(rrect.bounds().origin() + rx_offset);
+    arc_to(rrect.bounds().origin() + ry_offset, rrect.radius());
+  }
+}
+
 void path::add_ellipse(const pointf& center, const sizef& radius, float rotation_angle, sweep_dir dir) {
   mat33f rotation_transform = transform::rotate(rotation_angle);
 

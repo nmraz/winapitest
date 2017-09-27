@@ -4,6 +4,7 @@
 #include "ui/gfx/geom/matrix.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/rect.h"
+#include "ui/gfx/geom/round_rect.h"
 #include "ui/gfx/geom/size.h"
 #include <d2d1_1.h>
 #include <initializer_list>
@@ -212,6 +213,7 @@ public:
   
   void add_path(const path& other);
   void add_rect(const rectf& rc, sweep_dir dir = sweep_dir::clockwise);
+  void add_round_rect(const round_rect& rrect, sweep_dir dir = sweep_dir::clockwise);
   void add_ellipse(const pointf& center, const sizef& radius, float rotation_angle = 0.f,
     sweep_dir dir = sweep_dir::clockwise);
   void add_ellipse(const rectf& bounds, float rotation_angle = 0.f,
