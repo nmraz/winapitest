@@ -67,6 +67,11 @@ constexpr point<Rep> operator-(point<Rep> rhs, const point<Rep>& lhs) {
   return rhs -= lhs;
 }
 
+template<typename Rep>
+constexpr point<Rep> operator-(const point<Rep>& pt) {
+  return { -pt.x, -pt.y };
+}
+
 
 template<typename Rep>
 constexpr point<Rep>& operator*=(point<Rep>& rhs, Rep value) {
