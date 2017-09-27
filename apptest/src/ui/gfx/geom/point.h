@@ -73,33 +73,33 @@ constexpr point<Rep> operator-(const point<Rep>& pt) {
 }
 
 
-template<typename Rep>
-constexpr point<Rep>& operator*=(point<Rep>& rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr point<Rep>& operator*=(point<Rep>& rhs, Rep2 value) {
   rhs.x *= value;
   rhs.y *= value;
   return rhs;
 }
 
-template<typename Rep>
-constexpr point<Rep> operator*(point<Rep> rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr point<Rep> operator*(point<Rep> rhs, Rep2 value) {
   return rhs *= value;
 }
 
-template<typename Rep>
-constexpr point<Rep> operator*(Rep value, const point<Rep>& lhs) {
+template<typename Rep, typename Rep2>
+constexpr point<Rep> operator*(Rep2 value, const point<Rep>& lhs) {
   return lhs * value;
 }
 
 
-template<typename Rep>
-constexpr point<Rep>& operator/=(point<Rep>& rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr point<Rep>& operator/=(point<Rep>& rhs, Rep2 value) {
   rhs.x /= value;
   rhs.y /= value;
   return rhs;
 }
 
-template<typename Rep>
-constexpr point<Rep> operator/(point<Rep> rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr point<Rep> operator/(point<Rep> rhs, Rep2 value) {
   return rhs /= value;
 }
 

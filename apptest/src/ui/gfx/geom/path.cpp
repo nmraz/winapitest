@@ -287,7 +287,7 @@ void path::add_ellipse(const pointf& center, const sizef& radius, float rotation
 }
 
 void path::add_ellipse(const rectf& bounds, float rotation_angle, sweep_dir dir) {
-  add_ellipse(bounds.center(), bounds.get_size() / 2.f, rotation_angle, dir);
+  add_ellipse(bounds.center(), bounds.get_size() / 2, rotation_angle, dir);
 }
 
 

@@ -97,33 +97,33 @@ constexpr size<Rep> operator-(size<Rep> rhs, const size<Rep>& lhs) {
 }
 
 
-template<typename Rep>
-constexpr size<Rep>& operator*=(size<Rep>& rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr size<Rep>& operator*=(size<Rep>& rhs, Rep2 value) {
   rhs.width *= value;
   rhs.height *= value;
   return rhs;
 }
 
-template<typename Rep>
-constexpr size<Rep> operator*(size<Rep> rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr size<Rep> operator*(size<Rep> rhs, Rep2 value) {
   return rhs *= value;
 }
 
-template<typename Rep>
-constexpr size<Rep> operator*(Rep value, const size<Rep>& lhs) {
+template<typename Rep, typename Rep2>
+constexpr size<Rep> operator*(Rep2 value, const size<Rep>& lhs) {
   return lhs * value;
 }
 
 
-template<typename Rep>
-constexpr size<Rep>& operator/=(size<Rep>& rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr size<Rep>& operator/=(size<Rep>& rhs, Rep2 value) {
   rhs.width /= value;
   rhs.height /= value;
   return rhs;
 }
 
-template<typename Rep>
-constexpr size<Rep> operator/(size<Rep> rhs, Rep value) {
+template<typename Rep, typename Rep2>
+constexpr size<Rep> operator/(size<Rep> rhs, Rep2 value) {
   return rhs /= value;
 }
 
