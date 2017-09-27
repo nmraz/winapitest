@@ -6,6 +6,7 @@
 #include "base/win/last_error.h"
 #include "ui/gfx/d2d/convs.h"
 #include "ui/gfx/d2d/factories.h"
+#include "ui/gfx/transform.h"
 #include <utility>
 
 namespace gfx {
@@ -271,6 +272,21 @@ void path::add_rect(const rectf& rc, sweep_dir dir) {
     line_to(rc.top_right());
   }
   close();
+}
+
+void path::add_ellipse(const pointf& center, const sizef& radius, float rotation_angle) {
+  mat33f rotation_transform = transform::rotate(rotation_angle);
+
+  pointf start = transform::apply(rotation_transform, { center.x + radius.width, center.y});
+  pointf end = transform::apply(rotation_transform, { center.x - radius.width, center.y });
+
+  move_to(start);
+  arc_to(end, radius, rotation_angle);
+  arc_to(start, radius, rotation_angle);
+}
+
+void path::add_ellipse(const rectf& bounds, float rotation_angle) {
+  add_ellipse(bounds.center(), bounds.get_size() / 2.f, rotation_angle);
 }
 
 

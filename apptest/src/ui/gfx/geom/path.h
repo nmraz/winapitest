@@ -212,6 +212,8 @@ public:
   
   void add_path(const path& other);
   void add_rect(const rectf& rc, sweep_dir dir = sweep_dir::clockwise);
+  void add_ellipse(const pointf& center, const sizef& radius, float rotation_angle = 0.f);
+  void add_ellipse(const rectf& bounds, float rotation_angle = 0.f);
 
   path outline() const;
   path transform(const mat33f& tform) const;
