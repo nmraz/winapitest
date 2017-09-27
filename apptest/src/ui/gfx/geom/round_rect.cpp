@@ -9,6 +9,7 @@ round_rect::round_rect(const rectf& bounds, const sizef& radius)
 
 void round_rect::set_radius(sizef radius) {
   radius.shrink_to(bounds_.get_size() / 2.f);
+  radius_ = radius;
 }
 
 }  // namespace gfx
