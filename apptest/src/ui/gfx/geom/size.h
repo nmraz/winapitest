@@ -73,8 +73,8 @@ void size<Rep>::shrink_to(const size& other) {
 
 template<typename Rep>
 constexpr size<Rep>& operator+=(size<Rep>& rhs, const size<Rep>& lhs) {
-  rhs.x += lhs.x;
-  rhs.y += lhs.y;
+  rhs.width += lhs.width;
+  rhs.height += lhs.height;
   return rhs;
 }
 
@@ -86,8 +86,8 @@ constexpr size<Rep> operator+(size<Rep> rhs, const size<Rep>& lhs) {
 
 template<typename Rep>
 constexpr size<Rep>& operator-=(size<Rep>& rhs, const size<Rep>& lhs) {
-  rhs.x -= lhs.x;
-  rhs.y -= lhs.y;
+  rhs.width -= lhs.width;
+  rhs.height -= lhs.height;
   return rhs;
 }
 
@@ -99,8 +99,8 @@ constexpr size<Rep> operator-(size<Rep> rhs, const size<Rep>& lhs) {
 
 template<typename Rep>
 constexpr size<Rep>& operator*=(size<Rep>& rhs, Rep value) {
-  rhs.x *= value;
-  rhs.y *= value;
+  rhs.width *= value;
+  rhs.height *= value;
   return rhs;
 }
 
@@ -117,8 +117,8 @@ constexpr size<Rep> operator*(Rep value, const size<Rep>& lhs) {
 
 template<typename Rep>
 constexpr size<Rep>& operator/=(size<Rep>& rhs, Rep value) {
-  rhs.x /= value;
-  rhs.y /= value;
+  rhs.width /= value;
+  rhs.height /= value;
   return rhs;
 }
 
