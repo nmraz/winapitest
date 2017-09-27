@@ -259,6 +259,20 @@ void path::add_path(const path& other) {
   insert(end(), other.verbs().begin(), other.verbs().end());
 }
 
+void path::add_rect(const rectf& rc, sweep_dir dir) {
+  move_to(rc.origin());
+  if (dir == sweep_dir::clockwise) {
+    line_to(rc.top_right());
+    line_to(rc.bottom_right());
+    line_to(rc.bottom_left());
+  } else {
+    line_to(rc.bottom_left());
+    line_to(rc.bottom_right());
+    line_to(rc.top_right());
+  }
+  close();
+}
+
 
 path path::outline() const {
   path ret;
