@@ -51,6 +51,7 @@ public:
   constexpr point<Rep> top_right() const { return {right(), y()}; }
   constexpr point<Rep> bottom_right() const { return {right(), bottom()}; }
   constexpr point<Rep> bottom_left() const { return {x(), bottom()}; }
+  constexpr point<Rep> center() const { return { x() + width() / 2, y() + height() / 2 }; }
 
   constexpr void set_xywh(Rep x, Rep y, Rep width, Rep height);
   constexpr void set_bounds(Rep top, Rep left, Rep bottom, Rep right);
