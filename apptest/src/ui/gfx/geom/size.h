@@ -127,11 +127,6 @@ constexpr size<Rep> operator/(size<Rep> rhs, Rep value) {
   return rhs /= value;
 }
 
-template<typename Rep>
-constexpr size<Rep> operator/(Rep value, const size<Rep>& lhs) {
-  return lhs / value;
-}
-
 
 template<typename Rep>
 constexpr bool operator==(const size<Rep>& lhs, const size<Rep>& rhs) {

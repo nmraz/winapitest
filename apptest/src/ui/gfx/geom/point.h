@@ -103,11 +103,6 @@ constexpr point<Rep> operator/(point<Rep> rhs, Rep value) {
   return rhs /= value;
 }
 
-template<typename Rep>
-constexpr point<Rep> operator/(Rep value, const point<Rep>& lhs) {
-  return lhs / value;
-}
-
 
 template<typename Rep>
 constexpr bool operator==(const point<Rep>& lhs, const point<Rep>& rhs) {
