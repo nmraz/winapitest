@@ -114,7 +114,7 @@ STDMETHODIMP_(void) path_d2d_sink::AddArc(const D2D1_ARC_SEGMENT* arc) {
       impl::d2d_size_to_size(arc->size),
       arc->rotationAngle,
       static_cast<arc_size>(arc->arcSize),
-      static_cast<arc_dir>(arc->sweepDirection)
+      static_cast<sweep_dir>(arc->sweepDirection)
     );
   });
 }
@@ -237,11 +237,11 @@ void path::cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end)
   push_back(path_verbs::cubic{ ctrl1, ctrl2, end });
 }
 
-void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, arc_size size, arc_dir dir) {
+void path::arc_to(const pointf& end, const sizef& radius, float rotation_angle, arc_size size, sweep_dir dir) {
   push_back(path_verbs::arc{ end, radius, rotation_angle, size, dir });
 }
 
-void path::arc_to(const pointf& end, float radius, float rotation_angle, arc_size size, arc_dir dir) {
+void path::arc_to(const pointf& end, float radius, float rotation_angle, arc_size size, sweep_dir dir) {
   arc_to(end, { radius, radius }, rotation_angle, size, dir);
 }
 

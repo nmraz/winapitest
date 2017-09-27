@@ -45,7 +45,7 @@ enum class arc_size {
   small_arc = D2D1_ARC_SIZE_SMALL
 };
 
-enum class arc_dir {
+enum class sweep_dir {
   clockwise = D2D1_SWEEP_DIRECTION_CLOCKWISE,
   counter_clockwise = D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE
 };
@@ -124,7 +124,7 @@ struct arc {
   sizef radius;
   float rotation_angle;
   arc_size size;
-  arc_dir dir;
+  sweep_dir dir;
 };
 
 constexpr bool operator==(const arc& lhs, const arc& rhs) {
@@ -206,9 +206,9 @@ public:
   void cubic_to(const pointf& ctrl1, const pointf& ctrl2, const pointf& end);
 
   void arc_to(const pointf& end, const sizef& radius, float rotation_angle,
-    arc_size size = arc_size::small_arc, arc_dir dir = arc_dir::clockwise);
+    arc_size size = arc_size::small_arc, sweep_dir dir = sweep_dir::clockwise);
   void arc_to(const pointf& end, float radius, float rotation_angle,
-    arc_size size = arc_size::small_arc, arc_dir dir = arc_dir::clockwise);
+    arc_size size = arc_size::small_arc, sweep_dir dir = sweep_dir::clockwise);
   
   void add_path(const path& other);
 
