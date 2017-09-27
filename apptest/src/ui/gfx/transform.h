@@ -11,7 +11,7 @@ namespace gfx::transform {
 // provides a more intuitive syntax, where `A * B` means "first apply
 // A, followed by B".
 
-constexpr mat33f identity() {
+constexpr inline mat33f identity() {
   return {
     1, 0, 0,
     0, 1, 0,
@@ -19,7 +19,7 @@ constexpr mat33f identity() {
   };
 }
 
-constexpr mat33f translate(float dx, float dy) {
+constexpr inline mat33f translate(float dx, float dy) {
   return {
     1,  0,  0,
     0,  1,  0,
@@ -27,7 +27,7 @@ constexpr mat33f translate(float dx, float dy) {
   };
 }
 
-constexpr mat33f scale(float sx, float sy) {
+constexpr inline mat33f scale(float sx, float sy) {
   return {
     sx, 0,  0,
     0,  sy, 0,
@@ -35,7 +35,7 @@ constexpr mat33f scale(float sx, float sy) {
   };
 }
 
-constexpr mat33f shear(float shx, float shy) {
+constexpr inline mat33f shear(float shx, float shy) {
   return {
     1,   shy, 0,
     shx, 1,   0,
@@ -45,17 +45,17 @@ constexpr mat33f shear(float shx, float shy) {
 
 mat33f rotate(float theta);
 
-constexpr mat33f centered_about(const mat33f& tform, const pointf& center) {
+constexpr inline mat33f centered_about(const mat33f& tform, const pointf& center) {
   // translate `center` to origin, apply transform, and translate back
   return translate(-center.x, -center.y) * tform * translate(center.x, center.y);
 }
 
 
-constexpr bool is_affine(const mat33f& tform) {
+constexpr inline bool is_affine(const mat33f& tform) {
   return tform.get(0, 2) == 0 && tform.get(1, 2) == 0 && tform.get(2, 2) == 1;
 }
 
-constexpr bool is_scale_translate(const mat33f& tform) {
+constexpr inline bool is_scale_translate(const mat33f& tform) {
   return tform.get(0, 1) == 0 && tform.get(0, 2) == 0 && tform.get(1, 0) == 0
     && tform.get(1, 2) == 0 && tform.get(2, 2) == 1;
 }
