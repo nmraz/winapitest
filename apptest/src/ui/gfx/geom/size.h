@@ -16,10 +16,10 @@ struct size {
   constexpr Rep area() const { return width * height; }
   constexpr bool empty() const;
 
-  void set(Rep new_width, Rep new_height);
+  constexpr void set(Rep new_width, Rep new_height);
 
-  void expand_to(const size& other);
-  void shrink_to(const size& other);
+  constexpr void expand_to(const size& other);
+  constexpr void shrink_to(const size& other);
 
   Rep width, height;
 };
@@ -52,20 +52,20 @@ constexpr bool size<Rep>::empty() const {
 
 
 template<typename Rep>
-void size<Rep>::set(Rep new_width, Rep new_height) {
+constexpr void size<Rep>::set(Rep new_width, Rep new_height) {
   width = new_width;
   height = new_height;
 }
 
 
 template<typename Rep>
-void size<Rep>::expand_to(const size& other) {
+constexpr void size<Rep>::expand_to(const size& other) {
   width = std::max(width, other.width);
   height = std::max(height, other.height);
 }
 
 template<typename Rep>
-void size<Rep>::shrink_to(const size& other) {
+constexpr void size<Rep>::shrink_to(const size& other) {
   width = std::min(width, other.width);
   height = std::min(height, other.height);
 }
