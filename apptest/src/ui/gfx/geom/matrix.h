@@ -22,6 +22,23 @@ constexpr const Rep& matrix<Rep, M, N>::get(int row, int col) const {
 }
 
 
+template<typename Rep, int M, int N>
+constexpr bool operator==(const matrix<Rep, M, N>& lhs, const matrix<Rep, M, N>& rhs) {
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      if (lhs.get(i, j) != rhs.get(i, j)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+template<typename Rep, int M, int N>
+constexpr bool operator!=(const matrix<Rep, M, N>& lhs, const matrix<Rep, M, N>& rhs) {
+  return !(lhs == rhs);
+}
+
 template<typename Rep, int M, int N, int P>
 constexpr matrix<Rep, M, P> operator*(const matrix<Rep, M, N>& lhs, const matrix<Rep, N, P>& rhs) {
   matrix<Rep, M, P> ret{};
