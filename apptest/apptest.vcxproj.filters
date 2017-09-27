@@ -108,6 +108,9 @@
     <ClCompile Include="src\ui\gfx\geom\path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\gfx\geom\round_rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\logging\logging.h">
@@ -237,6 +240,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\gfx\geom\path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\gfx\geom\round_rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

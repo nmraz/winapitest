@@ -185,6 +185,7 @@
     <ClCompile Include="src\base\win\scoped_handle.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ui\gfx\geom\point.cpp" />
+    <ClCompile Include="src\ui\gfx\geom\round_rect.cpp" />
     <ClCompile Include="src\ui\ui_event_loop.cpp" />
     <ClCompile Include="src\ui\gfx\animation\animation.cpp" />
     <ClCompile Include="src\ui\gfx\animation\easing.cpp" />
@@ -224,6 +225,7 @@
     <ClInclude Include="src\base\win\message_window.h" />
     <ClInclude Include="src\base\win\scoped_co_init.h" />
     <ClInclude Include="src\base\win\scoped_handle.h" />
+    <ClInclude Include="src\ui\gfx\geom\round_rect.h" />
     <ClInclude Include="src\ui\ui_event_loop.h" />
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
     <ClInclude Include="src\ui\gfx\animation\easing.h" />
