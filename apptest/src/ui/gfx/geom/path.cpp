@@ -252,16 +252,13 @@ void path::arc_to(const pointf& center, const sizef& radius, float start_angle, 
   float rotation_angle, bool force_move) {
   sweep_angle = std::clamp(sweep_angle, -two_pi<float>, two_pi<float>);
 
-  mat33f rotation_transform = transform::rotate(-rotation_angle);
+  mat33f point_transform = transform::rotate(-rotation_angle) * transform::translate(center.x, center.y);
 
   // note: positive angles are considered *clockwise*
-  pointf rel_start = transform::apply(rotation_transform,
+  pointf start = transform::apply(point_transform,
     point_for_angle(-start_angle, radius.width, radius.height));
-  pointf rel_end = transform::apply(rotation_transform,
+  pointf end = transform::apply(point_transform,
     point_for_angle(-start_angle - sweep_angle, radius.width, radius.height));
-
-  pointf start = center + rel_start;
-  pointf end = center + rel_end;
 
   if (empty() || force_move) {
     move_to(start);
