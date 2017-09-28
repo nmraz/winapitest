@@ -313,35 +313,27 @@ void path::add_rect(const rectf& rc, sweep_dir dir) {
 }
 
 void path::add_round_rect(const round_rect& rrect, sweep_dir dir) {
-  pointf rx_offset{ rrect.radius().width(), 0 };
-  pointf ry_offset{ 0, rrect.radius().height() };
+  const rectf& bounds = rrect.bounds();
 
   if (dir == sweep_dir::clockwise) {
     // start drawing from the top of the bottom-left corner
-    move_to(rrect.bounds().bottom_left() - ry_offset);
-    line_to(rrect.bounds().origin() + ry_offset);
-    arc_to(rrect.bounds().origin() + rx_offset, rrect.radius());
-    line_to(rrect.bounds().top_right() - rx_offset);
-    arc_to(rrect.bounds().top_right() + ry_offset, rrect.radius());
-    line_to(rrect.bounds().bottom_right() - ry_offset);
-    arc_to(rrect.bounds().bottom_right() - rx_offset, rrect.radius());
-    line_to(rrect.bounds().bottom_left() + rx_offset);
-    arc_to(rrect.bounds().bottom_left() - ry_offset, rrect.radius());
-  } else {
-    // start drawing from the bottom of the top-left corner
-    move_to(rrect.bounds().origin() + ry_offset);
-    line_to(rrect.bounds().bottom_left() - ry_offset);
-    arc_to(rrect.bounds().bottom_left() + rx_offset, rrect.radius(), 0.f,
-      arc_size::small_arc, sweep_dir::counter_clockwise);
-    line_to(rrect.bounds().bottom_right() - rx_offset);
-    arc_to(rrect.bounds().bottom_right() - ry_offset, rrect.radius(), 0.f,
-      arc_size::small_arc, sweep_dir::counter_clockwise);
-    line_to(rrect.bounds().top_right() + ry_offset);
-    arc_to(rrect.bounds().top_right() - rx_offset, rrect.radius(), 0.f,
-      arc_size::small_arc, sweep_dir::counter_clockwise);
-    line_to(rrect.bounds().origin() + rx_offset);
-    arc_to(rrect.bounds().origin() + ry_offset, rrect.radius(), 0.f,
-      arc_size::small_arc, sweep_dir::counter_clockwise);
+    move_to({ bounds.x(), bounds.bottom() - rrect.radius(rect_corner::bottom_left).height() });
+    arc_to({
+      bounds.x() + rrect.radius(rect_corner::top_left).width(),
+      bounds.y() + rrect.radius(rect_corner::top_left).height()
+    }, rrect.radius(rect_corner::top_left), pi<float>, half_pi<float>);
+    arc_to({
+      bounds.right() - rrect.radius(rect_corner::top_right).width(),
+      bounds.y() + rrect.radius(rect_corner::top_right).height()
+    }, rrect.radius(rect_corner::top_right), -half_pi<float>, half_pi<float>);
+    arc_to({
+      bounds.right() - rrect.radius(rect_corner::bottom_right).width(),
+      bounds.bottom() - rrect.radius(rect_corner::bottom_right).height()
+    }, rrect.radius(rect_corner::bottom_right), 0, half_pi<float>);
+    arc_to({
+      bounds.x() + rrect.radius(rect_corner::bottom_left).width(),
+      bounds.y() - rrect.radius(rect_corner::bottom_left).height()
+    }, rrect.radius(rect_corner::bottom_left), half_pi<float>, half_pi<float>);
   }
 }
 
