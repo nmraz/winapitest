@@ -32,7 +32,7 @@ constexpr pointf d2d_point_to_point(const D2D1_POINT_2F& pt) {
 
 
 constexpr D2D1_SIZE_F size_to_d2d_size(const sizef& sz) {
-  return { sz.width, sz.height };
+  return { sz.width(), sz.height() };
 }
 
 constexpr sizef d2d_size_to_size(const D2D1_SIZE_F& sz) {

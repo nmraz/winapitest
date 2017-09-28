@@ -31,11 +31,11 @@ public:
   constexpr Rep y() const { return origin_.y; }
   constexpr void set_y(Rep y) { origin_.y = y; }
 
-  constexpr Rep width() const { return size_.width; }
-  constexpr void set_width(Rep new_width) { size_.width = new_width; }
+  constexpr Rep width() const { return size_.width(); }
+  constexpr void set_width(Rep new_width) { size_.set_width(new_width); }
 
-  constexpr Rep height() const { return size_.height; }
-  constexpr void set_height(Rep new_height) { size_.height = new_height; }
+  constexpr Rep height() const { return size_.height(); }
+  constexpr void set_height(Rep new_height) { size_.set_height(new_height); }
 
 
   constexpr const size<Rep>& get_size() const { return size_; }
@@ -65,8 +65,6 @@ public:
   constexpr void intersect(const rect& other);
 
 private:
-  constexpr void validate() const;
-
   point<Rep> origin_;
   size<Rep> size_;
 };
@@ -121,17 +119,12 @@ constexpr void rect<Rep>::set_bounds(Rep top, Rep left, Rep bottom, Rep right) {
 
 template<typename Rep>
 constexpr bool rect<Rep>::contains(const point<Rep>& pt) const {
-  validate();
-
   return x() <= pt.x && pt.x < right() && y() <= pt.y && pt.y < bottom();
 }
 
 
 template<typename Rep>
 constexpr bool rect<Rep>::intersects(const rect& other) const {
-  validate();
-  other.validate();
-
   if (empty() || other.empty()) {
     return false;
   }
@@ -141,9 +134,6 @@ constexpr bool rect<Rep>::intersects(const rect& other) const {
 
 template<typename Rep>
 constexpr void rect<Rep>::intersect(const rect& other) {
-  validate();
-  other.validate();
-
   if (empty() || other.empty()) {
     set_xywh(0, 0, 0, 0);
     return;
@@ -171,14 +161,6 @@ constexpr bool operator==(const rect<Rep>& lhs, const rect<Rep>& rhs) {
 template<typename Rep>
 constexpr bool operator!=(const rect<Rep>& lhs, const rect<Rep>& rhs) {
   return !(rhs == lhs);
-}
-
-
-// PRIVATE
-
-template<typename Rep>
-constexpr void rect<Rep>::validate() const {
-  ASSERT(width() >= 0 && height() >= 0) << "Illegal rectangle size";
 }
 
 
