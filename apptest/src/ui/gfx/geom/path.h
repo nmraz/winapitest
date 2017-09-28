@@ -209,8 +209,8 @@ public:
 
   void arc_to(const pointf& end, const sizef& radius, float rotation_angle = 0.f,
     arc_size size = arc_size::small_arc, sweep_dir dir = sweep_dir::clockwise);
-  void arc_to(const pointf& end, float radius, float rotation_angle = 0.f,
-    arc_size size = arc_size::small_arc, sweep_dir dir = sweep_dir::clockwise);
+  void arc_to(const pointf& end, float radius, arc_size size = arc_size::small_arc,
+    sweep_dir dir = sweep_dir::clockwise);
 
   void arc_to(const pointf& center, const sizef& radius, float start_angle,
     float sweep_angle, float rotation_angle = 0.f, bool force_move = false);
