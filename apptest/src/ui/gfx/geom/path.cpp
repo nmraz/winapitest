@@ -294,13 +294,17 @@ void path::add_round_rect(const round_rect& rrect, sweep_dir dir) {
     // start drawing from the bottom of the top-left corner
     move_to(rrect.bounds().origin() + ry_offset);
     line_to(rrect.bounds().bottom_left() - ry_offset);
-    arc_to(rrect.bounds().bottom_left() + rx_offset, rrect.radius(), arc_size::small_arc, sweep_dir::counter_clockwise);
+    arc_to(rrect.bounds().bottom_left() + rx_offset, rrect.radius(), 0.f,
+      arc_size::small_arc, sweep_dir::counter_clockwise);
     line_to(rrect.bounds().bottom_right() - rx_offset);
-    arc_to(rrect.bounds().bottom_right() - ry_offset, rrect.radius(), arc_size::small_arc, sweep_dir::counter_clockwise);
+    arc_to(rrect.bounds().bottom_right() - ry_offset, rrect.radius(), 0.f,
+      arc_size::small_arc, sweep_dir::counter_clockwise);
     line_to(rrect.bounds().top_right() + ry_offset);
-    arc_to(rrect.bounds().top_right() - rx_offset, rrect.radius(), arc_size::small_arc, sweep_dir::counter_clockwise);
+    arc_to(rrect.bounds().top_right() - rx_offset, rrect.radius(), 0.f,
+      arc_size::small_arc, sweep_dir::counter_clockwise);
     line_to(rrect.bounds().origin() + rx_offset);
-    arc_to(rrect.bounds().origin() + ry_offset, rrect.radius(), arc_size::small_arc, sweep_dir::counter_clockwise);
+    arc_to(rrect.bounds().origin() + ry_offset, rrect.radius(), 0.f,
+      arc_size::small_arc, sweep_dir::counter_clockwise);
   }
 }
 
