@@ -218,12 +218,10 @@ public:
     float rotation_angle = 0.f, bool force_move = false);
   
   void add_path(const path& other);
-  void add_rect(const rectf& rc, sweep_dir dir = sweep_dir::clockwise);
-  void add_round_rect(const round_rect& rrect, sweep_dir dir = sweep_dir::clockwise);
-  void add_ellipse(const pointf& center, const sizef& radius, float rotation_angle = 0.f,
-    sweep_dir dir = sweep_dir::clockwise);
-  void add_ellipse(const rectf& bounds, float rotation_angle = 0.f,
-    sweep_dir dir = sweep_dir::clockwise);
+  void add_rect(const rectf& rc);
+  void add_round_rect(const round_rect& rrect);
+  void add_ellipse(const pointf& center, const sizef& radius, float rotation_angle = 0.f);
+  void add_ellipse(const rectf& bounds, float rotation_angle = 0.f);
 
 
   path outline() const;
