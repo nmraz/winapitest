@@ -252,7 +252,7 @@ void path::arc_to(const pointf& center, const sizef& radius, float start_angle, 
   float rotation_angle, bool force_move) {
   sweep_angle = std::clamp(sweep_angle, -two_pi<float>, two_pi<float>);
 
-  mat33f rotation_transform = transform::rotate(rotation_angle);
+  mat33f rotation_transform = transform::rotate(-rotation_angle);
 
   // note: positive angles are considered *clockwise*
   pointf rel_start = transform::apply(rotation_transform,
@@ -349,7 +349,7 @@ void path::add_round_rect(const round_rect& rrect, sweep_dir dir) {
 }
 
 void path::add_ellipse(const pointf& center, const sizef& radius, float rotation_angle, sweep_dir dir) {
-  mat33f rotation_transform = transform::rotate(rotation_angle);
+  mat33f rotation_transform = transform::rotate(-rotation_angle);
   pointf rel_start = transform::apply(rotation_transform, { radius.width, 0 });
 
   pointf start = center + rel_start;
