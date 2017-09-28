@@ -269,7 +269,7 @@ void path::arc_to(const pointf& center, const sizef& radius, float start_angle, 
     line_to(start);
   }
 
-  if (sweep_angle == two_pi<float>) {
+  if (std::abs(sweep_angle) == two_pi<float>) {
     // full ellipse: build with two arcs
     arc_to(end, radius, rotation_angle);
     arc_to(start, radius, rotation_angle);
