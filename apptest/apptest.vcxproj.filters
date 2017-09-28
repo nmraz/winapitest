@@ -206,9 +206,6 @@
     <ClInclude Include="src\ui\gfx\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\gfx\geom\matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ui\gfx\geom\point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -243,6 +240,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\gfx\geom\round_rect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\gfx\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

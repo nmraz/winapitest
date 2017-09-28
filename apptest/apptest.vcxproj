@@ -230,7 +230,7 @@
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
     <ClInclude Include="src\ui\gfx\animation\easing.h" />
     <ClInclude Include="src\ui\gfx\color.h" />
-    <ClInclude Include="src\ui\gfx\geom\matrix.h" />
+    <ClInclude Include="src\ui\gfx\matrix.h" />
     <ClInclude Include="src\ui\gfx\geom\point.h" />
     <ClInclude Include="src\ui\gfx\geom\rect.h" />
     <ClInclude Include="src\ui\gfx\geom\size.h" />
