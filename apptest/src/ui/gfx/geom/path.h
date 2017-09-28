@@ -197,6 +197,7 @@ public:
 
   void swap(path& other) noexcept;
 
+
   void set_fill_mode(fill_mode mode);
   fill_mode get_fill_mode() const { return fill_mode_; }
 
@@ -210,6 +211,11 @@ public:
     arc_size size = arc_size::small_arc, sweep_dir dir = sweep_dir::clockwise);
   void arc_to(const pointf& end, float radius, float rotation_angle = 0.f,
     arc_size size = arc_size::small_arc, sweep_dir dir = sweep_dir::clockwise);
+
+  void arc_to(const pointf& center, const sizef& radius, float start_angle,
+    float sweep_angle, float rotation_angle = 0.f, bool force_move = false);
+  void arc_to(const rectf& bounds, float start_angle, float sweep_angle,
+    float rotation_angle = 0.f, bool force_move = false);
   
   void add_path(const path& other);
   void add_rect(const rectf& rc, sweep_dir dir = sweep_dir::clockwise);
@@ -218,6 +224,7 @@ public:
     sweep_dir dir = sweep_dir::clockwise);
   void add_ellipse(const rectf& bounds, float rotation_angle = 0.f,
     sweep_dir dir = sweep_dir::clockwise);
+
 
   path outline() const;
   path transform(const mat33f& tform) const;
@@ -231,6 +238,7 @@ public:
 
   path_relation compare(const path& other) const;
   bool contains(const pointf& pt) const;
+
 
   const impl::d2d_path_geom_ptr& d2d_geom() const;
   impl::d2d_geom_sink_ptr d2d_sink();

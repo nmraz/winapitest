@@ -248,6 +248,46 @@ void path::arc_to(const pointf& end, float radius, float rotation_angle, arc_siz
 }
 
 
+void path::arc_to(const pointf& center, const sizef& radius, float start_angle, float sweep_angle,
+  float rotation_angle, bool force_move) {
+  sweep_angle = std::clamp(sweep_angle, -two_pi<float>, two_pi<float>);
+
+  mat33f rotation_transform = transform::rotate(rotation_angle);
+
+  // note: positive angles are considered *clockwise*
+  pointf rel_start = transform::apply(rotation_transform,
+    point_for_angle(-start_angle, radius.width, radius.height));
+  pointf rel_end = transform::apply(rotation_transform,
+    point_for_angle(-start_angle - sweep_angle, radius.width, radius.height));
+
+  pointf start = center + rel_start;
+  pointf end = center + rel_end;
+
+  if (empty() || force_move) {
+    move_to(start);
+  } else {
+    line_to(start);
+  }
+
+  if (sweep_angle == two_pi<float>) {
+    // full ellipse: build with two arcs
+    arc_to(end, radius, rotation_angle);
+    arc_to(start, radius, rotation_angle);
+    return;
+  }
+
+  arc_size size = std::abs(sweep_angle) > pi<float> ? arc_size::large_arc : arc_size::small_arc;
+  sweep_dir dir = sweep_angle > 0 ? sweep_dir::clockwise : sweep_dir::counter_clockwise;
+
+  arc_to(end, radius, rotation_angle, size, dir);
+}
+
+void path::arc_to(const rectf& bounds, float start_angle, float sweep_angle, float rotation_angle,
+  bool forc_move) {
+  arc_to(bounds.center(), bounds.get_size() / 2, start_angle, sweep_angle, rotation_angle, forc_move);
+}
+
+
 void path::add_path(const path& other) {
   if (other.empty()) {
     return;
