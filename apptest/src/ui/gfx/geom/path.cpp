@@ -310,9 +310,10 @@ void path::add_round_rect(const round_rect& rrect, sweep_dir dir) {
 
 void path::add_ellipse(const pointf& center, const sizef& radius, float rotation_angle, sweep_dir dir) {
   mat33f rotation_transform = transform::rotate(rotation_angle);
+  pointf rel_start = transform::apply(rotation_transform, { radius.width, 0 });
 
-  pointf start = transform::apply(rotation_transform, { center.x + radius.width, center.y});
-  pointf end = transform::apply(rotation_transform, { center.x - radius.width, center.y });
+  pointf start = center + rel_start;
+  pointf end = center - rel_start;
 
   move_to(start);
   arc_to(end, radius, rotation_angle, arc_size::small_arc, dir);
