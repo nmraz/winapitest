@@ -43,7 +43,6 @@ constexpr inline mat33f shear(float shx, float shy) {
   };
 }
 
-// rotate clockwise about the origin by theta radians
 mat33f rotate(float theta);
 
 constexpr inline mat33f centered_about(const mat33f& tform, const pointf& center) {
