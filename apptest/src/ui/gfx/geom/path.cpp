@@ -284,8 +284,8 @@ void path::arc_to(const pointf& center, const sizef& radius, float start_angle, 
 }
 
 void path::arc_to(const rectf& bounds, float start_angle, float sweep_angle, float rotation_angle,
-  bool forc_move) {
-  arc_to(bounds.center(), bounds.get_size() / 2, start_angle, sweep_angle, rotation_angle, forc_move);
+  bool force_move) {
+  arc_to(bounds.center(), bounds.get_size() / 2, start_angle, sweep_angle, rotation_angle, force_move);
 }
 
 
