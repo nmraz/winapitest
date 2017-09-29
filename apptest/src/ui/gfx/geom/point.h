@@ -132,7 +132,7 @@ float angle(const pointf& pt);
 pointf to_unit(const pointf& pt);
 
 // point on the ellipse of radii rx, ry corresponging to the angle,
-// with positive values being clockwise
+// with positive values of angle indicating a clockwise rotation
 pointf point_for_angle(float angle, float rx, float ry);
 
 inline pointf point_for_angle(float angle, float radius = 1.f) {
