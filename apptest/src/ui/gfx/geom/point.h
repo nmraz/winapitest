@@ -50,8 +50,8 @@ constexpr point<Rep>& operator+=(point<Rep>& lhs, const point<Rep>& rhs) {
 }
 
 template<typename Rep>
-constexpr point<Rep> operator+(point<Rep> lhs, const point<Rep>& rhs) {
-  return lhs += rhs;
+constexpr point<Rep> operator+(const point<Rep>& lhs, const point<Rep>& rhs) {
+  return { lhs.x + rhs.x, lhs.y + rhs.y };
 }
 
 
@@ -63,8 +63,8 @@ constexpr point<Rep>& operator-=(point<Rep>& lhs, const point<Rep>& rhs) {
 }
 
 template<typename Rep>
-constexpr point<Rep> operator-(point<Rep> lhs, const point<Rep>& rhs) {
-  return lhs -= rhs;
+constexpr point<Rep> operator-(const point<Rep>& lhs, const point<Rep>& rhs) {
+  return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
 
 template<typename Rep>
@@ -75,14 +75,14 @@ constexpr point<Rep> operator-(const point<Rep>& pt) {
 
 template<typename Rep, typename Rep2>
 constexpr point<Rep>& operator*=(point<Rep>& lhs, Rep2 value) {
-  lhs.x *= value;
-  lhs.y *= value;
+  lhs.x = static_cast<Rep>(lhs.x * value);
+  lhs.y = static_cast<Rep>(lhs.y * value);
   return lhs;
 }
 
 template<typename Rep, typename Rep2>
-constexpr point<Rep> operator*(point<Rep> lhs, Rep2 value) {
-  return lhs *= value;
+constexpr point<Rep> operator*(const point<Rep>& lhs, Rep2 value) {
+  return { static_cast<Rep>(lhs.x * value), static_cast<Rep>(lhs.y * value) };
 }
 
 template<typename Rep, typename Rep2>
@@ -93,14 +93,14 @@ constexpr point<Rep> operator*(Rep2 value, const point<Rep>& rhs) {
 
 template<typename Rep, typename Rep2>
 constexpr point<Rep>& operator/=(point<Rep>& lhs, Rep2 value) {
-  lhs.x /= value;
-  lhs.y /= value;
+  lhs.x = static_cast<Rep>(lhs.x / value);
+  lhs.y = static_cast<Rep>(lhs.y / value);
   return lhs;
 }
 
 template<typename Rep, typename Rep2>
-constexpr point<Rep> operator/(point<Rep> lhs, Rep2 value) {
-  return lhs /= value;
+constexpr point<Rep> operator/(const point<Rep>& lhs, Rep2 value) {
+  return { static_cast<Rep>(lhs.x / value), static_cast<Rep>(lhs.y / value) };
 }
 
 

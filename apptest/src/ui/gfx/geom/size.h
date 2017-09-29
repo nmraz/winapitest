@@ -93,8 +93,8 @@ constexpr size<Rep>& operator+=(size<Rep>& lhs, const size<Rep>& rhs) {
 }
 
 template<typename Rep>
-constexpr size<Rep> operator+(size<Rep> lhs, const size<Rep>& rhs) {
-  return lhs += rhs;
+constexpr size<Rep> operator+(const size<Rep>& lhs, const size<Rep>& rhs) {
+  return { lhs.width() + rhs.width(), lhs.height() + rhs.height() };
 }
 
 
@@ -105,20 +105,20 @@ constexpr size<Rep>& operator-=(size<Rep>& lhs, const size<Rep>& rhs) {
 }
 
 template<typename Rep>
-constexpr size<Rep> operator-(size<Rep> lhs, const size<Rep>& rhs) {
-  return lhs -= rhs;
+constexpr size<Rep> operator-(const size<Rep>& lhs, const size<Rep>& rhs) {
+  return { lhs.width() - rhs.width(), lhs.height() - rhs.height() };
 }
 
 
 template<typename Rep, typename Rep2>
 constexpr size<Rep>& operator*=(size<Rep>& lhs, Rep2 value) {
-  lhs.set(lhs.width() * value, lhs.height() * value);
+  lhs.set(static_cast<Rep>(lhs.width() * value), static_cast<Rep>(lhs.height() * value));
   return lhs;
 }
 
 template<typename Rep, typename Rep2>
-constexpr size<Rep> operator*(size<Rep> lhs, Rep2 value) {
-  return lhs *= value;
+constexpr size<Rep> operator*(const size<Rep>& lhs, Rep2 value) {
+  return { static_cast<Rep>(lhs.width() * value), static_cast<Rep>(lhs.height() * value) };
 }
 
 template<typename Rep, typename Rep2>
@@ -129,13 +129,13 @@ constexpr size<Rep> operator*(Rep2 value, const size<Rep>& rhs) {
 
 template<typename Rep, typename Rep2>
 constexpr size<Rep>& operator/=(size<Rep>& lhs, Rep2 value) {
-  lhs.set(lhs.width() / value, lhs.height() / value);
+  lhs.set(static_cast<Rep>(lhs.width() / value), static_cast<Rep>(lhs.height() / value));
   return lhs;
 }
 
 template<typename Rep, typename Rep2>
-constexpr size<Rep> operator/(size<Rep> lhs, Rep2 value) {
-  return lhs /= value;
+constexpr size<Rep> operator/(const size<Rep>& lhs, Rep2 value) {
+  return { static_cast<Rep>(lhs.width() / value), static_cast<Rep>(lhs.height() / value) };
 }
 
 
