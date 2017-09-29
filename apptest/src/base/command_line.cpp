@@ -127,7 +127,7 @@ void command_line::parse(int argc, const wchar_t* const* argv) {
       if (delim_pos == std::string::npos) {
         set_switch(std::move(arg), "");
       } else {
-        set_switch(arg.substr(0, delim_pos), arg.substr(delim_pos + 1));
+        set_switch(arg.substr(0, delim_pos), arg.substr(delim_pos + switch_val_delim.size()));
       }
     } else {
       append_arg(std::move(arg));
