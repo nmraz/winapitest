@@ -6,12 +6,12 @@
 #include <sstream>
 #include <Windows.h>
 
+using namespace std::literals;
+
 namespace {
 
-constexpr const char* switch_sep = "--";
-constexpr std::size_t switch_sep_len = 2;
-
-constexpr const char* switch_val_delim = "=";
+constexpr auto switch_sep = "--"sv;
+constexpr auto switch_val_delim = "="sv;
 
 std::string quote(const std::string& str) {
   if (str.find_first_of(" \t\\\"") == std::string::npos) {  // no quoting necessary
@@ -80,14 +80,14 @@ std::string command_line::to_string() const {
   std::string ret = program_;
 
   for (const auto& sw : switches_) {
-    ret += ' ' + quote(switch_sep + sw.first);
+    ret += ' ' + quote(switch_sep.data() + sw.first);
     if (sw.second.size()) {
-      ret += switch_val_delim + quote(sw.second);
+      ret += switch_val_delim.data() + quote(sw.second);
     }
   }
 
   if (args_.size()) {
-    ret += std::string(" ") + switch_sep;
+    ret += " "s + switch_sep.data();
   }
   for (const auto& arg : args_) {
     ret += ' ' + quote(arg);
@@ -120,7 +120,7 @@ void command_line::parse(int argc, const wchar_t* const* argv) {
     allow_switches &= arg != switch_sep;
 
     if (arg.find(switch_sep) == 0 && allow_switches) {
-      arg = arg.substr(switch_sep_len);
+      arg = arg.substr(switch_sep.size());
       std::size_t delim_pos = arg.find(switch_val_delim);
 
       if (delim_pos == std::string::npos) {
