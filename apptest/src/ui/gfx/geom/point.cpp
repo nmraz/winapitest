@@ -24,7 +24,7 @@ pointf point_for_angle(float angle, float rx, float ry) {
   ASSERT(rx >= 0.f && ry >= 0.f) << "Radii must be non-negative";
   ASSERT(rx != 0.f || ry != 0.f) << "Cannot rotate vector of zero length";
 
-  return { rx * std::cos(angle), ry * std::sin(angle) };
+  return { rx * std::cos(angle), ry * -std::sin(angle) };
 }
 
 }  // namespace gfx

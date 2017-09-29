@@ -9,9 +9,9 @@ mat33f rotate(float theta) {
   float cos_theta = std::cos(theta);
 
   return {
-    cos_theta,  sin_theta,  0,
-    -sin_theta, cos_theta,  0,
-    0,          0,          1
+    cos_theta, -sin_theta, 0,
+    sin_theta, cos_theta,  0,
+    0,          0,         1
   };
 }
 
