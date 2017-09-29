@@ -5,7 +5,7 @@
 namespace gfx {
 namespace {
 
-void get_scale(float r1, float r2, float max_size, float& scale) {
+void adjust_scale(float r1, float r2, float max_size, float& scale) {
   if (r1 + r2 > max_size) {
     scale = std::min(scale, max_size / (r1 + r2));
   }
@@ -96,25 +96,25 @@ bool round_rect::contains(const pointf& pt) {
 void round_rect::scale_radii() {
   float scale = 1.f;
 
-  get_scale(
+  adjust_scale(
     radius(rect_corner::top_left).width(),
     radius(rect_corner::top_right).width(),
     bounds().width(),
     scale
   );
-  get_scale(
+  adjust_scale(
     radius(rect_corner::top_right).height(),
     radius(rect_corner::bottom_right).height(),
     bounds().height(),
     scale
   );
-  get_scale(
+  adjust_scale(
     radius(rect_corner::bottom_right).width(),
     radius(rect_corner::bottom_left).width(),
     bounds().width(),
     scale
   );
-  get_scale(
+  adjust_scale(
     radius(rect_corner::bottom_left).height(),
     radius(rect_corner::top_left).height(),
     bounds().height(),
