@@ -2,115 +2,115 @@
 
 namespace gfx {
 
-template<typename Rep>
+template<typename T>
 struct point {
   constexpr point();
-  constexpr point(Rep x, Rep y);
+  constexpr point(T x, T y);
 
-  template<typename Rep2, typename = std::enable_if_t<std::is_convertible_v<Rep2, Rep>>>
-  constexpr point(const point<Rep2>& other);
+  template<typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+  constexpr point(const point<U>& other);
 
-  void set(Rep new_x, Rep new_y);
+  void set(T new_x, T new_y);
 
-  Rep x, y;
+  T x, y;
 };
 
 
-template<typename Rep>
-constexpr point<Rep>::point()
-  : point(Rep(0), Rep(0)) {
+template<typename T>
+constexpr point<T>::point()
+  : point(T(0), T(0)) {
 }
 
-template<typename Rep>
-constexpr point<Rep>::point(Rep x, Rep y)
+template<typename T>
+constexpr point<T>::point(T x, T y)
   : x(x)
   , y(y) {
 }
 
-template<typename Rep>
-template<typename Rep2, typename>
-constexpr point<Rep>::point(const point<Rep2>& other)
+template<typename T>
+template<typename U, typename>
+constexpr point<T>::point(const point<U>& other)
   : x(other.x)
   , y(other.y) {
 }
 
 
-template<typename Rep>
-void point<Rep>::set(Rep new_x, Rep new_y) {
+template<typename T>
+void point<T>::set(T new_x, T new_y) {
   x = new_x;
   y = new_y;
 }
 
 
-template<typename Rep>
-constexpr point<Rep>& operator+=(point<Rep>& lhs, const point<Rep>& rhs) {
+template<typename T>
+constexpr point<T>& operator+=(point<T>& lhs, const point<T>& rhs) {
   lhs.x += rhs.x;
   lhs.y += rhs.y;
   return lhs;
 }
 
-template<typename Rep>
-constexpr point<Rep> operator+(const point<Rep>& lhs, const point<Rep>& rhs) {
+template<typename T>
+constexpr point<T> operator+(const point<T>& lhs, const point<T>& rhs) {
   return { lhs.x + rhs.x, lhs.y + rhs.y };
 }
 
 
-template<typename Rep>
-constexpr point<Rep>& operator-=(point<Rep>& lhs, const point<Rep>& rhs) {
+template<typename T>
+constexpr point<T>& operator-=(point<T>& lhs, const point<T>& rhs) {
   lhs.x -= rhs.x;
   lhs.y -= rhs.y;
   return lhs;
 }
 
-template<typename Rep>
-constexpr point<Rep> operator-(const point<Rep>& lhs, const point<Rep>& rhs) {
+template<typename T>
+constexpr point<T> operator-(const point<T>& lhs, const point<T>& rhs) {
   return { lhs.x - rhs.x, lhs.y - rhs.y };
 }
 
-template<typename Rep>
-constexpr point<Rep> operator-(const point<Rep>& pt) {
+template<typename T>
+constexpr point<T> operator-(const point<T>& pt) {
   return { -pt.x, -pt.y };
 }
 
 
-template<typename Rep, typename Rep2>
-constexpr point<Rep>& operator*=(point<Rep>& lhs, Rep2 value) {
-  lhs.x = static_cast<Rep>(lhs.x * value);
-  lhs.y = static_cast<Rep>(lhs.y * value);
+template<typename T, typename U>
+constexpr point<T>& operator*=(point<T>& lhs, U value) {
+  lhs.x = static_cast<T>(lhs.x * value);
+  lhs.y = static_cast<T>(lhs.y * value);
   return lhs;
 }
 
-template<typename Rep, typename Rep2>
-constexpr point<Rep> operator*(const point<Rep>& lhs, Rep2 value) {
-  return { static_cast<Rep>(lhs.x * value), static_cast<Rep>(lhs.y * value) };
+template<typename T, typename U>
+constexpr point<T> operator*(const point<T>& lhs, U value) {
+  return { static_cast<T>(lhs.x * value), static_cast<T>(lhs.y * value) };
 }
 
-template<typename Rep, typename Rep2>
-constexpr point<Rep> operator*(Rep2 value, const point<Rep>& rhs) {
+template<typename T, typename U>
+constexpr point<T> operator*(U value, const point<T>& rhs) {
   return rhs * value;
 }
 
 
-template<typename Rep, typename Rep2>
-constexpr point<Rep>& operator/=(point<Rep>& lhs, Rep2 value) {
-  lhs.x = static_cast<Rep>(lhs.x / value);
-  lhs.y = static_cast<Rep>(lhs.y / value);
+template<typename T, typename U>
+constexpr point<T>& operator/=(point<T>& lhs, U value) {
+  lhs.x = static_cast<T>(lhs.x / value);
+  lhs.y = static_cast<T>(lhs.y / value);
   return lhs;
 }
 
-template<typename Rep, typename Rep2>
-constexpr point<Rep> operator/(const point<Rep>& lhs, Rep2 value) {
-  return { static_cast<Rep>(lhs.x / value), static_cast<Rep>(lhs.y / value) };
+template<typename T, typename U>
+constexpr point<T> operator/(const point<T>& lhs, U value) {
+  return { static_cast<T>(lhs.x / value), static_cast<T>(lhs.y / value) };
 }
 
 
-template<typename Rep>
-constexpr bool operator==(const point<Rep>& lhs, const point<Rep>& rhs) {
+template<typename T>
+constexpr bool operator==(const point<T>& lhs, const point<T>& rhs) {
   return lhs.x == rhs.x && lhs.y == rhs.y;
 }
 
-template<typename Rep>
-constexpr bool operator!=(const point<Rep>& lhs, const point<Rep>& rhs) {
+template<typename T>
+constexpr bool operator!=(const point<T>& lhs, const point<T>& rhs) {
   return !(lhs == rhs);
 }
 

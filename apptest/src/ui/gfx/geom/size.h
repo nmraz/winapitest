@@ -5,147 +5,147 @@
 
 namespace gfx {
 
-template<typename Rep>
+template<typename T>
 struct size {
   constexpr size();
-  constexpr size(Rep width, Rep height);
+  constexpr size(T width, T height);
 
-  template<typename Rep2, typename = std::enable_if_t<std::is_convertible_v<Rep2, Rep>>>
-  constexpr size(const size<Rep2>& other);
+  template<typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
+  constexpr size(const size<U>& other);
 
-  constexpr Rep width() const { return width_; }
-  constexpr Rep height() const { return height_; }
+  constexpr T width() const { return width_; }
+  constexpr T height() const { return height_; }
 
-  constexpr Rep area() const { return width * height; }
+  constexpr T area() const { return width * height; }
   constexpr bool empty() const;
 
-  constexpr void set(Rep new_width, Rep new_height);
-  constexpr void set_width(Rep new_width);
-  constexpr void set_height(Rep new_height);
+  constexpr void set(T new_width, T new_height);
+  constexpr void set_width(T new_width);
+  constexpr void set_height(T new_height);
 
   constexpr void expand_to(const size& other);
   constexpr void shrink_to(const size& other);
 
 private:
-  Rep width_, height_;
+  T width_, height_;
 };
 
 
-template<typename Rep>
-constexpr size<Rep>::size()
-  : size(Rep(0), Rep(0)) {
+template<typename T>
+constexpr size<T>::size()
+  : size(T(0), T(0)) {
 }
 
-template<typename Rep>
-constexpr size<Rep>::size(Rep width, Rep height) {
+template<typename T>
+constexpr size<T>::size(T width, T height) {
   set(width, height);
 }
 
 
-template<typename Rep>
-template<typename Rep2, typename>
-constexpr size<Rep>::size(const size<Rep2>& other)
+template<typename T>
+template<typename U, typename>
+constexpr size<T>::size(const size<U>& other)
   : width_(other.width_)
   , height_(other.height_) {
 }
 
 
-template<typename Rep>
-constexpr bool size<Rep>::empty() const {
+template<typename T>
+constexpr bool size<T>::empty() const {
   return width_ == 0 || height_ == 0;
 }
 
 
-template<typename Rep>
-constexpr void size<Rep>::set(Rep new_width, Rep new_height) {
+template<typename T>
+constexpr void size<T>::set(T new_width, T new_height) {
   set_width(new_width);
   set_height(new_height);
 }
 
-template<typename Rep>
-constexpr void size<Rep>::set_width(Rep new_width) {
-  width_ = std::max(new_width, Rep(0));
+template<typename T>
+constexpr void size<T>::set_width(T new_width) {
+  width_ = std::max(new_width, T(0));
 }
 
-template<typename Rep>
-constexpr void size<Rep>::set_height(Rep new_height) {
-  height_ = std::max(new_height, Rep(0));
+template<typename T>
+constexpr void size<T>::set_height(T new_height) {
+  height_ = std::max(new_height, T(0));
 }
 
 
-template<typename Rep>
-constexpr void size<Rep>::expand_to(const size& other) {
+template<typename T>
+constexpr void size<T>::expand_to(const size& other) {
   width_ = std::max(width_, other.width_);
   height_ = std::max(height_, other.height_);
 }
 
-template<typename Rep>
-constexpr void size<Rep>::shrink_to(const size& other) {
+template<typename T>
+constexpr void size<T>::shrink_to(const size& other) {
   width_ = std::min(width_, other.width_);
   height_ = std::min(height_, other.height_);
 }
 
 
-template<typename Rep>
-constexpr size<Rep>& operator+=(size<Rep>& lhs, const size<Rep>& rhs) {
+template<typename T>
+constexpr size<T>& operator+=(size<T>& lhs, const size<T>& rhs) {
   lhs.set(lhs.width() + rhs.width(), lhs.height() + rhs.height());
   return rhs;
 }
 
-template<typename Rep>
-constexpr size<Rep> operator+(const size<Rep>& lhs, const size<Rep>& rhs) {
+template<typename T>
+constexpr size<T> operator+(const size<T>& lhs, const size<T>& rhs) {
   return { lhs.width() + rhs.width(), lhs.height() + rhs.height() };
 }
 
 
-template<typename Rep>
-constexpr size<Rep>& operator-=(size<Rep>& lhs, const size<Rep>& rhs) {
+template<typename T>
+constexpr size<T>& operator-=(size<T>& lhs, const size<T>& rhs) {
   lhs.set(lhs.width() - rhs.width(), lhs.height() - rhs.height());
   return rhs;
 }
 
-template<typename Rep>
-constexpr size<Rep> operator-(const size<Rep>& lhs, const size<Rep>& rhs) {
+template<typename T>
+constexpr size<T> operator-(const size<T>& lhs, const size<T>& rhs) {
   return { lhs.width() - rhs.width(), lhs.height() - rhs.height() };
 }
 
 
-template<typename Rep, typename Rep2>
-constexpr size<Rep>& operator*=(size<Rep>& lhs, Rep2 value) {
-  lhs.set(static_cast<Rep>(lhs.width() * value), static_cast<Rep>(lhs.height() * value));
+template<typename T, typename U>
+constexpr size<T>& operator*=(size<T>& lhs, U value) {
+  lhs.set(static_cast<T>(lhs.width() * value), static_cast<T>(lhs.height() * value));
   return lhs;
 }
 
-template<typename Rep, typename Rep2>
-constexpr size<Rep> operator*(const size<Rep>& lhs, Rep2 value) {
-  return { static_cast<Rep>(lhs.width() * value), static_cast<Rep>(lhs.height() * value) };
+template<typename T, typename U>
+constexpr size<T> operator*(const size<T>& lhs, U value) {
+  return { static_cast<T>(lhs.width() * value), static_cast<T>(lhs.height() * value) };
 }
 
-template<typename Rep, typename Rep2>
-constexpr size<Rep> operator*(Rep2 value, const size<Rep>& rhs) {
+template<typename T, typename U>
+constexpr size<T> operator*(U value, const size<T>& rhs) {
   return rhs * value;
 }
 
 
-template<typename Rep, typename Rep2>
-constexpr size<Rep>& operator/=(size<Rep>& lhs, Rep2 value) {
-  lhs.set(static_cast<Rep>(lhs.width() / value), static_cast<Rep>(lhs.height() / value));
+template<typename T, typename U>
+constexpr size<T>& operator/=(size<T>& lhs, U value) {
+  lhs.set(static_cast<T>(lhs.width() / value), static_cast<T>(lhs.height() / value));
   return lhs;
 }
 
-template<typename Rep, typename Rep2>
-constexpr size<Rep> operator/(const size<Rep>& lhs, Rep2 value) {
-  return { static_cast<Rep>(lhs.width() / value), static_cast<Rep>(lhs.height() / value) };
+template<typename T, typename U>
+constexpr size<T> operator/(const size<T>& lhs, U value) {
+  return { static_cast<T>(lhs.width() / value), static_cast<T>(lhs.height() / value) };
 }
 
 
-template<typename Rep>
-constexpr bool operator==(const size<Rep>& lhs, const size<Rep>& rhs) {
+template<typename T>
+constexpr bool operator==(const size<T>& lhs, const size<T>& rhs) {
   return lhs.width() == rhs.width() && lhs.height() == rhs.height();
 }
 
-template<typename Rep>
-constexpr bool operator!=(const size<Rep>& lhs, const size<Rep>& rhs) {
+template<typename T>
+constexpr bool operator!=(const size<T>& lhs, const size<T>& rhs) {
   return !(lhs == rhs);
 }
 
