@@ -256,8 +256,6 @@ void path::arc_to(const pointf& center, const sizef& radius, float start_angle, 
 
   pointf start = transform::apply(point_transform,
     point_for_angle(start_angle, radius.width(), radius.height()));
-  pointf end = transform::apply(point_transform,
-    point_for_angle(start_angle + sweep_angle, radius.width(), radius.height()));
 
   if (empty() || force_move) {
     move_to(start);
@@ -267,10 +265,17 @@ void path::arc_to(const pointf& center, const sizef& radius, float start_angle, 
 
   if (std::abs(sweep_angle) == two_pi<float>) {
     // full ellipse: build with two arcs
-    arc_to(end, radius, rotation_angle);
+
+    // `start - center` gives the start point `rel_start` for an ellipse centered at the origin;
+    // 180 degrees opposite that is `-rel_start`, but transforming it back yields
+    // `center - rel_start`, or `center - (start - center)`
+    arc_to(2 * center - start, radius, rotation_angle);
     arc_to(start, radius, rotation_angle);
     return;
   }
+
+  pointf end = transform::apply(point_transform,
+    point_for_angle(start_angle + sweep_angle, radius.width(), radius.height()));
 
   arc_size size = std::abs(sweep_angle) > pi<float> ? arc_size::large_arc : arc_size::small_arc;
   sweep_dir dir = sweep_angle > 0 ? sweep_dir::clockwise : sweep_dir::counter_clockwise;
