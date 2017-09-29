@@ -22,23 +22,6 @@ constexpr const T& matrix<T, M, N>::get(int row, int col) const {
 }
 
 
-template<typename T, int M, int N>
-constexpr bool operator==(const matrix<T, M, N>& lhs, const matrix<T, M, N>& rhs) {
-  for (int i = 0; i < M; ++i) {
-    for (int j = 0; j < N; ++j) {
-      if (lhs.get(i, j) != rhs.get(i, j)) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-template<typename T, int M, int N>
-constexpr bool operator!=(const matrix<T, M, N>& lhs, const matrix<T, M, N>& rhs) {
-  return !(lhs == rhs);
-}
-
 template<typename T, int M, int N, int P>
 constexpr matrix<T, M, P> operator*(const matrix<T, M, N>& lhs, const matrix<T, N, P>& rhs) {
   matrix<T, M, P> ret{};
@@ -54,6 +37,29 @@ constexpr matrix<T, M, P> operator*(const matrix<T, M, N>& lhs, const matrix<T, 
   }
 
   return ret;
+}
+
+template<typename T, int M>
+constexpr matrix<T, M, M>& operator*=(matrix<T, M, M>& lhs, const matrix<T, M, M>& rhs) {
+  return lhs = lhs * rhs;
+}
+
+
+template<typename T, int M, int N>
+constexpr bool operator==(const matrix<T, M, N>& lhs, const matrix<T, M, N>& rhs) {
+  for (int i = 0; i < M; ++i) {
+    for (int j = 0; j < N; ++j) {
+      if (lhs.get(i, j) != rhs.get(i, j)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+template<typename T, int M, int N>
+constexpr bool operator!=(const matrix<T, M, N>& lhs, const matrix<T, M, N>& rhs) {
+  return !(lhs == rhs);
 }
 
 
