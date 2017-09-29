@@ -14,29 +14,30 @@ constexpr auto switch_sep = "--"sv;
 constexpr auto switch_val_delim = "="sv;
 
 std::string quote(const std::string& str) {
-  if (str.find_first_of(" \t\\\"") == std::string::npos) {  // no quoting necessary
+  if (str.find_first_of(" \t\"") == std::string::npos) {  // no quoting necessary
     return str;
   }
 
   std::string out = "\"";
-  for (std::size_t i = 0; i < str.size(); i++) {
-    if (str[i] == '\\') {
-      std::size_t begin = i, end = i + 1;
-      while (end < str.size() && str[end] == '\\') {
+  for (auto it = str.begin(); it != str.end(); ++it) {
+    if (*it == '\\') {
+      auto begin = it, end = it + 1;
+      while (end != str.end() && *end == '\\') {
         ++end;
       }
       std::size_t backslashes = end - begin;
 
-      if (str[end] == '"' || end == str.size()) {
+      // backslashes followed by a quote must be escaped
+      if (*end == '"' || end == str.end()) {
         backslashes *= 2;
       }
 
       out.append(backslashes, '\\');
-      i = end - 1;  // skip processed characters
-    } else if (str[i] == '"') {
+      it = end - 1;  // skip processed characters
+    } else if (*it == '"') {
       out += "\\\"";
     } else {
-      out += str[i];
+      out += *it;
     }
   }
   out += '"';
