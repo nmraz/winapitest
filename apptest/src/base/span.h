@@ -22,17 +22,19 @@ constexpr bool is_strictly_derived_impl = std::is_base_of_v<Base, Der> && !std::
 template<typename Der, typename Base>
 constexpr bool is_strictly_derived = is_strictly_derived_impl<std::decay_t<Der>, std::decay_t<Base>>;
 
+// The goal here is to forbid dangerous derived-to-base pointer conversions for arrays, whle
+// allowing proxy types that can convert to pointers
 template<typename From, typename To>
-constexpr bool is_safe_array_conv = std::is_convertible_v<From*, To*>
-  && !is_strictly_derived<From, To>;
+constexpr bool is_safe_array_conv = std::is_convertible_v<From, To>
+  && !(std::is_pointer_v<From> && is_strictly_derived<std::remove_pointer_t<From>, std::remove_pointer_t<To>>);
 
 template<typename Cont>
 constexpr bool has_integral_size = std::is_integral_v<decltype(std::size(std::declval<Cont&>()))>;
 
 template<typename Cont, typename T>
 constexpr bool has_convertible_data = is_safe_array_conv<
-  std::remove_pointer_t<decltype(std::data(std::declval<Cont&>()))>,
-  T
+  decltype(std::data(std::declval<Cont&>())),
+  T*
 >;
 
 template<typename Cont, typename T>
@@ -74,10 +76,10 @@ public:
   template<typename Cont, typename = std::enable_if_t<!impl::is_span<Cont>>>
   constexpr span(const Cont&&) = delete;  // temporary
 
-  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U, T>>>
+  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>>
   constexpr span(const span<U>& rhs) : span(rhs.data(), rhs.size()) {}
 
-  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U, T>>>
+  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>>
   constexpr span(span<U>&& rhs) : span(rhs.data(), rhs.size()) {}
   
 
