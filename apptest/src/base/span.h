@@ -131,4 +131,35 @@ constexpr span<T> span<T>::subspan(index_type offset, index_type count) {
   return { data_ + offset, count };
 }
 
+template<typename T>
+inline span<T> make_span(T* data, std::ptrdiff_t size) {
+  return span<T>(data, size);
+}
+
+template<typename T>
+inline span<T> make_span(T* begin, T* end) {
+  return span<T>(begin, end);
+}
+
+template<
+  typename Cont,
+  typename T = typename Cont::value_type,
+  typename = std::enable_if_t<impl::is_compatible_container<Cont, T>>
+> inline span<T> make_span(Cont& cont) {
+  return span<T>(cont);
+}
+
+template<
+  typename Cont,
+  typename T = const typename Cont::value_type,
+  typename = std::enable_if_t<impl::is_compatible_container<const Cont, T>>
+> inline span<T> make_span(const Cont& cont) {
+  return span<T>(cont);
+}
+
+template<typename T>
+inline span<T> make_span(const span<T>& sp) {
+  return sp;
+}
+
 }  // namespace base
