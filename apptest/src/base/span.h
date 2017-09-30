@@ -22,7 +22,7 @@ constexpr bool is_strictly_derived_impl = std::is_base_of_v<Base, Der> && !std::
 template<typename Der, typename Base>
 constexpr bool is_strictly_derived = is_strictly_derived_impl<std::decay_t<Der>, std::decay_t<Base>>;
 
-// The goal here is to forbid dangerous derived-to-base pointer conversions for arrays, whle
+// The goal here is to forbid dangerous derived-to-base pointer conversions for arrays, while
 // allowing proxy types that can convert to pointers
 template<typename From, typename To>
 constexpr bool is_safe_array_conv = std::is_convertible_v<From, To>
