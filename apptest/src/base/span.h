@@ -190,6 +190,9 @@ template<
   return span<T>(cont);
 }
 
+template<typename Cont, typename = std::enable_if_t<!impl::is_span<Cont>>>
+constexpr void make_span(const Cont&&) = delete;
+
 template<typename T>
 constexpr inline span<T> make_span(const span<T>& sp) {
   return sp;
