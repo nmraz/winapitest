@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <iterator>
 #include <type_traits>
 
@@ -130,6 +131,38 @@ template<typename T>
 constexpr span<T> span<T>::subspan(index_type offset, index_type count) {
   return { data_ + offset, count };
 }
+
+
+template<typename T>
+constexpr bool operator==(const span<T>& lhs, const span<T>& rhs) {
+  return std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
+}
+
+template<typename T>
+constexpr bool operator !=(const span<T>& lhs, const span<T>& rhs) {
+  return !(lhs == rhs);
+}
+
+template<typename T>
+constexpr bool operator<(const span<T>& lhs, const span<T>& rhs) {
+  return std::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
+}
+
+template<typename T>
+constexpr bool operator>(const span<T>& lhs, const span<T>& rhs) {
+  return rhs < lhs;
+}
+
+template<typename T>
+constexpr bool operator<=(const span<T>& lhs, const span<T>& rhs) {
+  return !(lhs > rhs);
+}
+
+template<typename T>
+constexpr bool operator>=(const span<T>& lhs, const span<T>& rhs) {
+  return !(lhs < rhs);
+}
+
 
 template<typename T>
 inline span<T> make_span(T* data, std::ptrdiff_t size) {
