@@ -245,6 +245,9 @@
     <ClInclude Include="src\ui\gfx\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\span.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />

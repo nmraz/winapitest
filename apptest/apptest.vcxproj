@@ -214,6 +214,7 @@
     <ClInclude Include="src\base\signal\scoped_slot_handle.h" />
     <ClInclude Include="src\base\signal\signal.h" />
     <ClInclude Include="src\base\signal\slot_handle.h" />
+    <ClInclude Include="src\base\span.h" />
     <ClInclude Include="src\base\thread\thread.h" />
     <ClInclude Include="src\base\thread\thread_name.h" />
     <ClInclude Include="src\base\timer.h" />
