@@ -39,8 +39,8 @@ constexpr matrix<T, M, P> operator*(const matrix<T, M, N>& lhs, const matrix<T, 
   return ret;
 }
 
-template<typename T, int M>
-constexpr matrix<T, M, M>& operator*=(matrix<T, M, M>& lhs, const matrix<T, M, M>& rhs) {
+template<typename T, int M, int N>
+constexpr matrix<T, M, N>& operator*=(matrix<T, M, N>& lhs, const matrix<T, N, N>& rhs) {
   return lhs = lhs * rhs;
 }
 
