@@ -80,7 +80,7 @@ constexpr mat33f invert(const mat33f& tform) {
     static_cast<float>(-tform(0, 1) * inv_det),
     0.f,
     static_cast<float>(-tform(1, 0) * inv_det),
-    static_cast<float>(tform(0, 0) * inv_det), 
+    static_cast<float>(tform(0, 0) * inv_det),
     0.f,
     static_cast<float>((tform(1, 0) * tform(2, 1) - tform(1, 1) * tform(2, 0)) * inv_det),
     static_cast<float>((tform(0, 1) * tform(2, 0) - tform(0, 0) * tform(2, 1)) * inv_det),
