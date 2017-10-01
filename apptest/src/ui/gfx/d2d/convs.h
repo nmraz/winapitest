@@ -64,9 +64,9 @@ constexpr D2D1_MATRIX_3X2_F mat33_to_d2d_mat32(const mat33f& mat) {
   ASSERT(transform::is_affine(mat)) << "Direct2D requires affine transforms";
 
   return {
-    mat.get(0, 0), mat.get(0, 1),
-    mat.get(1, 0), mat.get(1, 1),
-    mat.get(2, 0), mat.get(2, 1)
+    mat(0, 0), mat(0, 1),
+    mat(1, 0), mat(1, 1),
+    mat(2, 0), mat(2, 1)
   };
 }
 

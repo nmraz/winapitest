@@ -52,18 +52,18 @@ constexpr inline mat33f centered_about(const mat33f& tform, const pointf& center
 
 
 constexpr inline bool is_affine(const mat33f& tform) {
-  return tform.get(0, 2) == 0 && tform.get(1, 2) == 0 && tform.get(2, 2) == 1;
+  return tform(0, 2) == 0 && tform(1, 2) == 0 && tform(2, 2) == 1;
 }
 
 constexpr inline bool is_scale_translate(const mat33f& tform) {
-  return tform.get(0, 1) == 0 && tform.get(0, 2) == 0 && tform.get(1, 0) == 0
-    && tform.get(1, 2) == 0 && tform.get(2, 2) == 1;
+  return tform(0, 1) == 0 && tform(0, 2) == 0 && tform(1, 0) == 0
+    && tform(1, 2) == 0 && tform(2, 2) == 1;
 }
 
 
 constexpr float determinant(const mat33f& tform) {
   ASSERT(is_affine(tform)) << "This only works for affine transforms";
-  return tform.get(0, 0) * tform.get(1, 1) - tform.get(0, 1) * tform.get(1, 0);
+  return tform(0, 0) * tform(1, 1) - tform(0, 1) * tform(1, 0);
 }
 
 constexpr inline bool is_invertible(const mat33f& tform) {
@@ -76,26 +76,26 @@ constexpr mat33f invert(const mat33f& tform) {
 
   double inv_det = 1.0 / det;
   return {
-    static_cast<float>(tform.get(1, 1) * inv_det),
-    static_cast<float>(-tform.get(0, 1) * inv_det),
+    static_cast<float>(tform(1, 1) * inv_det),
+    static_cast<float>(-tform(0, 1) * inv_det),
     0.f,
-    static_cast<float>(-tform.get(1, 0) * inv_det),
-    static_cast<float>(tform.get(0, 0) * inv_det), 
+    static_cast<float>(-tform(1, 0) * inv_det),
+    static_cast<float>(tform(0, 0) * inv_det), 
     0.f,
-    static_cast<float>((tform.get(1, 0) * tform.get(2, 1) - tform.get(1, 1) * tform.get(2, 0)) * inv_det),
-    static_cast<float>(-(tform.get(0, 0) * tform.get(2, 1) - tform.get(0, 1) * tform.get(2, 0)) * inv_det),
+    static_cast<float>((tform(1, 0) * tform(2, 1) - tform(1, 1) * tform(2, 0)) * inv_det),
+    static_cast<float>(-(tform(0, 0) * tform(2, 1) - tform(0, 1) * tform(2, 0)) * inv_det),
     1.f
   };
 }
 
 
 constexpr pointf apply(const mat33f& tform, const pointf& pt) {
-  ASSERT(is_affine(tform)) << "Direct2D requires affine transforms";
+  ASSERT(is_affine(tform)) << "This only works for affine transforms";
 
   // postmultiply `pt` by `tform`
   return {
-    pt.x * tform.get(0, 0) + pt.y * tform.get(1, 0) + tform.get(2, 0),
-    pt.x * tform.get(0, 1) + pt.y * tform.get(1, 1) + tform.get(2, 1)
+    pt.x * tform(0, 0) + pt.y * tform(1, 0) + tform(2, 0),
+    pt.x * tform(0, 1) + pt.y * tform(1, 1) + tform(2, 1)
   };
 }
 

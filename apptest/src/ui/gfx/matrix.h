@@ -6,18 +6,18 @@ template<typename T, int M, int N>
 struct matrix {
   T data[M][N];
 
-  constexpr T& get(int row, int col);
-  constexpr const T& get(int row, int col) const;
+  constexpr T& operator()(int row, int col);
+  constexpr const T& operator()(int row, int col) const;
 };
 
 
 template<typename T, int M, int N>
-constexpr T& matrix<T, M, N>::get(int row, int col) {
+constexpr T& matrix<T, M, N>::operator()(int row, int col) {
   return data[row][col];
 }
 
 template<typename T, int M, int N>
-constexpr const T& matrix<T, M, N>::get(int row, int col) const {
+constexpr const T& matrix<T, M, N>::operator()(int row, int col) const {
   return data[row][col];
 }
 
@@ -30,9 +30,9 @@ constexpr matrix<T, M, P> operator*(const matrix<T, M, N>& lhs, const matrix<T, 
     for (int j = 0; j < P; ++j) {
       T total = 0;
       for (int k = 0; k < N; ++k) {
-        total += lhs.get(i, k) * rhs.get(k, j);
+        total += lhs(i, k) * rhs(k, j);
       }
-      ret.get(i, j) = total;
+      ret(i, j) = total;
     }
   }
 
@@ -49,7 +49,7 @@ template<typename T, int M, int N>
 constexpr bool operator==(const matrix<T, M, N>& lhs, const matrix<T, M, N>& rhs) {
   for (int i = 0; i < M; ++i) {
     for (int j = 0; j < N; ++j) {
-      if (lhs.get(i, j) != rhs.get(i, j)) {
+      if (lhs(i, j) != rhs(i, j)) {
         return false;
       }
     }
