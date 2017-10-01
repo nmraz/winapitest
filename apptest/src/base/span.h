@@ -30,11 +30,11 @@ constexpr bool is_safe_array_conv = std::is_convertible_v<From, To>
   && !(std::is_pointer_v<From> && is_strictly_derived<std::remove_pointer_t<From>, std::remove_pointer_t<To>>);
 
 template<typename Cont>
-constexpr bool has_integral_size = std::is_integral_v<decltype(std::size(std::declval<Cont&>()))>;
+constexpr bool has_integral_size = std::is_integral_v<decltype(std::declval<Cont&>().size())>;
 
 template<typename Cont, typename T>
 constexpr bool has_convertible_data = is_safe_array_conv<
-  decltype(std::data(std::declval<Cont&>())),
+  decltype(std::declval<Cont&>().data()),
   T*
 >;
 
@@ -67,15 +67,16 @@ public:
   template<
     typename Cont,
     typename = std::enable_if_t<impl::is_compatible_container<Cont, T>>
-  > constexpr span(Cont& cont) : span(std::data(cont), std::size(cont)) {}
-
-  template<
-    typename Cont,
-    typename = std::enable_if_t<impl::is_compatible_container<const Cont, T>>
-  > constexpr span(const Cont& cont) : span(std::data(cont), std::size(cont)) {}
+  > constexpr span(Cont& cont) : span(cont.data(), cont.size()) {}
 
   template<typename Cont, typename = std::enable_if_t<!impl::is_span<Cont>>>
   constexpr span(const Cont&&) = delete;  // temporary
+
+  template<
+    typename U,
+    std::size_t N,
+    typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>
+  > constexpr span(U (&array)[N]) : span(array, N) {}
 
   template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>>
   constexpr span(const span<U>& rhs) : span(rhs.data(), rhs.size()) {}
@@ -165,13 +166,18 @@ constexpr bool operator>=(const span<T>& lhs, const span<T>& rhs) {
 
 
 template<typename T>
-inline span<T> make_span(T* data, std::ptrdiff_t size) {
+constexpr inline span<T> make_span(T* data, std::ptrdiff_t size) {
   return span<T>(data, size);
 }
 
 template<typename T>
-inline span<T> make_span(T* begin, T* end) {
+constexpr inline span<T> make_span(T* begin, T* end) {
   return span<T>(begin, end);
+}
+
+template<typename T, std::size_t N>
+constexpr inline span<T> make_span(T (&array)[N]) {
+  return span<T>(array);
 }
 
 template<
