@@ -49,6 +49,7 @@ template<typename T>
 class span {
 public:
   using index_type = std::ptrdiff_t;
+  using element_type = T;
   using pointer = T*;
   using reference = T&;
   using iterator = T*;
