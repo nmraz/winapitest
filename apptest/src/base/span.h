@@ -140,7 +140,7 @@ constexpr bool operator==(const span<T>& lhs, const span<T>& rhs) {
 }
 
 template<typename T>
-constexpr bool operator !=(const span<T>& lhs, const span<T>& rhs) {
+constexpr bool operator!=(const span<T>& lhs, const span<T>& rhs) {
   return !(lhs == rhs);
 }
 
