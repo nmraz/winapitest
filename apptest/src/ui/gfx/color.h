@@ -119,13 +119,14 @@ constexpr color& operator*=(color& col, T val) {
 }
 
 template<typename T>
-constexpr color operator*(color col, T val) {
-  return col *= val;
+constexpr color operator*(const color& col, T val) {
+  color ret = col;
+  return ret *= val;
 }
 
 template<typename T>
-constexpr color operator*(T val, color col) {
-  return col *= val;
+constexpr color operator*(T val, const color& col) {
+  return col * val;
 }
 
 
