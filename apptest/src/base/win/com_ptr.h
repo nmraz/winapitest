@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/assert.h"
+#include "base/win/last_error.h"
 #include <type_traits>
 #include <Unknwn.h>
 #include <utility>
@@ -41,7 +42,7 @@ public:
   IUnknown** unknown_addr() { return reinterpret_cast<IUnknown**>(addr()); }
 
   template<typename U>
-  HRESULT query_interface(com_ptr<U>& query);
+  HRESULT query_interface(com_ptr<U>& query) const;
 
   explicit operator bool() const { return !!ptr_; }
 
@@ -127,9 +128,8 @@ T** com_ptr<T>::addr() {
 
 template<typename T>
 template<typename U>
-HRESULT com_ptr<T>::query_interface(com_ptr<U>& query) {
-  ASSERT(ptr_) << "Null pointer dereference";
-  return ptr_->QueryInterface(query.addr());
+HRESULT com_ptr<T>::query_interface(com_ptr<U>& query) const {
+  return (*this)->QueryInterface(query.addr());
 }
 
 
