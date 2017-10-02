@@ -43,6 +43,10 @@ public:
 
   template<typename U>
   HRESULT query_interface(com_ptr<U>& query) const;
+  template<typename U>
+  com_ptr<U> as() const;
+  template<typename U>
+  com_ptr<U> maybe_as() const;
 
   explicit operator bool() const { return !!ptr_; }
 
@@ -130,6 +134,24 @@ template<typename T>
 template<typename U>
 HRESULT com_ptr<T>::query_interface(com_ptr<U>& query) const {
   return (*this)->QueryInterface(query.addr());
+}
+
+template<typename T>
+template<typename U>
+com_ptr<U> com_ptr<T>::as() const {
+  com_ptr<U> ret;
+  throw_if_failed(query_interface(ret));
+  return ret;
+}
+
+template<typename T>
+template<typename U>
+com_ptr<U> com_ptr<T>::maybe_as() const {
+  com_ptr<U> ret;
+  if (FAILED(query_interface(ret))) {
+    return nullptr;
+  }
+  return ret;
 }
 
 
