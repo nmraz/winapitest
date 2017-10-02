@@ -154,7 +154,7 @@ constexpr color green{ 0, 255, 0 };
 constexpr color blue{ 0, 0, 255 };
 
 constexpr color yellow{ 255, 255, 0 };
-constexpr color purple{ 255, 0, 255 };
+constexpr color magenta{ 255, 0, 255 };
 constexpr color cyan{ 0, 255, 255 };
 
 constexpr color orange{ 255, 69, 0 };
