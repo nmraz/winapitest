@@ -84,7 +84,8 @@ public:
 
   template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>>
   constexpr span(span<U>&& rhs) : span(rhs.data(), rhs.size()) {}
-  
+
+  constexpr void swap(span& other);
 
   constexpr reference operator[](index_type idx) const { return data_[idx]; }
   constexpr pointer data() const { return data_; }
@@ -117,6 +118,19 @@ private:
   pointer data_;
   index_type size_;
 };
+
+
+template<typename T>
+constexpr void span<T>::swap(span& other) {
+  using std::swap;
+  swap(data_, other.data_);
+  swap(size_, other.size_);
+}
+
+template<typename T>
+constexpr inline void swap(span<T>& lhs, span<T>& rhs) {
+  lhs.swap(rhs);
+}
 
 
 template<typename T>
