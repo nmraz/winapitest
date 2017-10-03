@@ -22,8 +22,8 @@ public:
 
   bool is_current() const;
 
-  static event_loop& current();
-  static bool is_nested();
+  static event_loop* current();
+  static int nesting_level();
 
 protected:
   bool run_pending_task();

@@ -9,7 +9,7 @@ namespace base {
 namespace {
 
 thread_local event_loop* current_loop = nullptr;
-thread_local int nesting_level = 0;
+thread_local int current_nesting_level = 0;
 
 }  // namespace
 
@@ -44,9 +44,9 @@ event_loop::event_loop()
 
 void event_loop::run() {
   loop_pusher push(this);
-  auto_restore<int> restore_nesting(nesting_level);
+  auto_restore<int> restore_nesting(current_nesting_level);
 
-  ++nesting_level;
+  ++current_nesting_level;
   should_quit_ = false;
 
   while (true) {
@@ -95,14 +95,13 @@ bool event_loop::is_current() const {
 
 
 // static
-event_loop& event_loop::current() {
-  ASSERT(current_loop) << "No event loop running on this thread";
-  return *current_loop;
+event_loop* event_loop::current() {
+  return current_loop;
 }
 
 // static
-bool event_loop::is_nested() {
-  return nesting_level > 1;
+int event_loop::nesting_level() {
+  return current_nesting_level;
 }
 
 
