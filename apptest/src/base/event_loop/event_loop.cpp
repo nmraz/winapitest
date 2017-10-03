@@ -19,25 +19,22 @@ struct event_loop::loop_pusher {
   loop_pusher(event_loop* loop);
   ~loop_pusher();
 
-  void set_loop(event_loop* loop);
 
   event_loop* prev_loop_;
 };
 
 event_loop::loop_pusher::loop_pusher(event_loop* loop)
   : prev_loop_(current_loop) {
-  set_loop(loop);
+  ASSERT(loop->runner_ == &task_runner::current()) << "Attempting to run event loop on wrong thread";
+  loop->runner_->set_loop(loop);
+  current_loop = loop;
 }
 
 event_loop::loop_pusher::~loop_pusher() {
-  set_loop(prev_loop_);
+  ASSERT(current_loop) << "Attempting to pop non-existant loop";
+  current_loop->runner_->set_loop(prev_loop_);
+  current_loop = prev_loop_;
 }
-
-void event_loop::loop_pusher::set_loop(event_loop* loop) {
-  current_loop = loop;
-  task_runner::current().set_loop(loop);
-}
-
 
 
 event_loop::event_loop()
