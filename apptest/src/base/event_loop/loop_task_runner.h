@@ -1,7 +1,7 @@
 #pragma once
 
 #include "base/non_copyable.h"
-#include "base/event_loop/task.h"
+#include "base/task_runner/task_runner.h"
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -11,7 +11,7 @@ namespace base {
 
 class event_loop;
 
-class loop_task_runner : public non_copy_movable {
+class loop_task_runner : public task_runner {
   friend event_loop;
 
   loop_task_runner() = default;
@@ -19,7 +19,6 @@ class loop_task_runner : public non_copy_movable {
 public:
   using ptr = std::shared_ptr<loop_task_runner>;
 
-  void post_task(task::callback_type callback, const task::delay_type& delay = task::delay_type::zero());
   void quit_now();
   void post_quit();
 
@@ -28,6 +27,8 @@ public:
 private:
   using task_queue = std::queue<task>;
   using delayed_task_queue = std::priority_queue<task>;
+
+  void do_post_task(task&& tsk) override;
 
   bool run_pending_task();
   bool run_delayed_task();

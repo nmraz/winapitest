@@ -6,26 +6,6 @@
 
 namespace base {
 
-void loop_task_runner::post_task(task::callback_type callback, const task::delay_type& delay) {
-  ASSERT(delay.count() >= 0) << "Can't post a task with a negative delay";
-
-  task::run_time_type run_time = delay.count() == 0 ? task::run_time_type() : task::clock_type::now() + delay;
-  bool was_empty;
-  {
-    std::lock_guard<std::mutex> hold(task_lock_);
-
-    was_empty = task_queue_.empty();
-    task_queue_.emplace(std::move(callback), run_time);
-  }
-
-  if (was_empty) {
-    std::lock_guard<std::mutex> hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
-    if (current_loop_) {
-      current_loop_->wake_up();
-    }
-  }
-}
-
 void loop_task_runner::post_quit() {
   post_task([this] { quit_now(); });
 }
@@ -47,6 +27,24 @@ loop_task_runner::ptr loop_task_runner::current() {
 
 
 // PRIVATE
+
+void loop_task_runner::do_post_task(task&& tsk) {
+  bool was_empty;
+  {
+    std::lock_guard<std::mutex> hold(task_lock_);
+
+    was_empty = task_queue_.empty();
+    task_queue_.push(std::move(tsk));
+  }
+
+  if (was_empty) {
+    std::lock_guard<std::mutex> hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
+    if (current_loop_) {
+      current_loop_->wake_up();
+    }
+  }
+}
+
 
 bool loop_task_runner::run_pending_task() {
   while (true) {
