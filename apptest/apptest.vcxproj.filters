@@ -69,9 +69,6 @@
     <ClCompile Include="src\base\event_loop\task_event_loop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\event_loop\task_runner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\win\message_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,6 +103,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\gfx\geom\round_rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\event_loop\loop_task_runner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,9 +173,6 @@
     <ClInclude Include="src\base\event_loop\task_event_loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\event_loop\task_runner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\base\win\message_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -237,6 +234,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\span.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\event_loop\loop_task_runner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

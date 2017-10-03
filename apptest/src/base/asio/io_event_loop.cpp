@@ -1,6 +1,5 @@
 #include "io_event_loop.h"
 
-#include "base/event_loop/task_runner.h"
 #include "base/win/last_error.h"
 #include <Windows.h>
 

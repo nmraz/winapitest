@@ -2,7 +2,7 @@
 
 #include "base/assert.h"
 #include "base/auto_restore.h"
-#include "base/event_loop/task_runner.h"
+#include "base/event_loop/loop_task_runner.h"
 #include <algorithm>
 
 namespace base {
@@ -25,7 +25,7 @@ struct event_loop::loop_pusher {
 
 event_loop::loop_pusher::loop_pusher(event_loop* loop)
   : prev_loop_(current_loop) {
-  ASSERT(loop->runner_ == task_runner::current().get()) << "Attempting to run event loop on wrong thread";
+  ASSERT(loop->runner_ == loop_task_runner::current().get()) << "Attempting to run event loop on wrong thread";
   loop->runner_->set_loop(loop);
   current_loop = loop;
 }
@@ -38,7 +38,7 @@ event_loop::loop_pusher::~loop_pusher() {
 
 
 event_loop::event_loop()
-  : runner_(task_runner::current().get()) {
+  : runner_(loop_task_runner::current().get()) {
 }
 
 
@@ -123,7 +123,7 @@ std::optional<task::run_time_type> event_loop::get_next_run_time() const {
 
 // PRIVATE
 
-task_runner* event_loop::get_runner() const {
+loop_task_runner* event_loop::get_runner() const {
   ASSERT(is_current()) << "Only the active event_loop can run tasks";
   return runner_;
 }

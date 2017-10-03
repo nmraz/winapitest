@@ -1,4 +1,4 @@
-#include "task_runner.h"
+#include "loop_task_runner.h"
 
 #include "base/assert.h"
 #include "base/event_loop/event_loop.h"
@@ -6,7 +6,7 @@
 
 namespace base {
 
-void task_runner::post_task(task::callback_type callback, const task::delay_type& delay) {
+void loop_task_runner::post_task(task::callback_type callback, const task::delay_type& delay) {
   ASSERT(delay.count() >= 0) << "Can't post a task with a negative delay";
 
   task::run_time_type run_time = delay.count() == 0 ? task::run_time_type() : task::clock_type::now() + delay;
@@ -26,11 +26,11 @@ void task_runner::post_task(task::callback_type callback, const task::delay_type
   }
 }
 
-void task_runner::post_quit() {
+void loop_task_runner::post_quit() {
   post_task([this] { quit_now(); });
 }
 
-void task_runner::quit_now() {
+void loop_task_runner::quit_now() {
   if (event_loop::is_nested()) {
     post_quit();
   }
@@ -40,15 +40,15 @@ void task_runner::quit_now() {
 
 
 // static
-task_runner::ptr task_runner::current() {
-  static thread_local ptr runner(new task_runner);
+loop_task_runner::ptr loop_task_runner::current() {
+  static thread_local ptr runner(new loop_task_runner);
   return runner;
 }
 
 
 // PRIVATE
 
-bool task_runner::run_pending_task() {
+bool loop_task_runner::run_pending_task() {
   while (true) {
     swap_queues();
     if (current_tasks_.empty()) {
@@ -70,7 +70,7 @@ bool task_runner::run_pending_task() {
   return false;
 }
 
-bool task_runner::run_delayed_task() {
+bool loop_task_runner::run_delayed_task() {
   if (delayed_tasks_.empty()) {
     return false;
   }
@@ -91,7 +91,7 @@ bool task_runner::run_delayed_task() {
 }
 
 
-std::optional<task::run_time_type> task_runner::get_next_run_time() const {
+std::optional<task::run_time_type> loop_task_runner::get_next_run_time() const {
   if (delayed_tasks_.empty()) {
     return std::nullopt;
   }
@@ -100,7 +100,7 @@ std::optional<task::run_time_type> task_runner::get_next_run_time() const {
 }
 
 
-void task_runner::swap_queues() {
+void loop_task_runner::swap_queues() {
   if (current_tasks_.empty()) {
     std::lock_guard<std::mutex> hold(task_lock_);
     task_queue_.swap(current_tasks_);
@@ -108,7 +108,7 @@ void task_runner::swap_queues() {
 }
 
 
-void task_runner::set_loop(event_loop* loop) {
+void loop_task_runner::set_loop(event_loop* loop) {
   std::lock_guard<std::mutex> hold(loop_lock_);
   current_loop_ = loop;
 }

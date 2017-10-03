@@ -11,13 +11,13 @@ namespace base {
 
 class event_loop;
 
-class task_runner : public non_copy_movable {
+class loop_task_runner : public non_copy_movable {
   friend event_loop;
 
-  task_runner() = default;
+  loop_task_runner() = default;
 
 public:
-  using ptr = std::shared_ptr<task_runner>;
+  using ptr = std::shared_ptr<loop_task_runner>;
 
   void post_task(task::callback_type callback, const task::delay_type& delay = task::delay_type::zero());
   void quit_now();

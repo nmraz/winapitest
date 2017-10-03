@@ -6,7 +6,7 @@
 
 namespace base {
 
-class task_runner;
+class loop_task_runner;
 
 class event_loop : public non_copy_movable {
 public:
@@ -33,11 +33,11 @@ protected:
 private:
   struct loop_pusher;
 
-  // Check that the loop is active and retrieve the current task_runner
-  task_runner* get_runner() const;
+  // Check that the loop is active and retrieve the current loop_task_runner
+  loop_task_runner* get_runner() const;
 
   bool should_quit_;
-  task_runner* runner_;  // the runner should outlive us anyway
+  loop_task_runner* runner_;  // the runner should outlive us anyway
 };
 
 }  // namespace base

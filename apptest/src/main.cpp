@@ -1,7 +1,7 @@
 ﻿#include "base/asio/file.h"
 #include "base/asio/io_event_loop.h"
 #include "base/command_line.h"
-#include "base/event_loop/task_runner.h"
+#include "base/event_loop/loop_task_runner.h"
 #include "base/event_loop/next_tick.h"
 #include "base/logging/logging.h"
 #include "base/logging/logging_sinks.h"
@@ -35,7 +35,7 @@ int wmain(int argc, const wchar_t** argv) {
   timer1.set_callback([&] {
     LOG(info) << "timer1: elapsed time: "
       << millis(chrono::steady_clock::now() - start_time).count() << "ms";
-    base::task_runner::current()->post_quit();
+    base::loop_task_runner::current()->post_quit();
   });
 
   timer2.set_callback([&] {
