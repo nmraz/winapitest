@@ -1,5 +1,7 @@
 #include "thread_name.h"
 
+#include "base/unicode.h"
+#include "base/win/last_error.h"
 #include <map>
 #include <mutex>
 #include <utility>
@@ -21,10 +23,10 @@ typedef struct tagTHREADNAME_INFO {
 } THREADNAME_INFO;
 #pragma pack(pop)  
 
-void set_debugger_thread_name(const char* name) {
+void set_debugger_thread_name(std::string_view name) {
   THREADNAME_INFO info;
   info.dwType = 0x1000;
-  info.szName = name;
+  info.szName = name.data();
   info.dwThreadID = static_cast<DWORD>(-1);
   info.dwFlags = 0;
 
@@ -37,13 +39,31 @@ void set_debugger_thread_name(const char* name) {
 }
 
 
+using set_thread_desc_func = HRESULT(*)(HANDLE, PCWSTR);
+
+void set_windows_thread_name(std::string_view name) {
+  static auto* set_thread_desc =
+    reinterpret_cast<set_thread_desc_func>(::GetProcAddress(::GetModuleHandleW(L"Kernel32.dll"), "SetThreadDescription"));
+
+  // SetThreadDescription is new in win 10 v1703 (Creators Update)
+  if (set_thread_desc) {
+    win::throw_if_failed(
+      set_thread_desc(::GetCurrentThread(), widen(name).c_str()),
+      "Failed to set thread name"
+    );
+  } else if (::IsDebuggerPresent()) {  // fall back to older method (exception)
+    set_debugger_thread_name(name);
+  }
+}
+
+
 std::map<std::thread::id, std::string> thread_name_map;
 std::mutex thread_name_lock;
 
 }  // namespace
 
 void set_current_thread_name(std::string name) {
-  set_debugger_thread_name(name.c_str());
+  set_windows_thread_name(name.c_str());
 
   std::lock_guard<std::mutex> hold(thread_name_lock);
   thread_name_map[std::this_thread::get_id()] = std::move(name);
