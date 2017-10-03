@@ -1,13 +1,12 @@
 #include "thread_name.h"
 
+#include <map>
+#include <mutex>
 #include <utility>
 #include <Windows.h>
 
 namespace base {
 namespace {
-
-thread_local std::string current_name = "<anonymous>";
-
 
 // Adapted from https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx
 
@@ -22,7 +21,6 @@ typedef struct tagTHREADNAME_INFO {
 } THREADNAME_INFO;
 #pragma pack(pop)  
 
-
 void set_debugger_thread_name(const char* name) {
   THREADNAME_INFO info;
   info.dwType = 0x1000;
@@ -34,19 +32,40 @@ void set_debugger_thread_name(const char* name) {
 #pragma warning(disable: 6320 6322) // constant EXCEPTION_EXECUTE_HANDLER, empty __except block
   __try {
     ::RaiseException(thread_name_exception, 0, sizeof(info) / sizeof(ULONG_PTR), reinterpret_cast<ULONG_PTR*>(&info));
-  } __except(EXCEPTION_EXECUTE_HANDLER) {}
+  } __except (EXCEPTION_EXECUTE_HANDLER) {}
 #pragma warning(pop)
 }
+
+
+std::map<std::thread::id, std::string> thread_name_map;
+std::mutex thread_name_lock;
 
 }  // namespace
 
 void set_current_thread_name(std::string name) {
   set_debugger_thread_name(name.c_str());
-  current_name = std::move(name);
+
+  std::lock_guard<std::mutex> hold(thread_name_lock);
+  thread_name_map[std::this_thread::get_id()] = std::move(name);
+}
+
+void cleanup_current_thread_name() {
+  std::lock_guard<std::mutex> hold(thread_name_lock);
+
+  auto it = thread_name_map.find(std::this_thread::get_id());
+  if (it != thread_name_map.end()) {
+    thread_name_map.erase(it);
+  }
+}
+
+
+const std::string& get_thread_name(std::thread::id id) {
+  std::lock_guard<std::mutex> hold(thread_name_lock);
+  return thread_name_map[id];
 }
 
 const std::string& get_current_thread_name() {
-  return current_name;
+  return get_thread_name(std::this_thread::get_id());
 }
 
 }  // namespace base

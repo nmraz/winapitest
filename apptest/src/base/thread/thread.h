@@ -22,7 +22,9 @@ public:
   void stop(bool wait = true);
 
   loop_task_runner::ptr task_runner() const;
+
   std::thread::id get_id() const { return thread_.get_id(); }
+  const std::string& name() const;
 
 private:
   void run(loop_factory factory);
