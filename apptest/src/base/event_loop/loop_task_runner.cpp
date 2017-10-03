@@ -11,11 +11,12 @@ void loop_task_runner::post_quit() {
 }
 
 void loop_task_runner::quit_now() {
-  if (event_loop::nesting_level() > 1) {
-    post_quit();
+  if (event_loop* cur_loop = event_loop::current()) {
+    if (event_loop::nesting_level() > 1) {
+      post_quit();
+    }
+    cur_loop->quit();
   }
-
-  event_loop::current()->quit();
 }
 
 
