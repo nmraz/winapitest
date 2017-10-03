@@ -170,7 +170,6 @@
     <ClCompile Include="src\base\event_loop\task_runner.cpp" />
     <ClCompile Include="src\base\event_loop\task.cpp" />
     <ClCompile Include="src\base\event_loop\task_event_loop.cpp" />
-    <ClCompile Include="src\base\event_loop\task_runner_handle.cpp" />
     <ClCompile Include="src\base\logging\logging.cpp" />
     <ClCompile Include="src\base\logging\logging_sinks.cpp" />
     <ClCompile Include="src\base\signal\scoped_slot_handle.cpp" />
@@ -205,8 +204,6 @@
     <ClInclude Include="src\base\event_loop\task_runner.h" />
     <ClInclude Include="src\base\event_loop\task.h" />
     <ClInclude Include="src\base\event_loop\task_event_loop.h" />
-    <ClInclude Include="src\base\event_loop\task_runner_handle.h" />
-    <ClInclude Include="src\base\event_loop\task_runner_ref.h" />
     <ClInclude Include="src\base\finally.h" />
     <ClInclude Include="src\base\logging\logging.h" />
     <ClInclude Include="src\base\logging\logging_sinks.h" />

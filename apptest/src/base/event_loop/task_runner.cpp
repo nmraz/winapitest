@@ -2,22 +2,9 @@
 
 #include "base/assert.h"
 #include "base/event_loop/event_loop.h"
-#include "base/event_loop/task_runner_handle.h"
-#include "base/event_loop/task_runner_ref.h"
 #include <utility>
 
 namespace base {
-
-task_runner::task_runner()
-  : current_loop_(nullptr)
-  , handle_ref_(std::make_shared<impl::task_runner_ref>(this)) {
-}
-
-task_runner::~task_runner() {
-  std::lock_guard<std::shared_mutex> hold(handle_ref_->lock);
-  handle_ref_->runner = nullptr;
-}
-
 
 void task_runner::post_task(task::callback_type callback, const task::delay_type& delay) {
   ASSERT(delay.count() >= 0) << "Can't post a task with a negative delay";
@@ -52,14 +39,9 @@ void task_runner::quit_now() {
 }
 
 
-task_runner_handle task_runner::handle() {
-  return task_runner_handle(handle_ref_);
-}
-
-
 // static
-task_runner& task_runner::current() {
-  static thread_local task_runner runner;
+task_runner::ptr task_runner::current() {
+  static thread_local ptr runner(new task_runner);
   return runner;
 }
 

@@ -2,7 +2,6 @@
 
 #include "base/non_copyable.h"
 #include "base/event_loop/task.h"
-#include "base/event_loop/task_runner_handle.h"
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -12,25 +11,19 @@ namespace base {
 
 class event_loop;
 
-namespace impl {
-struct task_runner_ref;
-}
-
-
 class task_runner : public non_copy_movable {
   friend event_loop;
 
-  task_runner();
-  ~task_runner();
+  task_runner() = default;
 
 public:
+  using ptr = std::shared_ptr<task_runner>;
+
   void post_task(task::callback_type callback, const task::delay_type& delay = task::delay_type::zero());
   void quit_now();
   void post_quit();
 
-  task_runner_handle handle();
-
-  static task_runner& current();
+  static ptr current();
 
 private:
   using task_queue = std::queue<task>;
@@ -52,10 +45,8 @@ private:
 
   task::run_time_type cached_now_;  // make running more efficient when multiple tasks have to run now
 
-  event_loop* current_loop_;
+  event_loop* current_loop_ = nullptr;
   std::mutex loop_lock_;  // prevents current_loop_ from changing while it is waking up
-
-  std::shared_ptr<impl::task_runner_ref> handle_ref_;  // synchronizes with handles on other threads
 };
 
 }  // namespace base

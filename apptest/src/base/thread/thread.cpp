@@ -27,16 +27,16 @@ thread::~thread() {
 
 void thread::stop(bool wait) {
   if (thread_.joinable()) {
-    task_runner().post_task([] {
+    task_runner()->post_task([] {
       quit_properly = true;
-      task_runner::current().quit_now();
+      task_runner::current()->quit_now();
     });
     wait ? thread_.join() : thread_.detach();
   }
 }
 
 
-task_runner_handle thread::task_runner() const {
+task_runner::ptr thread::task_runner() const {
   std::unique_lock<std::mutex> hold(runner_lock_);
   runner_cv_.wait(hold, [this] { return has_runner_; });  // wait until the runner exists
   return runner_;
@@ -47,7 +47,7 @@ task_runner_handle thread::task_runner() const {
 
 void thread::run(loop_factory factory) {
   std::unique_ptr<event_loop> loop = factory();
-  set_task_runner(task_runner::current().handle());
+  set_task_runner(task_runner::current());
   loop->run();
   ASSERT(quit_properly) << "Thread should not quit of its own accord";
 }
@@ -58,7 +58,7 @@ void thread::named_run(loop_factory factory, std::string name) {
 }
 
 
-void thread::set_task_runner(task_runner_handle runner) {
+void thread::set_task_runner(task_runner::ptr runner) {
   std::lock_guard<std::mutex> hold(runner_lock_);
   has_runner_ = true;
   runner_ = std::move(runner);

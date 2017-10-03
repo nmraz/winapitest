@@ -72,9 +72,6 @@
     <ClCompile Include="src\base\event_loop\task_runner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\event_loop\task_runner_handle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\win\message_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,12 +174,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\event_loop\task_runner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\event_loop\task_runner_handle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\event_loop\task_runner_ref.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\win\message_window.h">

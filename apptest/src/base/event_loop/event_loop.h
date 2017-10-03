@@ -37,7 +37,7 @@ private:
   task_runner* get_runner() const;
 
   bool should_quit_;
-  task_runner* runner_;
+  task_runner* runner_;  // the runner should outlive us anyway
 };
 
 }  // namespace base

@@ -25,7 +25,7 @@ struct event_loop::loop_pusher {
 
 event_loop::loop_pusher::loop_pusher(event_loop* loop)
   : prev_loop_(current_loop) {
-  ASSERT(loop->runner_ == &task_runner::current()) << "Attempting to run event loop on wrong thread";
+  ASSERT(loop->runner_ == task_runner::current().get()) << "Attempting to run event loop on wrong thread";
   loop->runner_->set_loop(loop);
   current_loop = loop;
 }
@@ -38,7 +38,7 @@ event_loop::loop_pusher::~loop_pusher() {
 
 
 event_loop::event_loop()
-  : runner_(&task_runner::current()) {
+  : runner_(task_runner::current().get()) {
 }
 
 
