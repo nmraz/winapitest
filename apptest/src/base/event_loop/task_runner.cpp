@@ -60,7 +60,7 @@ bool task_runner::run_pending_task() {
       current_tasks_.pop();
 
       if (current_task.run_time == task::run_time_type()) {
-        current_task.callback();
+        current_task.run();
         return true;
       }
       delayed_tasks_.push(std::move(current_task));
@@ -85,7 +85,7 @@ bool task_runner::run_delayed_task() {
 
   task tmp_task = std::move(const_cast<task&>(current_task));  // current_task will still be at the top
   delayed_tasks_.pop();  // the task must be dequeued *before* running
-  tmp_task.callback();
+  tmp_task.run();
 
   return true;
 }
