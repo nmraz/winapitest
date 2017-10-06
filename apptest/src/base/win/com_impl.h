@@ -5,38 +5,23 @@
 #include <Unknwn.h>
 
 namespace base::win {
-namespace impl {
 
-template<typename... Bases, typename T>
-HRESULT query_interface([[maybe_unused]] T* obj, [[maybe_unused]] REFIID iid, void** out);
-
-template<typename First, typename... Rest, typename T>
-inline HRESULT query_first_interface(T* obj, REFIID iid, void** out) {
+template<typename First, typename... Bases, typename T>
+HRESULT query_interface(T* obj, REFIID iid, void** out) {
+  static_assert(std::is_base_of_v<IUnknown, T>, "Queryable object must derive from IUnknown");
+  
   if (iid == __uuidof(First)) {
     *out = static_cast<First*>(obj);
     obj->AddRef();
     return S_OK;
   }
-  return query_interface<Rest...>(obj, iid, out);
-}
 
-template<typename... Bases, typename T>
-inline HRESULT query_interface([[maybe_unused]] T* obj, [[maybe_unused]] REFIID iid, void** out) {
   if constexpr (sizeof...(Bases) > 0) {
-    return query_first_interface(obj, iid, out);
+    return query_interface<Bases...>(obj, iid, out);
   } else {
     *out = nullptr;
     return E_NOINTERFACE;
   }
-}
-
-}  // namespace impl
-
-template<typename... Bases, typename T>
-HRESULT query_interface(T* obj, REFIID iid, void** out) {
-  static_assert(std::is_base_of_v<IUnknown, T>, "Queryable object must derive from IUnknown");
-
-  return impl::query_interface(obj, iid, out);
 }
 
 
