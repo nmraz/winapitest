@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/task_runner/task_runner.h"
+#include "base/task_runner/task.h"
 #include "base/non_copyable.h"
 #include <chrono>
 #include <functional>
@@ -13,7 +13,6 @@ public:
   using callback_type = std::function<void()>;
 
   explicit timer(callback_type callback = nullptr);
-  explicit timer(std::shared_ptr<task_runner> runner);
   ~timer();
 
   template<typename Rep, typename Period>
@@ -36,8 +35,6 @@ private:
 
   std::shared_ptr<posted_task> current_task_;
   callback_type callback_;
-
-  std::shared_ptr<task_runner> task_runner_;
 };
 
 template<typename Rep, typename Period>

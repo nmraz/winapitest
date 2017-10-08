@@ -1,6 +1,6 @@
 #include "timer.h"
 
-#include "base/event_loop/loop_task_runner.h"
+#include "base/event_loop/next_tick.h"
 #include <utility>
 
 namespace base {
@@ -23,12 +23,7 @@ void timer::posted_task::run() {
 
 
 timer::timer(callback_type callback)
-  : callback_(std::move(callback))
-  , task_runner_(loop_task_runner::current()) {
-}
-
-timer::timer(std::shared_ptr<task_runner> runner)
-  : task_runner_(std::move(runner)) {
+  : callback_(std::move(callback)) {
 }
 
 timer::~timer() {
@@ -80,7 +75,7 @@ void timer::fire() {
 
 
 void timer::repost_task() {
-  task_runner_->post_task([task = current_task_] { task->run(); }, interval_);
+  set_timeout([task = current_task_] { task->run(); }, interval_);
 }
 
 }  // namespace base
