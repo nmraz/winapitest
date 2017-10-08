@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/non_copyable.h"
 #include <atomic>
 #include <memory>
 
@@ -19,7 +20,7 @@ private:
 };
 
 
-class cancellation_tracker {
+class cancellation_tracker : non_copyable {
 public:
   cancellation_tracker();
 
