@@ -16,7 +16,7 @@ public:
   ~scoped_handle();
 
   scoped_handle& operator=(handle handle);
-  scoped_handle& operator=(scoped_handle rhs);
+  scoped_handle& operator=(scoped_handle rhs) noexcept;
 
   handle get() const { return handle_; }
   void swap(scoped_handle& other) noexcept;

@@ -30,7 +30,7 @@ scoped_handle& scoped_handle::operator=(handle handle) {
   return *this;
 }
 
-scoped_handle& scoped_handle::operator=(scoped_handle rhs) {
+scoped_handle& scoped_handle::operator=(scoped_handle rhs) noexcept {
   rhs.swap(*this);
 
   return *this;

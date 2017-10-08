@@ -29,7 +29,7 @@ public:
   ~com_ptr();
 
   com_ptr& operator=(T* ptr);
-  com_ptr& operator=(com_ptr rhs);
+  com_ptr& operator=(com_ptr rhs) noexcept;
 
   T* get() const { return ptr_; }
   void swap(com_ptr& other) noexcept;
@@ -95,7 +95,7 @@ com_ptr<T>& com_ptr<T>::operator=(T* ptr) {
 }
 
 template<typename T>
-com_ptr<T>& com_ptr<T>::operator=(com_ptr rhs) {
+com_ptr<T>& com_ptr<T>::operator=(com_ptr rhs) noexcept {
   rhs.swap(*this);
   return *this;
 }
