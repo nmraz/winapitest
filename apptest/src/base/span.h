@@ -175,17 +175,17 @@ constexpr bool operator>=(const span<T>& lhs, const span<T>& rhs) {
 
 template<typename T>
 constexpr inline span<T> make_span(T* data, std::ptrdiff_t size) {
-  return span<T>(data, size);
+  return { data, size };
 }
 
 template<typename T>
 constexpr inline span<T> make_span(T* begin, T* end) {
-  return span<T>(begin, end);
+  return { begin, end };
 }
 
 template<typename T, std::size_t N>
 constexpr inline span<T> make_span(T (&array)[N]) {
-  return span<T>(array);
+  return { array };
 }
 
 template<
@@ -193,7 +193,7 @@ template<
   typename T = typename Cont::value_type,
   typename = std::enable_if_t<impl::is_compatible_container<Cont, T>>
 > constexpr inline span<T> make_span(Cont& cont) {
-  return span<T>(cont);
+  return { cont };
 }
 
 template<
@@ -201,7 +201,7 @@ template<
   typename T = const typename Cont::value_type,
   typename = std::enable_if_t<impl::is_compatible_container<const Cont, T>>
 > constexpr inline span<T> make_span(const Cont& cont) {
-  return span<T>(cont);
+  return { cont };
 }
 
 template<typename Cont, typename = std::enable_if_t<!impl::is_span<Cont>>>
