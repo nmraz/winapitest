@@ -20,7 +20,7 @@ private:
 };
 
 
-class cancellation_tracker : non_copyable {
+class cancellation_tracker : public non_copyable {
 public:
   cancellation_tracker();
 
