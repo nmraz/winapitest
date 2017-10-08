@@ -66,9 +66,6 @@ public:
     typename = std::enable_if_t<impl::is_compatible_container<Cont, T>>
   > constexpr span(Cont& cont) : span(cont.data(), cont.size()) {}
 
-  template<typename Cont, typename = std::enable_if_t<!impl::is_span<Cont>>>
-  constexpr span(const Cont&&) = delete;  // temporary
-
   template<
     typename U,
     std::size_t N,
@@ -208,7 +205,7 @@ template<
 }
 
 template<typename Cont, typename = std::enable_if_t<!impl::is_span<Cont>>>
-constexpr void make_span(const Cont&&) = delete;
+constexpr void make_span(const Cont&&) = delete;  // temporary
 
 template<typename T>
 constexpr inline span<T> make_span(const span<T>& sp) {
