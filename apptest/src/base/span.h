@@ -18,24 +18,20 @@ constexpr bool is_span_impl<span<T>> = true;
 template<typename T>
 constexpr bool is_span = is_span_impl<std::decay_t<T>>;
 
-template<typename Der, typename Base>
-constexpr bool is_strictly_derived_impl = std::is_base_of_v<Base, Der> && !std::is_same_v<Der, Base>;
-template<typename Der, typename Base>
-constexpr bool is_strictly_derived = is_strictly_derived_impl<std::decay_t<Der>, std::decay_t<Base>>;
-
-// The goal here is to forbid dangerous derived-to-base pointer conversions for arrays, while
-// allowing proxy types that can convert to pointers
 template<typename From, typename To>
-constexpr bool is_safe_array_conv = std::is_convertible_v<From, To>
-  && !(std::is_pointer_v<From> && is_strictly_derived<std::remove_pointer_t<From>, std::remove_pointer_t<To>>);
+constexpr bool is_safe_array_conv = std::is_convertible_v<From(&)[], To(&)[]>;
 
 template<typename Cont>
 constexpr bool has_integral_size = std::is_integral_v<decltype(std::declval<Cont&>().size())>;
 
+template<typename Data, typename T>
+constexpr bool is_convertible_data = std::is_pointer_v<Data>
+  && is_safe_array_conv<std::remove_pointer_t<Data>, T>;
+
 template<typename Cont, typename T>
-constexpr bool has_convertible_data = is_safe_array_conv<
+constexpr bool has_convertible_data = is_convertible_data<
   decltype(std::declval<Cont&>().data()),
-  T*
+  T
 >;
 
 template<typename Cont, typename T>
@@ -76,13 +72,13 @@ public:
   template<
     typename U,
     std::size_t N,
-    typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>
+    typename = std::enable_if_t<impl::is_safe_array_conv<U, T>>
   > constexpr span(U (&array)[N]) : span(array, N) {}
 
-  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>>
+  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U, T>>>
   constexpr span(const span<U>& rhs) : span(rhs.data(), rhs.size()) {}
 
-  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U*, T*>>>
+  template<typename U, typename = std::enable_if_t<impl::is_safe_array_conv<U, T>>>
   constexpr span(span<U>&& rhs) : span(rhs.data(), rhs.size()) {}
 
   constexpr void swap(span& other);
