@@ -271,6 +271,33 @@ inline void swap(promise_source<T>& lhs, promise_source<T>& rhs) {
 }
 
 
+
+// UTILITIES
+
+namespace impl {
+
+template<typename T>
+struct remove_promise_impl {
+  using type = T;
+};
+
+template<typename T>
+struct remove_promise_impl<promise<T>> {
+  using type = T;
+};
+
+template<typename T>
+using remove_promise = typename remove_promise_impl<T>::type;
+
+}  // namespace impl
+
+template<typename T>
+using unwrapped_promise_source = promise_source<impl::remove_promise<T>>;
+
+template<typename T>
+using unwrapped_promise = promise<impl::remove_promise<T>>;
+
+
 template<typename T>
 promise<std::decay_t<T>> make_resolved_promise(T&& val) {
   promise_source<std::decay_t<T>> source;
@@ -409,22 +436,6 @@ promise<T>::promise(std::shared_ptr<impl::promise_data<T>> data)
 
 namespace impl {
 
-template<typename T>
-struct remove_promise_impl {
-  using type = T;
-};
-
-template<typename T>
-struct remove_promise_impl<promise<T>> {
-  using type = T;
-};
-
-template<typename T>
-using remove_promise = typename remove_promise_impl<T>::type;
-
-template<typename T>
-using promise_source_for = promise_source<remove_promise<T>>;
-
 template<typename Ret>
 struct promise_cont_caller {
   template<typename T, typename Cont, typename Arg>
@@ -458,7 +469,7 @@ auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
   using cont_result_type = std::decay_t<std::invoke_result_t<Cont&&, promise_val<T>&&>>;
 
   struct cont_context {
-    impl::promise_source_for<cont_result_type> source;
+    unwrapped_promise_source<cont_result_type> source;
     impl::promise_state<T> state;
   };
 
