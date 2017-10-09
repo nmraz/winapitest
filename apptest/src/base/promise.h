@@ -324,8 +324,9 @@ void promise_source_base<T>::set_value(const promise<T>& prom) {
     prom.data_->set_cont([data = data_](promise_state<T>&& state) {
       data->fulfill(std::move(state));
     });
+  } else {
+    abandon();
   }
-  abandon();
 }
 
 template<typename T>
