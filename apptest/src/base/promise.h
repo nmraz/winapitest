@@ -162,9 +162,9 @@ template<typename T>
 class promise_source_base : non_copyable {
 public:
   promise_source_base();
+  promise_source_base(promise_source_base&& rhs) = default;
   ~promise_source_base();
 
-  promise_source_base& operator=(promise_source_base rhs) noexcept;
   void swap(promise_source_base& other) noexcept;
 
   promise<T> get_promise() const;
@@ -229,16 +229,24 @@ inline void swap(promise<T>& lhs, promise<T>& rhs) {
 template<typename T>
 class promise_source : public impl::promise_source_base<T> {
 public:
-  using impl::promise_source_base<T>::set_value;
+  promise_source() = default;
+  promise_source(promise_source&& rhs) = default;
 
+  promise_source& operator=(promise_source&& rhs) noexcept;
+
+  using impl::promise_source_base<T>::set_value;
   void set_value(T val);
 };
 
 template<>
 class promise_source<void> : public impl::promise_source_base<void> {
 public:
-  using impl::promise_source_base<void>::set_value;
+  promise_source() = default;
+  promise_source(promise_source&& rhs) = default;
 
+  promise_source& operator=(promise_source&& rhs) noexcept;
+
+  using impl::promise_source_base<void>::set_value;
   void set_value();
 };
 
@@ -282,12 +290,6 @@ promise_source_base<T>::promise_source_base()
 template<typename T>
 promise_source_base<T>::~promise_source_base() {
   abandon();
-}
-
-template<typename T>
-promise_source_base<T>& promise_source_base<T>::operator=(promise_source_base rhs) noexcept {
-  // the implicitly declared move assignment operator doesn't abandon(), whereas this one does
-  rhs.swap(*this);
 }
 
 template<typename T>
@@ -450,6 +452,11 @@ auto promise<T>::then(Cont&& cont) {
 // promise_source<T>
 
 template<typename T>
+promise_source<T>& promise_source<T>::operator=(promise_source&& rhs) noexcept {
+  promise_source(std::move(rhs)).swap(*this);
+}
+
+template<typename T>
 void promise_source<T>::set_value(T val) {
   ASSERT(this->data_) << "Empty promise source";
   this->data_->fulfill(impl::promise_state_resolved<T>{ std::move(val) });
@@ -457,6 +464,10 @@ void promise_source<T>::set_value(T val) {
 
 
 // promise_source<void>
+
+inline promise_source<void>& promise_source<void>::operator=(promise_source&& rhs) noexcept {
+  promise_source(std::move(rhs)).swap(*this);
+}
 
 inline void promise_source<void>::set_value() {
   ASSERT(data_) << "Empty promise source";
