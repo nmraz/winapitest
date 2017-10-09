@@ -469,25 +469,22 @@ auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
   struct cont_context {
     unwrapped_promise_source<cont_result_type> source;
     impl::promise_state<T> state;
+    std::decay_t<Cont> cont;
   };
 
   ASSERT(is_valid()) << "Invalid promise";
 
-  auto ctx = std::make_shared<cont_context>();
+  auto ctx = std::make_shared<cont_context>(cont_context{ {}, {}, std::forward<Cont>(cont) });
 
   data_->set_cont([
     runner = std::move(runner),
-    ctx,
-    cont = std::forward<Cont>(cont)
+    ctx
   ](impl::promise_state<T>&& state) mutable {
     ctx->state = std::move(state);
 
-    runner->post_task([
-      cont = std::forward<Cont>(cont),
-      ctx = std::move(ctx)
-    ]() mutable {
+    runner->post_task([ctx = std::move(ctx)]() mutable {
       try {
-        impl::promise_cont_caller<cont_result_type>::call(ctx->source, std::forward<Cont>(cont), std::move(ctx->state));
+        impl::promise_cont_caller<cont_result_type>::call(ctx->source, std::forward<Cont>(ctx->cont), std::move(ctx->state));
       } catch (...) {
         ctx->source.set_exception(std::current_exception());
       }
