@@ -2,9 +2,11 @@
 
 #include "base/assert.h"
 #include "base/non_copyable.h"
+#include "base/task_runner/task_runner.h"
 #include <exception>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <stdexcept>
 #include <utility>
 #include <variant>
@@ -107,54 +109,64 @@ public:
   void fulfill(State&& state);
   void fulfill(promise_state<T> state);
 
+private:
   bool is_ready() const;
-  void call_cont() noexcept;
+  void call_cont(std::unique_lock<std::mutex>& hold) noexcept;
 
   promise_state<T> state_;
   std::function<void(promise_state<T>&&)> cont_;
+  std::mutex lock_;  // protects state_, cont_
 };
 
 template<typename T>
 template<typename Cont>
 void promise_data<T>::set_cont(Cont&& cont) {
+  std::unique_lock<std::mutex> hold(lock_);
+
   ASSERT(!cont_) << "Promise continuation already set";
   cont_ = std::forward<Cont>(cont);
 
   if (is_ready()) {
-    call_cont();
+    call_cont(hold);
   }
 }
 
 template<typename T>
 template<typename State>
 void promise_data<T>::fulfill(State&& state) {
+  std::unique_lock<std::mutex> hold(lock_);
+
   if (!std::holds_alternative<promise_state_pending>(state_.rep)) {
     return;
   }
 
   state_.rep = std::forward<State>(state);
-  call_cont();
+  call_cont(hold);
 }
 
 template<typename T>
 void promise_data<T>::fulfill(promise_state<T> state) {
-  state_ = std::move(state);
-  call_cont();
-}
+  std::unique_lock<std::mutex> hold(lock_);
 
-template<typename T>
-void promise_data<T>::call_cont() noexcept {
-  ASSERT(is_ready()) << "Promise continuation called in non-ready state";
-  if (cont_) {
-    cont_(std::move(state_));
-    cont_ = nullptr;
-  }
+  state_ = std::move(state);
+  call_cont(hold);
 }
 
 template<typename T>
 bool promise_data<T>::is_ready() const {
   return std::holds_alternative<promise_state_resolved<T>>(state_.rep)
     || std::holds_alternative<promise_state_rejected>(state_.rep);
+}
+
+template<typename T>
+void promise_data<T>::call_cont(std::unique_lock<std::mutex>& hold) noexcept {
+  if (auto cont = std::exchange(cont_, nullptr)) {
+    auto state = std::move(state_);
+    hold.unlock();
+
+    // note: continuation is called *outside* the lock
+    cont(std::move(state));
+  }
 }
 
 
@@ -211,6 +223,9 @@ public:
 
   template<typename Cont>
   auto then(Cont&& cont);
+
+  template<typename Cont>
+  auto then(Cont&& cont, std::shared_ptr<task_runner> runner);
 
 private:
   friend class impl::promise_source_base<T>;
@@ -325,9 +340,7 @@ void promise_source_base<T>::abandon() {
     return;
   }
 
-  if (std::holds_alternative<promise_state_pending>(data_->state_.rep)) {
-    set_exception(std::make_exception_ptr(abandoned_promise()));
-  }
+  set_exception(std::make_exception_ptr(abandoned_promise()));  // this will have no effect if the promise has already been fulfilled
   data_ = nullptr;
 }
 
@@ -428,24 +441,48 @@ struct promise_cont_caller<void> {
   }
 };
 
+std::shared_ptr<task_runner> default_promise_task_runner();
+
 }  // namespace impl
 
 template<typename T>
 template<typename Cont>
 auto promise<T>::then(Cont&& cont) {
+  return then(std::forward<Cont>(cont), impl::default_promise_task_runner());
+}
+
+template<typename T>
+template<typename Cont>
+auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
   using cont_result_type = std::decay_t<std::invoke_result_t<Cont&&, promise_val<T>&&>>;
 
-  auto source = std::make_shared<impl::promise_source_for<cont_result_type>>();
+  struct cont_context {
+    impl::promise_source_for<cont_result_type> source;
+    impl::promise_state<T> state;
+  };
 
-  data_->set_cont([source, cont = std::forward<Cont>(cont)](impl::promise_state<T>&& state) mutable {
-    try {
-      impl::promise_cont_caller<cont_result_type>::call(*source, std::forward<Cont>(cont), std::move(state));
-    } catch (...) {
-      source->set_exception(std::current_exception());
-    }
+  auto ctx = std::make_shared<cont_context>();
+
+  data_->set_cont([
+    runner = std::move(runner),
+    ctx,
+    cont = std::forward<Cont>(cont)
+  ](impl::promise_state<T>&& state) mutable {
+    ctx->state = std::move(state);
+
+    runner->post_task([
+      cont = std::forward<Cont>(cont),
+      ctx = std::move(ctx)
+    ]() mutable {
+      try {
+        impl::promise_cont_caller<cont_result_type>::call(ctx->source, std::forward<Cont>(cont), std::move(ctx->state));
+      } catch (...) {
+        ctx->source.set_exception(std::current_exception());
+      }
+    });
   });
 
-  return source->get_promise();
+  return ctx->source.get_promise();
 }
 
 
