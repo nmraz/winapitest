@@ -181,7 +181,7 @@ public:
 
   promise<T> get_promise() const;
 
-  void set_value(const promise<T>& prom);
+  void set_value(promise<T>&& prom);
   void set_exception(std::exception_ptr exc);
 
 protected:
@@ -214,7 +214,7 @@ inline void swap(promise_val<T>& lhs, promise_val<T>& rhs) {
 
 
 template<typename T>
-class promise {
+class promise : public non_copyable {
 public:
   promise() = default;
   void swap(promise& other) noexcept;
@@ -346,14 +346,12 @@ promise<T> promise_source_base<T>::get_promise() const {
 }
 
 template<typename T>
-void promise_source_base<T>::set_value(const promise<T>& prom) {
-  if (prom.is_valid()) {
-    prom.data_->set_cont([data = data_](promise_state<T>&& state) {
-      data->fulfill(std::move(state));
-    });
-  } else {
-    abandon();
-  }
+void promise_source_base<T>::set_value(promise<T>&& prom) {
+  ASSERT(prom.is_valid()) << "Invalid promise";
+  prom.data_->set_cont([data = data_](promise_state<T>&& state) {
+    data->fulfill(std::move(state));
+  });
+  prom.data_ = nullptr;
 }
 
 template<typename T>
@@ -473,6 +471,8 @@ auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
     impl::promise_state<T> state;
   };
 
+  ASSERT(is_valid()) << "Invalid promise";
+
   auto ctx = std::make_shared<cont_context>();
 
   data_->set_cont([
@@ -493,6 +493,7 @@ auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
       }
     });
   });
+  data_ = nullptr;
 
   return ctx->source.get_promise();
 }
