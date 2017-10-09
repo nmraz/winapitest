@@ -197,6 +197,7 @@ private:
 template<typename T>
 class promise_val : public non_copyable {
 public:
+  constexpr promise_val() = default;
   promise_val(impl::promise_state<T>&& state);
 
   void swap(promise_val& other) noexcept;
