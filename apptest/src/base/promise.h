@@ -86,6 +86,7 @@ template<typename T>
 promise_state<T>& promise_state<T>::operator=(promise_state rhs) noexcept {
   using std::swap;
   swap(rep, rhs.rep);
+  return *this;
 }
 
 template<typename T>
@@ -103,14 +104,12 @@ public:
   void set_cont(Cont&& cont);
 
   template<typename State>
-  void set_state(State&& state);
+  void fulfill(State&& state);
+  void fulfill(promise_state<T> state);
 
   bool is_ready() const;
   void call_cont() noexcept;
 
-  const typename promise_state<T>::rep_type& raw_state() const { return state_.rep; }
-
-private:
   promise_state<T> state_;
   std::function<void(promise_state<T>&&)> cont_;
 };
@@ -128,7 +127,7 @@ void promise_data<T>::set_cont(Cont&& cont) {
 
 template<typename T>
 template<typename State>
-void promise_data<T>::set_state(State&& state) {
+void promise_data<T>::fulfill(State&& state) {
   if (!std::holds_alternative<promise_state_pending>(state_.rep)) {
     return;
   }
@@ -138,7 +137,14 @@ void promise_data<T>::set_state(State&& state) {
 }
 
 template<typename T>
+void promise_data<T>::fulfill(promise_state<T> state) {
+  state_ = std::move(state);
+  call_cont();
+}
+
+template<typename T>
 void promise_data<T>::call_cont() noexcept {
+  ASSERT(is_ready()) << "Promise continuation called in non-ready state";
   if (cont_) {
     cont_(std::move(state_));
     cont_ = nullptr;
@@ -158,24 +164,20 @@ public:
   promise_source_base();
   ~promise_source_base();
 
+  promise_source_base& operator=(promise_source_base rhs) noexcept;
   void swap(promise_source_base& other) noexcept;
 
   promise<T> get_promise() const;
+
+  void set_value(const promise<T>& prom);
   void set_exception(std::exception_ptr exc);
 
 protected:
   std::shared_ptr<promise_data<T>> data_;
 
 private:
-  template<typename T>
-  friend void copy_promise_data(promise_source_base<T>& source, promise<T> prom);
+  void abandon();
 };
-
-
-template<typename T>
-void copy_promise_data(promise_source_base<T>& source, promise<T> prom) {
-  source.data_ = prom.data_;
-}
 
 }  // namespace impl
 
@@ -211,9 +213,6 @@ public:
   auto then(Cont&& cont);
 
 private:
-  template<typename T>
-  friend void impl::copy_promise_data(promise_source_base<T>& source, promise<T> prom);
-
   friend class impl::promise_source_base<T>;
 
   promise(std::shared_ptr<impl::promise_data<T>> data);
@@ -230,13 +229,16 @@ inline void swap(promise<T>& lhs, promise<T>& rhs) {
 template<typename T>
 class promise_source : public impl::promise_source_base<T> {
 public:
-  template<typename U>
-  void set_value(U&& val);
+  using impl::promise_source_base<T>::set_value;
+
+  void set_value(T val);
 };
 
 template<>
 class promise_source<void> : public impl::promise_source_base<void> {
 public:
+  using impl::promise_source_base<void>::set_value;
+
   void set_value();
 };
 
@@ -279,9 +281,13 @@ promise_source_base<T>::promise_source_base()
 
 template<typename T>
 promise_source_base<T>::~promise_source_base() {
-  if (std::holds_alternative<promise_state_pending>(data_->raw_state())) {  // the promise has been abandoned
-    set_exception(std::make_exception_ptr(abandoned_promise()));
-  }
+  abandon();
+}
+
+template<typename T>
+promise_source_base<T>& promise_source_base<T>::operator=(promise_source_base rhs) noexcept {
+  // the implicitly declared move assignment operator doesn't abandon(), whereas this one does
+  rhs.swap(*this);
 }
 
 template<typename T>
@@ -296,10 +302,31 @@ promise<T> promise_source_base<T>::get_promise() const {
 }
 
 template<typename T>
-void promise_source_base<T>::set_exception(std::exception_ptr exc) {
-  ASSERT(data_) << "Empty promise";
+void promise_source_base<T>::set_value(const promise<T>& prom) {
+  if (prom.is_valid()) {
+    prom.data_->set_cont([data = data_](promise_state<T>&& state) {
+      data->fulfill(std::move(state));
+    });
+  }
+  abandon();
+}
 
-  data_->set_state(promise_state_rejected{ exc });
+template<typename T>
+void promise_source_base<T>::set_exception(std::exception_ptr exc) {
+  ASSERT(data_) << "Empty promise source";
+  data_->fulfill(promise_state_rejected{ exc });
+}
+
+template<typename T>
+void promise_source_base<T>::abandon() {
+  if (!data_) {
+    return;
+  }
+
+  if (std::holds_alternative<promise_state_pending>(data_->state_.rep)) {
+    set_exception(std::make_exception_ptr(abandoned_promise()));
+  }
+  data_ = nullptr;
 }
 
 }  // namespace impl
@@ -384,17 +411,9 @@ using promise_source_for = promise_source<remove_promise<T>>;
 
 template<typename Ret>
 struct promise_cont_caller {
-  template<typename Cont, typename Arg>
-  static void call(promise_source<Ret>& source, Cont&& cont, Arg&& arg) {
+  template<typename T, typename Cont, typename Arg>
+  static void call(promise_source<T>& source, Cont&& cont, Arg&& arg) {
     source.set_value(std::forward<Cont>(cont)(std::forward<Arg>(arg)));
-  }
-};
-
-template<typename Ret>
-struct promise_cont_caller<promise<Ret>> {
-  template<typename Cont, typename Arg>
-  static void call(promise_source<Ret>& source, Cont&& cont, Arg&& arg) {
-    copy_promise_data(source, std::forward<Cont>(cont)(std::forward<Arg>(arg)));
   }
 };
 
@@ -433,16 +452,17 @@ auto promise<T>::then(Cont&& cont) {
 // promise_source<T>
 
 template<typename T>
-template<typename U>
-void promise_source<T>::set_value(U&& val) {
-  this->data_->set_state(impl::promise_state_resolved<T>{ std::forward<U>(val) });
+void promise_source<T>::set_value(T val) {
+  ASSERT(this->data_) << "Empty promise source";
+  this->data_->fulfill(impl::promise_state_resolved<T>{ std::move(val) });
 }
 
 
 // promise_source<void>
 
 inline void promise_source<void>::set_value() {
-  data_->set_state(impl::promise_state_resolved<void>{});
+  ASSERT(data_) << "Empty promise source";
+  data_->fulfill(impl::promise_state_resolved<void>{});
 }
 
 }  // namespace base
