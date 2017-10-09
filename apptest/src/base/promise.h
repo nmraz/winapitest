@@ -436,10 +436,8 @@ auto promise<T>::then(Cont&& cont) {
   auto source = std::make_shared<impl::promise_source_for<cont_result_type>>();
 
   data_->set_cont([source, cont = std::forward<Cont>(cont)](impl::promise_state<T>&& state) mutable {
-    promise_val<T> val(std::move(state));
-
     try {
-      impl::promise_cont_caller<cont_result_type>::call(*source, std::forward<Cont>(cont), std::move(val));
+      impl::promise_cont_caller<cont_result_type>::call(*source, std::forward<Cont>(cont), std::move(state));
     } catch (...) {
       source->set_exception(std::current_exception());
     }
