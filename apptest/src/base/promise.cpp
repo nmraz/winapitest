@@ -12,6 +12,11 @@ abandoned_promise::abandoned_promise()
   : std::logic_error("Abandoned promise") {
 }
 
+promise_already_retrieved::promise_already_retrieved()
+  : std::logic_error("Promise already retrieved") {
+}
+
+
 namespace impl {
 
 std::shared_ptr<task_runner> default_promise_task_runner() {

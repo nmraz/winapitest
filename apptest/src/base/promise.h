@@ -23,6 +23,12 @@ public:
   abandoned_promise();
 };
 
+class promise_already_retrieved : public std::logic_error {
+public:
+  promise_already_retrieved();
+};
+
+
 template<typename T>
 class promise_source;
 
@@ -179,7 +185,7 @@ public:
 
   void swap(promise_source_base& other) noexcept;
 
-  promise<T> get_promise() const;
+  promise<T> get_promise();
 
   void set_value(promise<T>&& prom);
   void set_exception(std::exception_ptr exc);
@@ -189,6 +195,8 @@ protected:
 
 private:
   void abandon();
+
+  bool promise_retrieved_ = false;
 };
 
 }  // namespace impl
@@ -342,7 +350,13 @@ void promise_source_base<T>::swap(promise_source_base& other) noexcept {
 }
 
 template<typename T>
-promise<T> promise_source_base<T>::get_promise() const {
+promise<T> promise_source_base<T>::get_promise() {
+  ASSERT(data_) << "No state";
+
+  if (promise_retrieved_) {
+    throw promise_already_retrieved();
+  }
+  promise_retrieved_ = true;
   return promise<T>(data_);
 }
 
