@@ -12,7 +12,13 @@
 #define ASSERT(COND) __assume(COND), ASSERT_IMPL(true)
 #endif
 
-namespace base::impl {
+#define NOTREACHED() ASSERT(base::not_reached)
+
+namespace base {
+
+constexpr bool not_reached = false;
+
+namespace impl {
 
 class failed_assertion {
 public:
@@ -35,4 +41,5 @@ struct assert_voidify {
   void operator|(const failed_assertion&) {}
 };
 
-}  // namespace base::impl
+}  // namespace impl
+}  // namespace base

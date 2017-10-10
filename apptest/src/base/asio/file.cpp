@@ -38,7 +38,7 @@ DWORD get_win_create_disp(file::create_disp disp) {
   case file::create_disp::create_always:
     return CREATE_ALWAYS;
   default:
-    ASSERT(false) << "Invalid file creation disposition";
+    NOTREACHED() << "Invalid file creation disposition";
     return 0;
   }
 }
