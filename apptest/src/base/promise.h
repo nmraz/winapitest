@@ -187,7 +187,7 @@ public:
 
   promise<T> get_promise();
 
-  void set_value(promise<T>&& prom);
+  void set_value(promise<T> prom);
   void set_exception(std::exception_ptr exc);
 
 protected:
@@ -361,12 +361,11 @@ promise<T> promise_source_base<T>::get_promise() {
 }
 
 template<typename T>
-void promise_source_base<T>::set_value(promise<T>&& prom) {
+void promise_source_base<T>::set_value(promise<T> prom) {
   ASSERT(prom.is_valid()) << "No state";
   prom.data_->set_cont([data = data_](promise_state<T>&& state) {
     data->fulfill(std::move(state));
   });
-  prom.data_ = nullptr;
 }
 
 template<typename T>
