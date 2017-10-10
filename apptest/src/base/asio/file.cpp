@@ -55,6 +55,21 @@ DWORD get_win_access(int desired_access) {
   return ret;
 }
 
+DWORD get_win_share_mode(int mode) {
+  DWORD ret = 0;
+
+  if (mode & file::share_read) {
+    ret |= FILE_SHARE_READ;
+  }
+  if (mode & file::share_write) {
+    ret |= FILE_SHARE_WRITE;
+  }
+  if (mode & file::share_del) {
+    ret |= FILE_SHARE_DELETE;
+  }
+  return ret;
+}
+
 
 void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* win_overlapped) noexcept {
   std::unique_ptr<overlappedex> overlapped(static_cast<overlappedex*>(win_overlapped));
@@ -71,21 +86,18 @@ void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* win
 }  // namespace
 
 
-file::file(std::string_view name, int desired_access, create_disp disp) {
-  open(name, desired_access, disp);
+file::file(std::string_view name, int desired_access, create_disp disp, int share) {
+  open(name, desired_access, disp, share);
 }
 
 
-void file::open(std::string_view name, int desired_access, create_disp disp) {
-  DWORD win_access = get_win_access(desired_access);
-  DWORD win_create_disp = get_win_create_disp(disp);
-
+void file::open(std::string_view name, int desired_access, create_disp disp, int share) {
   handle_ = ::CreateFileW(
     widen(name).c_str(),
-    win_access,
-    FILE_SHARE_READ | FILE_SHARE_WRITE,
+    get_win_access(desired_access),
+    get_win_share_mode(share),
     nullptr,
-    win_create_disp,
+    get_win_create_disp(disp),
     FILE_FLAG_OVERLAPPED,
     nullptr
   );

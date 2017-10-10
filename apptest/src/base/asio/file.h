@@ -25,13 +25,21 @@ public:
     create_always,  // open or create + truncate
   };
 
+  enum share_mode {
+    share_none = 0,
+    share_read = 1 << 0,
+    share_write = 1 << 1,
+    share_del = 1 << 2
+  };
+
+
   using offset_type = std::int64_t;
   using complete_type = promise<unsigned long>;
 
   file() = default;
-  file(std::string_view name, int desired_access, create_disp disp);
+  file(std::string_view name, int desired_access, create_disp disp, int share = share_read | share_write);
 
-  void open(std::string_view name, int desired_access, create_disp disp);
+  void open(std::string_view name, int desired_access, create_disp disp, int share = share_read | share_write);
   void close();
 
 
