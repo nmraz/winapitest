@@ -199,6 +199,9 @@ void promise_data<T>::call_cont(std::unique_lock<std::mutex>& hold) noexcept {
 template<typename T>
 class promise_source_base : non_copyable {
 public:
+  using promised_type = T;
+  using promise_type = promise<T>;
+
   promise_source_base();
   promise_source_base(promise_source_base&& rhs) = default;
   ~promise_source_base();
@@ -225,6 +228,8 @@ private:
 template<typename T>
 class promise_val : public non_copyable {
 public:
+  using value_type = T;
+
   constexpr promise_val() = default;
   promise_val(impl::promise_state<T>&& state);
 
@@ -245,6 +250,9 @@ inline void swap(promise_val<T>& lhs, promise_val<T>& rhs) {
 template<typename T>
 class promise : public non_copyable {
 public:
+  using promised_type = T;
+  using source_type = promise_source<T>;
+
   promise() = default;
   void swap(promise& other) noexcept;
 
