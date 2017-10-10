@@ -102,7 +102,7 @@ void file::open(std::string_view name, int desired_access, create_disp disp, int
     nullptr
   );
 
-  if (handle_.get() == INVALID_HANDLE_VALUE) {
+  if (!handle_) {
     win::throw_last_error("Failed to open file");
   }
 }

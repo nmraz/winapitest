@@ -51,7 +51,7 @@ void scoped_handle::release() {
 
 
 scoped_handle::operator bool() const {
-  return !!handle_;
+  return handle_ != nullptr && handle_ != INVALID_HANDLE_VALUE;
 }
 
 }  // namespace base::win
