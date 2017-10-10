@@ -117,7 +117,6 @@ public:
 
   template<typename State>
   void fulfill(State&& state);
-  void fulfill(promise_state<T> state);
 
 private:
   bool is_ready() const;
@@ -393,7 +392,7 @@ void promise_source_base<T>::set_value(promise<T> prom) {
   ASSERT(prom.is_valid()) << "No state";
   ASSERT(data_) << "No state";
   prom.data_->set_cont([data = data_](promise_state<T>&& state) {
-    data->fulfill(std::move(state));
+    data->fulfill(state.move_rep());
   });
 }
 
