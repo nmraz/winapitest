@@ -460,24 +460,17 @@ promise<T>::promise(std::shared_ptr<impl::promise_data<T>> data)
 
 namespace impl {
 
-template<typename Ret>
-struct promise_cont_caller {
-  template<typename T, typename Cont, typename Arg>
-  static void call(promise_source<T>& source, Cont&& cont, Arg&& arg) {
-    source.set_value(std::forward<Cont>(cont)(std::forward<Arg>(arg)));
-  }
-};
+std::shared_ptr<task_runner> default_promise_task_runner();
 
-template<>
-struct promise_cont_caller<void> {
-  template<typename Cont, typename Arg>
-  static void call(promise_source<void>& source, Cont&& cont, Arg&& arg) {
+template<typename Ret, typename Source, typename Cont, typename Arg>
+void call_promise_cont(Source& source, Cont&& cont, Arg&& arg) {
+  if constexpr (std::is_void_v<Ret>) {
     std::forward<Cont>(cont)(std::forward<Arg>(arg));
     source.set_value();
+  } else {
+    source.set_value(std::forward<Cont>(cont)(std::forward<Arg>(arg)));
   }
-};
-
-std::shared_ptr<task_runner> default_promise_task_runner();
+}
 
 }  // namespace impl
 
@@ -510,7 +503,7 @@ auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
 
     runner->post_task([ctx = std::move(ctx)]() mutable {
       try {
-        impl::promise_cont_caller<cont_result_type>::call(ctx->source, std::forward<Cont>(ctx->cont), std::move(ctx->state));
+        impl::call_promise_cont<cont_result_type>(ctx->source, std::forward<Cont>(ctx->cont), std::move(ctx->state));
       } catch (...) {
         ctx->source.set_exception(std::current_exception());
       }
