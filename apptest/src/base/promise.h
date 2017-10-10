@@ -108,6 +108,10 @@ typename promise_state<T>::rep_type promise_state<T>::move_rep() {
 template<typename T>
 struct promise_data {
 public:
+  promise_data() = default;
+  template<typename State>
+  promise_data(State&& state);
+
   template<typename Cont>
   void set_cont(Cont&& cont);
 
@@ -125,6 +129,12 @@ private:
   std::function<void(promise_state<T>&&)> cont_;
   std::mutex lock_;  // protects state_, cont_
 };
+
+template<typename T>
+template<typename State>
+promise_data<T>::promise_data(State&& state) {
+  state_.rep = std::forward<State>(state);
+}
 
 template<typename T>
 template<typename Cont>
@@ -248,6 +258,9 @@ public:
   auto then(Cont&& cont, std::shared_ptr<task_runner> runner);
 
 private:
+  template<typename T>
+  friend auto make_resolved_promise(T&& val);
+  friend promise<void> make_resolved_promise();
   friend class impl::promise_source_base<T>;
 
   promise(std::shared_ptr<impl::promise_data<T>> data);
@@ -319,10 +332,13 @@ using unwrapped_promise = promise<impl::remove_promise<T>>;
 
 
 template<typename T>
-promise<std::decay_t<T>> make_resolved_promise(T&& val) {
-  promise_source<std::decay_t<T>> source;
-  source.set_value(std::forward<T>(val));
-  return source.get_promise();
+auto make_resolved_promise(T&& val) {
+  using decayed_t = std::decay_t<T>;
+
+  auto data = std::make_shared<impl::promise_data<decayed_t>>(
+    impl::promise_state_resolved<T>{ std::forward<T>(val) }
+  );
+  return promise<decayed_t>(std::move(data));
 }
 
 template<typename T>
@@ -331,9 +347,10 @@ promise<T> make_resolved_promise(promise<T> val) {
 }
 
 inline promise<void> make_resolved_promise() {
-  promise_source<void> source;
-  source.set_value();
-  return source.get_promise();
+  auto data = std::make_shared<impl::promise_data<void>>(
+    impl::promise_state_resolved<void>{}
+  );
+  return promise<void>(std::move(data));
 }
 
 
