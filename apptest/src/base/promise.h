@@ -362,7 +362,7 @@ promise<T> promise_source_base<T>::get_promise() {
 
 template<typename T>
 void promise_source_base<T>::set_value(promise<T>&& prom) {
-  ASSERT(prom.is_valid()) << "Invalid promise";
+  ASSERT(prom.is_valid()) << "No state";
   prom.data_->set_cont([data = data_](promise_state<T>&& state) {
     data->fulfill(std::move(state));
   });
@@ -371,7 +371,7 @@ void promise_source_base<T>::set_value(promise<T>&& prom) {
 
 template<typename T>
 void promise_source_base<T>::set_exception(std::exception_ptr exc) {
-  ASSERT(data_) << "Empty promise source";
+  ASSERT(data_) << "No state";
   data_->fulfill(promise_state_rejected{ exc });
 }
 
@@ -487,7 +487,7 @@ auto promise<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
     std::decay_t<Cont> cont;
   };
 
-  ASSERT(is_valid()) << "Invalid promise";
+  ASSERT(is_valid()) << "No state";
 
   auto ctx = std::make_shared<cont_context>(cont_context{ {}, {}, std::forward<Cont>(cont) });
 
@@ -520,7 +520,7 @@ promise_source<T>& promise_source<T>::operator=(promise_source&& rhs) noexcept {
 
 template<typename T>
 void promise_source<T>::set_value(T val) {
-  ASSERT(this->data_) << "Empty promise source";
+  ASSERT(this->data_) << "No state";
   this->data_->fulfill(impl::promise_state_resolved<T>{ std::move(val) });
 }
 
@@ -532,7 +532,7 @@ inline promise_source<void>& promise_source<void>::operator=(promise_source&& rh
 }
 
 inline void promise_source<void>::set_value() {
-  ASSERT(data_) << "Empty promise source";
+  ASSERT(data_) << "No state";
   data_->fulfill(impl::promise_state_resolved<void>{});
 }
 
