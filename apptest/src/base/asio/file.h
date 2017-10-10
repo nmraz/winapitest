@@ -12,24 +12,26 @@ namespace base {
 
 class file {
 public:
-  enum flags {
-    open_only = 1 << 0,  // open only if exists
-    create_only = 1 << 1,  // create only if doesn't exist
+  enum access {
+    in = 1 << 0,  // read
+    out = 1 << 1  // write
+  };
 
-    open_always = 1 << 2,  // open or create
-    create_always = 1 << 3,  // open and trucate or create
-    
-    in = 1 << 4,  // read
-    out = 1 << 5  // write
+  enum class create_disp {
+    open_only,  // open only if exists
+    create_only,  // create only if doesn't exist
+
+    open_always,  // open or create
+    create_always,  // open or create + truncate
   };
 
   using offset_type = std::int64_t;
   using complete_type = promise<unsigned long>;
 
   file() = default;
-  file(std::string_view name, int open_flags);
+  file(std::string_view name, int desired_access, create_disp disp);
 
-  void open(std::string_view name, int open_flags);
+  void open(std::string_view name, int desired_access, create_disp disp);
   void close();
 
 

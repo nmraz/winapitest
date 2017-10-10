@@ -52,7 +52,7 @@ int wmain(int argc, const wchar_t** argv) {
     timer2.set(2s);
 
     io_thread.task_runner()->post_task([] {
-      auto file = std::make_shared<base::file>("test.txt", base::file::out | base::file::create_always);
+      auto file = std::make_shared<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
       auto data = std::make_shared<std::string>(3000, 'h');
 
       file->write(0, *data).then([file, data](base::promise_val<unsigned long> bytes_written) {
