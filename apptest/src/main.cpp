@@ -55,8 +55,12 @@ int wmain(int argc, const wchar_t** argv) {
       auto file = std::make_shared<base::file>("test.txt", base::file::out | base::file::create_always);
       auto data = std::make_shared<std::string>(3000, 'h');
 
-      file->write(0, *data, [file, data] (const std::error_code& err, unsigned long written) {
-        LOG(info) << "wrote " << written << " bytes of data: " << err.message();
+      file->write(0, *data).then([file, data](base::promise_val<unsigned long> bytes_written) {
+        try {
+          LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
+        } catch (const std::exception& e) {
+          LOG(error) << "Failed to write to file: " << e.what();
+        }
       });
     });
 

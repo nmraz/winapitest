@@ -9,16 +9,15 @@ namespace base {
 namespace {
 
 struct overlappedex : OVERLAPPED {
-  file::complete_callback callback;
+  file::complete_type::source_type source;
 };
 
-auto make_overlapped(file::offset_type offset, file::complete_callback&& callback) {
+auto make_overlapped(file::offset_type offset) {
   auto overlapped = std::make_unique<overlappedex>();
 
   LARGE_INTEGER offsetParts;
   offsetParts.QuadPart = offset;
 
-  overlapped->callback = std::move(callback);
   overlapped->Offset = offsetParts.LowPart;
   overlapped->OffsetHigh = offsetParts.HighPart;
 
@@ -26,11 +25,16 @@ auto make_overlapped(file::offset_type offset, file::complete_callback&& callbac
 }
 
 
-void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* overlapped) noexcept {
-  std::unique_ptr<overlappedex> overlapped_ex(static_cast<overlappedex*>(overlapped));
-  std::error_code ec(err, std::system_category());
+void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* win_overlapped) noexcept {
+  std::unique_ptr<overlappedex> overlapped(static_cast<overlappedex*>(win_overlapped));
 
-  overlapped_ex->callback(ec, bytes_transferred);
+  if (err) {
+    overlapped->source.set_exception(
+      std::make_exception_ptr(std::system_error(err, std::system_category()))
+    );
+  } else {
+    overlapped->source.set_value(bytes_transferred);
+  }
 }
 
 }  // namespace
@@ -72,24 +76,30 @@ void file::close() {
 }
 
 
-void file::read(offset_type offset, void* buf, unsigned long count, complete_callback callback) {
-  auto overlapped = make_overlapped(offset, std::move(callback));
+file::complete_type file::read(offset_type offset, void* buf, unsigned long count) {
+  auto overlapped = make_overlapped(offset);
 
   if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->callback(win::last_error_code(), 0);
-    return;
+    overlapped->source.set_exception(
+      std::make_exception_ptr(std::system_error(win::last_error_code()))
+    );
+    return overlapped->source.get_promise();
+  } else {
+    return overlapped.release()->source.get_promise();
   }
-  overlapped.release();
 }
 
-void file::write(offset_type offset, const void* buf, unsigned long count, complete_callback callback) {
-  auto overlapped = make_overlapped(offset, std::move(callback));
+file::complete_type file::write(offset_type offset, const void* buf, unsigned long count) {
+  auto overlapped = make_overlapped(offset);
 
   if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->callback(win::last_error_code(), 0);
-    return;
+    overlapped->source.set_exception(
+      std::make_exception_ptr(std::system_error(win::last_error_code()))
+    );
+    return overlapped->source.get_promise();
+  } else {
+    return overlapped.release()->source.get_promise();
   }
-  overlapped.release();
 }
 
 

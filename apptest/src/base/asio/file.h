@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/promise.h"
 #include "base/win/scoped_handle.h"
 #include <cstdint>
 #include <functional>
@@ -23,8 +24,7 @@ public:
   };
 
   using offset_type = std::int64_t;
-
-  using complete_callback = std::function<void(const std::error_code&, unsigned long)>;
+  using complete_type = promise<unsigned long>;
 
   file() = default;
   file(std::string_view name, int open_flags);
@@ -33,19 +33,19 @@ public:
   void close();
 
 
-  template<typename Buffer, typename Cb>
-  void read(offset_type offset, Buffer& buf, Cb&& callback);
+  template<typename Buffer>
+  complete_type read(offset_type offset, Buffer& buf);
 
 
-  template<typename Buffer, typename Cb>
-  void write(offset_type offset, const Buffer& buf, Cb&& callback);
+  template<typename Buffer>
+  complete_type write(offset_type offset, const Buffer& buf);
 
-  template<typename Buffer, typename Cb>
-  void write(offset_type, const Buffer&&, Cb&&) = delete;  // temp object
+  template<typename Buffer>
+  void write(offset_type, const Buffer&&) = delete;  // temp object
 
 
-  void read(offset_type offset, void* buf, unsigned long count, complete_callback callback);
-  void write(offset_type offset, const void* buf, unsigned long count, complete_callback callback);
+  complete_type read(offset_type offset, void* buf, unsigned long count);
+  complete_type write(offset_type offset, const void* buf, unsigned long count);
 
   offset_type length();
 
@@ -54,14 +54,14 @@ private:
 };
 
 
-template<typename Buffer, typename Cb>
-void file::read(offset_type offset, Buffer& buf, Cb&& callback) {
-  read(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
+template<typename Buffer>
+file::complete_type file::read(offset_type offset, Buffer& buf) {
+  return read(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)));
 }
 
-template<typename Buffer, typename Cb>
-void file::write(offset_type offset, const Buffer& buf, Cb&& callback) {
-  write(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)), std::forward<Cb>(callback));
+template<typename Buffer>
+file::complete_type file::write(offset_type offset, const Buffer& buf) {
+  return write(offset, std::data(buf), static_cast<unsigned long>(std::size(buf)));
 }
 
 }  // namespace base
