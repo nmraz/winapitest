@@ -162,18 +162,6 @@ void promise_data<T>::fulfill(State&& state) {
 }
 
 template<typename T>
-void promise_data<T>::fulfill(promise_state<T> state) {
-  std::unique_lock<std::mutex> hold(lock_);
-
-  if (!is_pending()) {
-    return;
-  }
-
-  state_ = std::move(state);
-  call_cont(hold);
-}
-
-template<typename T>
 bool promise_data<T>::is_ready() const {
   return std::holds_alternative<promise_state_resolved<T>>(state_.rep)
     || std::holds_alternative<promise_state_rejected>(state_.rep);
