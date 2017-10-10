@@ -374,6 +374,7 @@ promise<T> promise_source_base<T>::get_promise() {
 template<typename T>
 void promise_source_base<T>::set_value(promise<T> prom) {
   ASSERT(prom.is_valid()) << "No state";
+  ASSERT(data_) << "No state";
   prom.data_->set_cont([data = data_](promise_state<T>&& state) {
     data->fulfill(std::move(state));
   });
