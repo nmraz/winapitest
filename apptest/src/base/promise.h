@@ -199,6 +199,9 @@ public:
   promise<T> get_promise();
 
   void set_value(promise<T> prom);
+
+  template<typename Exc>
+  void set_exception(Exc&& exc);
   void set_exception(std::exception_ptr exc);
 
 protected:
@@ -393,6 +396,12 @@ void promise_source_base<T>::set_value(promise<T> prom) {
 }
 
 template<typename T>
+template<typename Exc>
+void promise_source_base<T>::set_exception(Exc&& exc) {
+  set_exception(std::make_exception_ptr(std::forward<Exc>(exc)));
+}
+
+template<typename T>
 void promise_source_base<T>::set_exception(std::exception_ptr exc) {
   ASSERT(data_) << "No state";
   data_->fulfill(promise_state_rejected{ exc });
@@ -404,7 +413,7 @@ void promise_source_base<T>::abandon() {
     return;
   }
 
-  set_exception(std::make_exception_ptr(abandoned_promise()));  // this will have no effect if the promise has already been fulfilled
+  set_exception(abandoned_promise());  // this will have no effect if the promise has already been fulfilled
   data_ = nullptr;
 }
 
