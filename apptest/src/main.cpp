@@ -6,6 +6,7 @@
 #include "base/logging/logging.h"
 #include "base/logging/logging_sinks.h"
 #include "base/promise.h"
+#include "base/task_runner/run_task.h"
 #include "base/timer.h"
 #include "base/thread/thread.h"
 #include "base/thread/thread_name.h"
@@ -51,17 +52,20 @@ int wmain(int argc, const wchar_t** argv) {
     timer1.set(5s);
     timer2.set(2s);
 
-    io_thread.task_runner()->post_task([] {
-      auto file = std::make_shared<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
-      auto data = std::make_shared<std::string>(3000, 'h');
+    auto file = std::make_shared<base::file>();
+    auto data = std::make_shared<std::string>(3000, 'h');
 
-      file->write(0, *data).then([file, data](base::promise_val<unsigned long> bytes_written) {
-        try {
-          LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
-        } catch (const std::exception& e) {
-          LOG(error) << "Failed to write to file: " << e.what();
-        }
-      });
+    base::run_task(io_thread.task_runner(), [file, data] {
+      LOG(info) << "Opening and writing to file";
+
+      file->open("test.txt", base::file::out, base::file::create_disp::create_always);
+      return file->write(0, *data);
+    }).then([file, data](base::promise_val<unsigned long> bytes_written) {
+      try {
+        LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
+      } catch (const std::exception& e) {
+        LOG(error) << "Failed to write to file: " << e.what();
+      }
     });
 
     ::MessageBoxW(nullptr, L"This is a message box", L"Message Box", MB_OK);
