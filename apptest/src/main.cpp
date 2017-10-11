@@ -5,7 +5,6 @@
 #include "base/event_loop/next_tick.h"
 #include "base/logging/logging.h"
 #include "base/logging/logging_sinks.h"
-#include "base/promise.h"
 #include "base/task_runner/run_task.h"
 #include "base/timer.h"
 #include "base/thread/thread.h"
@@ -103,24 +102,6 @@ int wmain(int argc, const wchar_t** argv) {
     LOG(info) << "Entering";
     anim.enter();
   }, 400ms);
-
-
-  base::promise_source<int> source;
-  source.get_promise().then([](base::promise_val<int> val) {
-    LOG(info) << "Got " << val.get();
-    return 5.789;
-  }).then([](base::promise_val<double> val) {
-    LOG(info) << "And " << val.get();
-    throw std::runtime_error("Oh no");
-  }).then([](base::promise_val<void> val) {
-    try {
-      val.get();
-    } catch (const std::exception& e) {
-      LOG(info) << "Caught " << e.what();
-    }
-  });
-
-  source.set_value(5);
 
 
   ui::event_loop loop;
