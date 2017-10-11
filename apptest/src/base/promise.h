@@ -403,11 +403,8 @@ template<>
 struct when_all_impl<void> {
   template<typename InIt>
   static promise<void> call(InIt begin, InIt end) {
-    if (begin == end) {
-      return make_resolved_promise();
-    }
-
     auto acc = make_resolved_promise();
+
     for (; begin != end; ++begin) {
       acc = acc.then([prom = std::move(*begin)](promise_val<void> val) mutable {
         val.get();  // propagate any exceptions
