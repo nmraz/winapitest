@@ -1,5 +1,7 @@
 #include "inline_task_runner.h"
 
+#include "base/task_runner/task_runner.h"
+
 namespace base {
 namespace {
 
