@@ -211,10 +211,19 @@ public:
 protected:
   std::shared_ptr<promise_data<T>> data_;
 
+  template<typename Cb>
+  void fulfill(Cb&& cb) {
+    if (!fulfilled_) {
+      std::forward<Cb>(cb)();
+      fulfilled_ = true;
+    }
+  }
+
 private:
   void abandon();
 
   bool promise_retrieved_ = false;
+  bool fulfilled_ = false;
 };
 
 }  // namespace impl
@@ -481,8 +490,11 @@ template<typename T>
 void promise_source_base<T>::set_value(promise<T> prom) {
   ASSERT(prom.is_valid()) << "No state";
   ASSERT(data_) << "No state";
-  prom.data_->set_cont([data = data_](promise_state<T>&& state) {
-    data->fulfill(state.move_rep());
+
+  fulfill([this, prom = std::move(prom)]() mutable {
+    prom.data_->set_cont([data = data_](promise_state<T>&& state) {
+      data->fulfill(state.move_rep());
+    });
   });
 }
 
@@ -495,7 +507,10 @@ void promise_source_base<T>::set_exception(Exc&& exc) {
 template<typename T>
 void promise_source_base<T>::set_exception(std::exception_ptr exc) {
   ASSERT(data_) << "No state";
-  data_->fulfill(promise_state_rejected{ exc });
+  
+  fulfill([this, exc]() mutable {
+    data_->fulfill(promise_state_rejected{ exc });
+  });
 }
 
 template<typename T>
@@ -637,7 +652,10 @@ promise_source<T>& promise_source<T>::operator=(promise_source&& rhs) noexcept {
 template<typename T>
 void promise_source<T>::set_value(T val) {
   ASSERT(this->data_) << "No state";
-  this->data_->fulfill(impl::promise_state_resolved<T>{ std::move(val) });
+  
+  this->fulfill([this, val = std::move(val)]() mutable {
+    this->data_->fulfill(impl::promise_state_resolved<T>{ std::move(val) });
+  });
 }
 
 
@@ -649,7 +667,10 @@ inline promise_source<void>& promise_source<void>::operator=(promise_source&& rh
 
 inline void promise_source<void>::set_value() {
   ASSERT(data_) << "No state";
-  data_->fulfill(impl::promise_state_resolved<void>{});
+  
+  fulfill([this]() mutable {
+    data_->fulfill(impl::promise_state_resolved<void>{});
+  });
 }
 
 }  // namespace base
