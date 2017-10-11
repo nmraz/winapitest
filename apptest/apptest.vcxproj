@@ -166,6 +166,7 @@
     <ClCompile Include="src\base\event_loop\loop_task_runner.cpp" />
     <ClCompile Include="src\base\promise.cpp" />
     <ClCompile Include="src\base\task_runner\cancellation.cpp" />
+    <ClCompile Include="src\base\task_runner\inline_task_runner.cpp" />
     <ClCompile Include="src\base\task_runner\task.cpp" />
     <ClCompile Include="src\base\event_loop\task_event_loop.cpp" />
     <ClCompile Include="src\base\logging\logging.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="src\base\event_loop\loop_task_runner.h" />
     <ClInclude Include="src\base\promise.h" />
     <ClInclude Include="src\base\task_runner\cancellation.h" />
+    <ClInclude Include="src\base\task_runner\inline_task_runner.h" />
     <ClInclude Include="src\base\task_runner\task.h" />
     <ClInclude Include="src\base\event_loop\task_event_loop.h" />
     <ClInclude Include="src\base\finally.h" />
