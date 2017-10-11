@@ -263,6 +263,9 @@
     <ClInclude Include="src\base\task_runner\inline_task_runner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\task_runner\run_task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />

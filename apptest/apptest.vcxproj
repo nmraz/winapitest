@@ -205,6 +205,7 @@
     <ClInclude Include="src\base\promise.h" />
     <ClInclude Include="src\base\task_runner\cancellation.h" />
     <ClInclude Include="src\base\task_runner\inline_task_runner.h" />
+    <ClInclude Include="src\base\task_runner\run_task.h" />
     <ClInclude Include="src\base\task_runner\task.h" />
     <ClInclude Include="src\base\event_loop\task_event_loop.h" />
     <ClInclude Include="src\base\finally.h" />
