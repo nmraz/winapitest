@@ -157,9 +157,7 @@ template<typename State>
 void promise_data<T>::fulfill(State&& state) {
   std::unique_lock<std::mutex> hold(lock_);
 
-  if (!is_pending()) {
-    return;
-  }
+  ASSERT(is_pending()) << "Fulfilling fulfilled promise";
 
   state_.rep = std::forward<State>(state);
   call_cont(hold);
