@@ -425,11 +425,27 @@ template<typename T>
 struct when_any_impl {
   template<typename InIt>
   static promise<T> call(InIt begin, InIt end) {
-    promise_source<T> source;
+    struct when_any_context {
+      promise_source<T> source;
+      // while promise_source and promise can be accessed concurrently,
+      // promise_source itself is not thread-safe
+      std::mutex lock;
+    };
+
+    auto ctx = std::make_shared<when_any_context>();
+
     for (; begin != end; ++begin) {
-      source.set_value(std::move(*begin));
+      begin->then([ctx](promise_val<T> val) {
+        std::lock_guard<std::mutex> hold(ctx->lock);
+
+        try {
+          ctx->source.set_value(val.get());
+        } catch (...) {
+          ctx->source.set_exception(std::current_exception());
+        }
+      }, get_inline_task_runner());
     }
-    return source.get_promise();
+    return ctx->source.get_promise();
   }
 };
 
