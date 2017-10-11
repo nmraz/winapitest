@@ -2,14 +2,18 @@
 
 #include "base/assert.h"
 #include "base/non_copyable.h"
+#include "base/task_runner/inline_task_runner.h"
 #include "base/task_runner/task_runner.h"
 #include <exception>
 #include <functional>
+#include <iterator>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <utility>
+#include <type_traits>
 #include <variant>
+#include <vector>
 
 namespace base {
 
@@ -349,6 +353,93 @@ inline promise<void> make_resolved_promise() {
     impl::promise_state_resolved<void>{}
   );
   return promise<void>(std::move(data));
+}
+
+
+namespace impl {
+
+template<typename T>
+constexpr bool is_promise = false;
+template<typename T>
+constexpr bool is_promise<promise<T>> = true;
+
+template<typename T>
+struct when_all_impl {
+  template<typename InIt>
+  static promise<std::vector<T>> call(InIt begin, InIt end) {
+    if (begin == end) {
+      return make_resolved_promise(std::vector<T>());
+    }
+
+    auto ret = std::make_shared<std::vector<T>>();
+
+    // note: std::accumulate requires that elements aren't mutated
+    auto acc = make_resolved_promise();
+    for (; begin != end; ++begin) {
+      acc = acc.then([prom = std::move(*begin)](promise_val<void> val) mutable {
+        val.get();  // propagate any exceptions
+        return std::move(prom);
+      }, get_inline_task_runner()).then([ret](promise_val<T> val) mutable {
+        // no need to synchronize here since we wait sequentially
+        ret->push_back(val.get());
+      }, get_inline_task_runner());
+    }
+
+    return acc.then([ret](promise_val<void> val) {
+      val.get();  // propagate exceptions
+      return std::move(*ret);
+    }, get_inline_task_runner());
+  }
+};
+
+template<>
+struct when_all_impl<void> {
+  template<typename InIt>
+  static promise<void> call(InIt begin, InIt end) {
+    if (begin == end) {
+      return make_resolved_promise();
+    }
+
+    auto acc = make_resolved_promise();
+    for (; begin != end; ++begin) {
+      acc = acc.then([prom = std::move(*begin)](promise_val<void> val) mutable {
+        val.get();  // propagate any exceptions
+        return std::move(prom);
+      }, get_inline_task_runner());
+    }
+
+    return acc;
+  }
+};
+
+template<typename T>
+struct when_any_impl {
+  template<typename InIt>
+  static promise<T> call(InIt begin, InIt end) {
+    promise_source<T> source;
+    for (; begin != end; ++begin) {
+      source.set_value(std::move(*begin));
+    }
+    return source.get_promise();
+  }
+};
+
+}  // namespace impl
+
+template<typename InIt>
+auto when_all(InIt begin, InIt end) {
+  using it_val = typename std::iterator_traits<InIt>::value_type;
+  static_assert(impl::is_promise<it_val>, "when_all requires iterators to promises");
+
+  return impl::when_all_impl<typename it_val::result_type>::call(begin, end);
+}
+
+template<typename InIt>
+auto when_any(InIt begin, InIt end) {
+  using it_val = typename std::iterator_traits<InIt>::value_type;
+  static_assert(impl::is_promise<it_val>, "when_any requires iterators to promises");
+
+  return impl::when_any_impl<typename it_val::result_type>::call(begin, end);
 }
 
 
