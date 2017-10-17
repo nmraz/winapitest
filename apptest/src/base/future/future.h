@@ -301,7 +301,7 @@ void future<T>::call_then_cont(Context ctx) {
       ctx->val.reset();
       ctx->cont.reset();
 
-      ret.set_cont([ctx = std::move(ctx)] (auto&& val) {
+      ret.set_cont([ctx = std::move(ctx)](auto&& val) {
         ctx->prom.set(std::forward<decltype(val)>(val));
       });
     } catch (...) {
