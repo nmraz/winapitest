@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base/promise.h"
+#include "base/future/future.h"
 #include "base/win/scoped_handle.h"
 #include <cstdint>
 #include <functional>
@@ -34,7 +34,7 @@ public:
 
 
   using offset_type = std::int64_t;
-  using complete_type = promise<unsigned long>;
+  using complete_type = future<unsigned long>;
 
   file() = default;
   file(std::string_view name, int desired_access, create_disp disp, int share = share_read | share_write);

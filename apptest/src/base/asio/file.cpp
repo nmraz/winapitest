@@ -11,7 +11,7 @@ namespace base {
 namespace {
 
 struct overlappedex : OVERLAPPED {
-  file::complete_type::source_type source;
+  promise<unsigned long> prom;
 };
 
 auto make_overlapped(file::offset_type offset) {
@@ -75,9 +75,9 @@ void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* win
   std::unique_ptr<overlappedex> overlapped(static_cast<overlappedex*>(win_overlapped));
 
   if (err) {
-    overlapped->source.set_exception(std::system_error(err, std::system_category()));
+    overlapped->prom.set_exception(std::system_error(err, std::system_category()));
   } else {
-    overlapped->source.set_value(bytes_transferred);
+    overlapped->prom.set_value(bytes_transferred);
   }
 }
 
@@ -114,10 +114,10 @@ file::complete_type file::read(offset_type offset, void* buf, unsigned long coun
   auto overlapped = make_overlapped(offset);
 
   if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->source.set_exception(std::system_error(win::last_error_code()));
-    return overlapped->source.get_promise();
+    overlapped->prom.set_exception(std::system_error(win::last_error_code()));
+    return overlapped->prom.get_future();
   } else {
-    return overlapped.release()->source.get_promise();
+    return overlapped.release()->prom.get_future();
   }
 }
 
@@ -125,10 +125,10 @@ file::complete_type file::write(offset_type offset, const void* buf, unsigned lo
   auto overlapped = make_overlapped(offset);
 
   if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->source.set_exception(std::system_error(win::last_error_code()));;
-    return overlapped->source.get_promise();
+    overlapped->prom.set_exception(std::system_error(win::last_error_code()));;
+    return overlapped->prom.get_future();
   } else {
-    return overlapped.release()->source.get_promise();
+    return overlapped.release()->prom.get_future();
   }
 }
 

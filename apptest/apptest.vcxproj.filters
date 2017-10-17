@@ -114,10 +114,16 @@
     <ClCompile Include="src\base\task_runner\cancellation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\promise.cpp">
+    <ClCompile Include="src\base\task_runner\inline_task_runner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\task_runner\inline_task_runner.cpp">
+    <ClCompile Include="src\base\future\future_val.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\future\exceptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\future\future.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -257,13 +263,22 @@
     <ClInclude Include="src\base\task_runner\cancellation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\promise.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\base\task_runner\inline_task_runner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\task_runner\run_task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\future\future_val.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\future\impl\core.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\future\exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\future\future.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -59,7 +59,7 @@ int wmain(int argc, const wchar_t** argv) {
 
       file->open("test.txt", base::file::out, base::file::create_disp::create_always);
       return file->write(0, *data);
-    }).then([file, data](base::promise_val<unsigned long> bytes_written) {
+    }).then([file, data](base::future_val<unsigned long> bytes_written) {
       try {
         LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
       } catch (const std::exception& e) {
