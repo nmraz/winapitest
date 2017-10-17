@@ -161,6 +161,7 @@ promise<T>::~promise() {
 template<typename T>
 promise<T>& promise<T>::operator=(promise rhs) noexcept {
   rhs.swap(*this);
+  return *this;
 }
 
 template<typename T>
