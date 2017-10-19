@@ -127,9 +127,9 @@ public:
   template<typename F, typename = enable_if_compatible<F>>
   function(F func);
   
-  ~function();
+  ~function() { reset(); }
   
-  function& operator=(std::nullptr_t);
+  function& operator=(std::nullptr_t) { reset(); }
   function& operator=(function&& rhs) noexcept;
   
   template<typename F typename = enable_if_compatible<F>>
@@ -142,8 +142,38 @@ public:
   Ret operator()(Args... args) const;
   
 private:
+  void* get_space() { return &space_; }
+  bool is_local() const { return impl_ == get_space(); }
+
   impl::func_space space_;
   impl::func_impl_base<Ret, Args...>* impl_;
+}
+
+
+template<typename Ret, typename... Args>
+function<Ret(Args...)>::function(function&& rhs) noexcept
+  : function() {
+  if (!rhs) {
+    return;  // already null
+  }
+  
+  if (rhs.is_local()) {
+    impl_ = rhs.impl_->move(get_space());  // stored locally - move target
+  } else {
+    impl_ = rhs.impl_;  // stored on heap - steal pointer
+    rhs.impl_ = nullptr;
+  }
+}
+
+template<typename Ret, typename... Args>
+template<typename F, typename>
+function<Ret(Args...)>::function(F func)
+  : function() {
+  if (impl::func_is_null(func)) {
+    return;  // already null
+  }
+  
+  impl_ = impl::func_impl<F, Ret, Args...>::create(std::move(func), get_space());
 }
 
 }  // namespace base
