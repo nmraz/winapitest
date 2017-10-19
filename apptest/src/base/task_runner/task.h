@@ -1,12 +1,12 @@
 #pragma once
 
+#include "base/function.h"
 #include <chrono>
-#include <functional>
 
 namespace base {
 
 struct task {
-  using callback_type = std::function<void()>;
+  using callback_type = function<void()>;
 
   using clock_type = std::chrono::steady_clock;
   using run_time_type = clock_type::time_point;
@@ -16,7 +16,7 @@ struct task {
   bool operator<(const task& rhs) const;
 
   // ensure that std::terminate is called if the callback throws
-  void run() const noexcept {
+  void run() noexcept {
     callback();
   }
 
