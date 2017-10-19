@@ -246,29 +246,29 @@ void function<Ret(Args...)>::move_from(function&& rhs) noexcept {
 
 // NONMEMBER
 
-template<typename R, typename... Args>
-inline void swap(function<R(Args...)>& lhs, function<R(Args...)>& rhs) noexcept {
+template<typename Ret, typename... Args>
+inline void swap(function<Ret(Args...)>& lhs, function<Ret(Args...)>& rhs) noexcept {
   lhs.swap(rhs);
 }
 
 
-template<typename R, typename... Args>
-bool operator==(const function<R(Args...)>& func, std::nullptr_t) {
+template<typename Ret, typename... Args>
+bool operator==(const function<Ret(Args...)>& func, std::nullptr_t) {
   return !func;
 }
 
-template<typename R, typename... Args>
-bool operator==(std::nullptr_t, const function<R(Args...)>& func) {
+template<typename Ret, typename... Args>
+bool operator==(std::nullptr_t, const function<Ret(Args...)>& func) {
   return !func;
 }
 
-template<typename R, typename... Args>
-bool operator!=(const function<R(Args...)>& func, std::nullptr_t) {
+template<typename Ret, typename... Args>
+bool operator!=(const function<Ret(Args...)>& func, std::nullptr_t) {
   return !!func;
 }
 
-template<typename R, typename... Args>
-bool operator!=(std::nullptr_t, const function<R(Args...)>& func) {
+template<typename Ret, typename... Args>
+bool operator!=(std::nullptr_t, const function<Ret(Args...)>& func) {
   return !!func;
 }
 
