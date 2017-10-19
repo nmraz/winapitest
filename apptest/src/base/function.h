@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/assert.h"
 #include <functional>
 #include <new>
 #include <type_traits>
@@ -31,7 +32,7 @@ template<typename Ret, typename... Args>
 struct func_impl_base {
   // note: no virtual dtor due to destroy()
 
-  virtual func_impl_base* move(void* space) = 0;
+  virtual func_impl_base* move(void* space) noexcept = 0;
   virtual void destroy() = 0;
 
   virtual Ret call(Args... args) = 0;
@@ -46,7 +47,7 @@ class func_impl : public func_impl_base<Ret, Args...> {
 public:
   static func_impl* create(F&& func, void* space);
 
-  func_impl_base<Ret, Args...>* move(void* space) override;
+  func_impl_base<Ret, Args...>* move(void* space) noexcept override;
   void destroy() override;
 
   Ret call(Args&&... args) override;
@@ -65,8 +66,9 @@ func_impl<F, Ret, Args...>* func_impl<F, Ret, Args>::create(F&& func, [[maybe_un
 }
 
 template<typename F, typename Ret, typename... Args>
-func_impl_base<Ret, Args...>* func_impl<F, Ret, Args...>::move(void* space) {
-  return create(std::move(func_));
+func_impl_base<Ret, Args...>* func_impl<F, Ret, Args...>::move(void* space) noexcept {
+  ASSERT(!alloc_on_heap) << "Attempting to move heap-allocated function into local space";
+  return new (space) func_impl(std::move(func_));
 }
 
 template<typename F, typename Ret, typename... Args>
