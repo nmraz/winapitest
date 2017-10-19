@@ -12,7 +12,7 @@
 namespace base {
 namespace impl {
 
-constexpr int func_space_ptr_size = 6;
+constexpr int func_space_ptr_size = 7;  // base::function is 8 pointers total together with the impl_ pointer
 using func_space = std::aligned_union_t<func_space_ptr_size * sizeof(void*), void*>;
 
 template<typename Impl>
