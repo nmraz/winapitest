@@ -204,6 +204,7 @@
     <ClInclude Include="src\base\event_loop\event_loop.h" />
     <ClInclude Include="src\base\event_loop\next_tick.h" />
     <ClInclude Include="src\base\event_loop\loop_task_runner.h" />
+    <ClInclude Include="src\base\function.h" />
     <ClInclude Include="src\base\future\exceptions.h" />
     <ClInclude Include="src\base\future\future.h" />
     <ClInclude Include="src\base\future\impl\core.h" />

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "base/assert.h"
+#include "base/function.h"
 #include "base/future/exceptions.h"
 #include "base/future/future_val.h"
 #include "base/non_copyable.h"
-#include <functional>
 #include <mutex>
 
 namespace base::impl {
@@ -27,7 +27,7 @@ private:
   void call_cont(std::unique_lock<std::mutex> hold) noexcept;
 
   future_val<T> val_;
-  std::function<void(future_val<T>&&)> cont_;
+  function<void(future_val<T>&&)> cont_;
   std::mutex lock_;  // protects val_, cont_
 };
 
