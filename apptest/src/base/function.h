@@ -141,6 +141,7 @@ public:
   
 private:
   void* get_space() { return &space_; }
+  const void* get_space() const { return &space_; }
   bool is_local() const { return impl_ == get_space(); }
 
   template<typename F>
