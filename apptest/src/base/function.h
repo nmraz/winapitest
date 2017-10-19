@@ -10,6 +10,11 @@
 // is also noexcept movable/swappable, unlike std::function.
 
 namespace base {
+
+template<typename Sig>
+class function;
+
+
 namespace impl {
 
 constexpr int func_space_ptr_size = 7;  // base::function is 8 pointers total together with the impl_ pointer
@@ -84,10 +89,24 @@ Ret func_impl<F, Ret, Args...>::call(Args&&... args) {
   }
 }
 
+
+// nullness checks
+
+template<typename T>
+constexpr bool func_not_null(const T&) {
+  return true;
 }
 
+template<typename T>
+constexpr bool func_not_null(const T* ptr) {
+  return !!ptr;
+}
 
-template<typename Sig>
-class function;
+template<typename Class, typename Mem>
+constexpr bool func_not_null(const Mem Class::* ptr) {
+  return !!ptr;
+}
+
+}
 
 }  // namespace base
