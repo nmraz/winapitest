@@ -78,9 +78,9 @@ void func_impl<F, Ret, Args...>::destroy() {
 template<typename F, typename Ret, typename... Args>
 Ret func_impl<F, Ret, Args...>::call(Args&&... args) {
   if constexpr (std::is_void_v<Ret>) {
-    std::invoke(func_, std::move(args)...);  // discard return value (if any)
+    std::invoke(func_, std::forward<Args>(args)...);  // discard return value (if any)
   } else {
-    return std::invoke(func_, std::move(args)...);
+    return std::invoke(func_, std::forward<Args>(args)...);
   }
 }
 
