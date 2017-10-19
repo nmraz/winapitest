@@ -243,4 +243,33 @@ void function<Ret(Args...)>::move_from(function&& rhs) noexcept {
   }
 }
 
+
+// NONMEMBER
+
+template<typename R, typename... Args>
+inline void swap(function<R(Args...)>& lhs, function<R(Args...)>& rhs) noexcept {
+  lhs.swap(rhs);
+}
+
+
+template<typename R, typename... Args>
+bool operator==(const function<R(Args...)>& func, std::nullptr_t) {
+  return !func;
+}
+
+template<typename R, typename... Args>
+bool operator==(std::nullptr_t, const function<R(Args...)>& func) {
+  return !func;
+}
+
+template<typename R, typename... Args>
+bool operator!=(const function<R(Args...)>& func, std::nullptr_t) {
+  return !!func;
+}
+
+template<typename R, typename... Args>
+bool operator!=(std::nullptr_t, const function<R(Args...)>& func) {
+  return !!func;
+}
+
 }  // namespace base
