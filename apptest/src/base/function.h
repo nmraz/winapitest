@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/assert.h"
+#include "base/non_copyable.h"
 #include <functional>
 #include <new>
 #include <type_traits>
@@ -107,6 +108,39 @@ constexpr bool func_not_null(const Mem Class::* ptr) {
   return !!ptr;
 }
 
+}
+
+
+template<typename Ret, typename... Args>
+class function<Ret(Args...)> : public non_copyable {
+  template<typename F>
+  using enable_if_compatible = std::enable_if_t<
+    std::is_invocable_r_v<Ret, F&, Args&&>
+    && !std::is_same_v<F, function>
+  >
+  
+public:
+  constexpr function() : impl_(nullptr) {}
+  constexpr function(std::nullptr_t) : function() {}
+  function(function&& rhs) noexcept;
+  
+  template<typename F, typename = enable_if_compatible<F>>
+  function(F func);
+  
+  function& operator=(std::nullptr_t);
+  function& operator=(function&& rhs) noexcept;
+  
+  template<typename F typename = enable_if_compatible<F>>
+  function& operator=(F func);
+  
+  void reset();
+  void swap(function& other) noexcept;
+  
+  Ret operator()(Args... args) const;
+  
+private:
+  impl::func_space space_;
+  impl::func_impl_base<Ret, Args...>* impl_;
 }
 
 }  // namespace base
