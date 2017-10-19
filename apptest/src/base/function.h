@@ -136,8 +136,9 @@ public:
   void reset();
   void swap(function& other) noexcept;
   
+  Ret operator()(Args... args);
+
   explicit operator bool() const { return !!impl_; }
-  Ret operator()(Args... args) const;
   
 private:
   void* get_space() { return &space_; }
@@ -204,7 +205,7 @@ void function<Ret(Args...)>::swap(function& other) noexcept {
 
 
 template<typename Ret, typename... Args>
-Ret function<Ret(Args...)>::operator()(Args... args) const {
+Ret function<Ret(Args...)>::operator()(Args... args) {
   if (!impl_) {
     throw std::bad_function_call();
   }
