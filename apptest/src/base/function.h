@@ -127,6 +127,8 @@ public:
   template<typename F, typename = enable_if_compatible<F>>
   function(F func);
   
+  ~function();
+  
   function& operator=(std::nullptr_t);
   function& operator=(function&& rhs) noexcept;
   
