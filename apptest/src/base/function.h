@@ -115,7 +115,7 @@ template<typename Ret, typename... Args>
 class function<Ret(Args...)> : public non_copyable {
   template<typename F>
   using enable_if_compatible = std::enable_if_t<
-    std::is_invocable_r_v<Ret, F&, Args&&>
+    std::is_invocable_r_v<Ret, F&, Args&&...>
     && !std::is_same_v<F, function>
   >
   
