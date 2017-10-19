@@ -2,6 +2,7 @@
 
 #include "base/assert.h"
 #include "base/non_copyable.h"
+#include <cstddef>
 #include <functional>
 #include <new>
 #include <type_traits>
@@ -20,7 +21,7 @@ class function;
 namespace impl {
 
 constexpr int func_space_ptr_size = 7;  // base::function is 8 pointers total together with the impl_ pointer
-using func_space = std::aligned_union_t<func_space_ptr_size * sizeof(void*), void*>;
+using func_space = std::aligned_union_t<func_space_ptr_size * sizeof(void*), std::max_align_t>;
 
 template<typename Impl>
 constexpr bool needs_heap =
