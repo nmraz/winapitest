@@ -94,18 +94,18 @@ Ret func_impl<F, Ret, Args...>::call(Args&&... args) {
 // nullness checks
 
 template<typename T>
-constexpr bool func_not_null(const T&) {
-  return true;
+constexpr bool func_is_null(const T&) {
+  return false;
 }
 
 template<typename T>
-constexpr bool func_not_null(const T* ptr) {
-  return !!ptr;
+constexpr bool func_is_null(T* ptr) {
+  return !ptr;
 }
 
 template<typename Class, typename Mem>
-constexpr bool func_not_null(const Mem Class::* ptr) {
-  return !!ptr;
+constexpr bool func_is_null(Mem Class::* ptr) {
+  return !ptr;
 }
 
 }
