@@ -10,14 +10,9 @@
 // is also noexcept movable/swappable, unlike std::function.
 
 namespace base {
-
-template<typename Sig>
-class function;
-
 namespace impl {
 
 constexpr int func_space_ptr_size = 6;
-
 using func_space = std::aligned_union_t<func_space_ptr_size * sizeof(void*), void*>;
 
 template<typename Impl>
@@ -90,5 +85,9 @@ Ret func_impl<F, Ret, Args...>::call(Args&&... args) {
 }
 
 }
+
+
+template<typename Sig>
+class function;
 
 }  // namespace base
