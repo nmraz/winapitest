@@ -147,7 +147,7 @@ private:
 
   impl::func_space space_;
   impl::func_impl_base<Ret, Args...>* impl_;
-}
+};
 
 
 template<typename Ret, typename... Args>
