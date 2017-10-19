@@ -60,7 +60,7 @@ func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(F&& func, [[maybe
   if constexpr (needs_heap<func_impl>) {
     return new func_impl(std::move(func));
   } else {
-    new (space) func_impl(std::move(func));
+    return new (space) func_impl(std::move(func));
   }
 }
 
