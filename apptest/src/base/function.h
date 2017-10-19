@@ -5,6 +5,7 @@
 #include <functional>
 #include <new>
 #include <type_traits>
+#include <utility>
 
 // base::function is similar in design and purpose to std::function,
 // but doesn't require copyability (and hence is move-only itself). It
@@ -119,7 +120,7 @@ class function<Ret(Args...)> : public non_copyable {
   >
   
 public:
-  constexpr function() : impl_(nullptr) {}
+  constexpr function() = default;
   constexpr function(std::nullptr_t) : function() {}
   function(function&& rhs) noexcept;
   
@@ -131,7 +132,7 @@ public:
   function& operator=(std::nullptr_t) { reset(); }
   function& operator=(function&& rhs) noexcept;
   
-  template<typename F typename = enable_if_compatible<F>>
+  template<typename F, typename = enable_if_compatible<F>>
   function& operator=(F func);
   
   void reset();
@@ -144,36 +145,102 @@ private:
   void* get_space() { return &space_; }
   bool is_local() const { return impl_ == get_space(); }
 
+  template<typename F>
+  void set_from(F&& func);
+  void move_from(function&& rhs) noexcept;
+
   impl::func_space space_;
-  impl::func_impl_base<Ret, Args...>* impl_;
+  impl::func_impl_base<Ret, Args...>* impl_ = nullptr;
 };
 
 
 template<typename Ret, typename... Args>
-function<Ret(Args...)>::function(function&& rhs) noexcept
-  : function() {
-  if (!rhs) {
-    return;  // already null
+function<Ret(Args...)>::function(function&& rhs) noexcept {
+  move_from(std::move(rhs));
+}
+
+template<typename Ret, typename... Args>
+template<typename F, typename>
+function<Ret(Args...)>::function(F func) {
+  set_from(std::move(func));
+}
+
+template<typename Ret, typename... Args>
+function<Ret(Args...)>& function<Ret(Args...)>::operator=(function&& rhs) noexcept {
+  if (this == &rhs) {
+    return *this;
   }
-  
+
+  reset();
+  move_from(std::move(rhs));
+  return *this;
+}
+
+template<typename Ret, typename... Args>
+template<typename F, typename>
+function<Ret(Args...)>& function<Ret(Args...)>::operator=(F func) {
+  reset();
+  set_from(std::move(func));
+}
+
+
+template<typename Ret, typename... Args>
+void function<Ret(Args...)>::reset() {
+  if (impl_) {
+    impl_->destroy();
+    impl_ = nullptr;
+  }
+}
+
+template<typename Ret, typename... Args>
+void function<Ret(Args...)>::swap(function& other) noexcept {
+  if (!is_local() && !other.is_local()) {
+    std::swap(impl_, other.impl_);  // both on heap - swap pointers
+  } else {
+    function tmp = std::move(other);  // three-way move
+    other = std::move(*this);
+    *this = std::move(tmp);
+  }
+}
+
+
+template<typename Ret, typename... Args>
+Ret function<Ret(Args...)>::operator()(Args... args) const {
+  if (!impl_) {
+    throw std::bad_function_call();
+  }
+  return impl_->call(std::forward<Args>(args)...);
+}
+
+
+// PRIVATE
+
+template<typename Ret, typename... Args>
+template<typename F>
+void function<Ret(Args...)>::set_from(F&& func) {
+  ASSERT(!impl_) << "This assumes that the function is empty";
+
+  if (impl::func_is_null(func)) {
+    return;  // already empty
+  }
+
+  impl_ = impl::func_impl<F, Ret, Args...>::create(std::move(func), get_space());
+}
+
+template<typename Ret, typename... Args>
+void function<Ret(Args...)>::move_from(function&& rhs) noexcept {
+  ASSERT(!impl_) << "This assumes that the function is empty";
+
+  if (!rhs) {
+    return;  // already empty
+  }
+
   if (rhs.is_local()) {
     impl_ = rhs.impl_->move(get_space());  // stored locally - move target
   } else {
     impl_ = rhs.impl_;  // stored on heap - steal pointer
     rhs.impl_ = nullptr;
   }
-
-}
-
-template<typename Ret, typename... Args>
-template<typename F, typename>
-function<Ret(Args...)>::function(F func)
-  : function() {
-  if (impl::func_is_null(func)) {
-    return;  // already null
-  }
-  
-  impl_ = impl::func_impl<F, Ret, Args...>::create(std::move(func), get_space());
 }
 
 }  // namespace base
