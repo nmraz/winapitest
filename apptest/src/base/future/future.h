@@ -128,10 +128,10 @@ private:
   void set_cont(Cont&& cont);
 
   template<
+    typename ReturnsFuture,
     typename Cont,
-    bool ReturnsFuture,
-    typename Context
-  > static void call_then_cont(Context ctx);
+    typename Val
+  > static void call_then_cont(Cont&& cont, Val&& val, promise<typename ReturnsFuture::inner_type> prom);
 
   std::shared_ptr<impl::future_core<T>> core_;
 };
@@ -261,21 +261,21 @@ auto future<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
 
   using result_type = std::decay_t<std::invoke_result_t<Cont&&, future_val<T>&&>>;
   using returns_future = impl::is_future<result_type>;
-  using promise_type = promise<typename returns_future::inner_type>;
 
-  struct then_context {
-    future_val<T> val;
-    promise_type prom;
-    std::optional<std::decay_t<Cont>> cont;  // allows control over destruction of cont
-  };
+  promise<typename returns_future::inner_type> prom;
+  auto fut = prom.get_future();
 
-  auto ctx = std::make_shared<then_context>(then_context{ {}, {}, std::forward<Cont>(cont) });
-  auto fut = ctx->prom.get_future();
-
-  set_cont([ctx = std::move(ctx), runner = std::move(runner)](future_val<T>&& val) mutable {
-    ctx->val = std::move(val);
-    runner->post_task([ctx = std::move(ctx)]() mutable {
-      call_then_cont<Cont, returns_future::value>(std::move(ctx));
+  set_cont([
+    cont = std::forward<Cont>(cont),
+    prom = std::move(prom),
+    runner = std::move(runner)
+  ](future_val<T>&& val) mutable {
+    runner->post_task([
+      cont = std::forward<Cont>(cont),
+      prom = std::move(prom),
+      val = std::move(val)
+    ]() mutable {
+      call_then_cont<returns_future>(std::forward<Cont>(cont), std::move(val), std::move(prom));
     });
   });
 
@@ -291,26 +291,20 @@ void future<T>::set_cont(Cont&& cont) {
 }
 
 template<typename T>
-template<typename Cont, bool ReturnsFuture, typename Context>
-void future<T>::call_then_cont(Context ctx) {
-  if constexpr (ReturnsFuture) {  // future return type
+template<typename ReturnsFuture, typename Cont, typename Val>
+void future<T>::call_then_cont(Cont&& cont, Val&& val, promise<typename ReturnsFuture::inner_type> prom) {
+  if constexpr (ReturnsFuture::value) {  // future return type
     try {
-      auto ret = std::forward<Cont>(*ctx->cont)(std::move(ctx->val));
-
-      // clean up - the context must stay alive (for the promise),
-      // but its other members need to be destroyed
-      ctx->val.reset();
-      ctx->cont.reset();
-
-      ret.set_cont([ctx = std::move(ctx)](auto&& val) {
-        ctx->prom.set(std::forward<decltype(val)>(val));
-      });
+      std::forward<Cont>(cont)(std::move(val))
+        .set_cont([prom = std::move(prom)](auto&& cont_val) mutable {
+          prom.set(std::forward<decltype(cont_val)>(cont_val));
+        });
     } catch (...) {
-      ctx->prom.set_exception(std::current_exception());
+      prom.set_exception(std::current_exception());
     }
   } else {  // non-future return type
-    ctx->prom.set_from([&ctx] {
-      return std::forward<Cont>(*ctx->cont)(std::move(ctx->val));
+    prom.set_from([&]() mutable {
+      return std::forward<Cont>(cont)(std::move(val));
     });
   }
 }
