@@ -25,8 +25,7 @@ template<typename Impl>
 constexpr bool needs_heap =
   sizeof(Impl) > sizeof(func_space)  // too big
   || alignof(func_space) % alignof(Impl) != 0  // over-aligned
-  || !std::is_nothrow_move_constructible_v<Impl>  // can't guarentee noexcept move/swap
-  || !std::is_nothrow_move_assignable_v<Impl>;
+  || !std::is_nothrow_move_constructible_v<Impl>;  // can't guarentee noexcept move/swap
 
 
 template<typename Ret, typename... Args>
@@ -163,6 +162,7 @@ function<Ret(Args...)>::function(function&& rhs) noexcept
     impl_ = rhs.impl_;  // stored on heap - steal pointer
     rhs.impl_ = nullptr;
   }
+
 }
 
 template<typename Ret, typename... Args>
