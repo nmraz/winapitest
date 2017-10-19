@@ -41,8 +41,6 @@ struct func_impl_base {
 
 template<typename F, typename Ret, typename... Args>
 class func_impl : public func_impl_base<Ret, Args...> {
-  static constexpr bool alloc_on_heap = needs_heap<func_impl>;
-
   func_impl(F&& func) : func_(std::move(func)) {}
 
 public:
@@ -59,7 +57,7 @@ private:
 
 template<typename F, typename Ret, typename... Args>
 func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(F&& func, [[maybe_unused]] void* space) {
-  if constexpr (alloc_on_heap) {
+  if constexpr (needs_heap<func_impl>) {
     return new func_impl(std::move(func));
   } else {
     new (space) func_impl(std::move(func));
@@ -68,13 +66,13 @@ func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(F&& func, [[maybe
 
 template<typename F, typename Ret, typename... Args>
 func_impl_base<Ret, Args...>* func_impl<F, Ret, Args...>::move(void* space) noexcept {
-  ASSERT(!alloc_on_heap) << "Attempting to move heap-allocated function into local space";
+  ASSERT(!needs_heap<func_impl>) << "Attempting to move heap-allocated function into local space";
   return new (space) func_impl(std::move(func_));
 }
 
 template<typename F, typename Ret, typename... Args>
 void func_impl<F, Ret, Args...>::destroy() {
-  if constexpr (alloc_on_heap) {
+  if constexpr (needs_heap<func_impl>) {
     delete this;
   } else {
     this->~func_impl();
