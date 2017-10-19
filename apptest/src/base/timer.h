@@ -1,16 +1,16 @@
 #pragma once
 
+#include "base/function.h"
 #include "base/task_runner/task.h"
 #include "base/non_copyable.h"
 #include <chrono>
-#include <functional>
 #include <memory>
 
 namespace base {
 
 class timer : public non_copy_movable {
 public:
-  using callback_type = std::function<void()>;
+  using callback_type = function<void()>;
 
   explicit timer(callback_type callback = nullptr);
   ~timer();
