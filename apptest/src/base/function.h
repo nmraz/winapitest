@@ -58,7 +58,7 @@ private:
 };
 
 template<typename F, typename Ret, typename... Args>
-func_impl<F, Ret, Args...>* func_impl<F, Ret, Args>::create(F&& func, [[maybe_unused]] void* space) {
+func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(F&& func, [[maybe_unused]] void* space) {
   if constexpr (alloc_on_heap) {
     return new func_impl(std::move(func));
   } else {
@@ -117,7 +117,7 @@ class function<Ret(Args...)> : public non_copyable {
   using enable_if_compatible = std::enable_if_t<
     std::is_invocable_r_v<Ret, F&, Args&&...>
     && !std::is_same_v<F, function>
-  >
+  >;
   
 public:
   constexpr function() = default;
