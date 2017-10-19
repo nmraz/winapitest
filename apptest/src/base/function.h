@@ -35,7 +35,7 @@ struct func_impl_base {
   virtual func_impl_base* move(void* space) noexcept = 0;
   virtual void destroy() = 0;
 
-  virtual Ret call(Args... args) = 0;
+  virtual Ret call(Args&&... args) = 0;
 };
 
 template<typename F, typename Ret, typename... Args>
