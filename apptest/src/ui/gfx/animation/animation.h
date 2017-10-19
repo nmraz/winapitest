@@ -1,9 +1,9 @@
 #pragma once
 
+#include "base/function.h"
 #include "base/non_copyable.h"
 #include "base/task_runner/task.h"
 #include <chrono>
-#include <functional>
 
 namespace gfx {
 namespace impl {
@@ -15,8 +15,8 @@ struct animation_controller;
 
 class animation : public base::non_copy_movable {
 public:
-  using progress_callback = std::function<void(double value)>;
-  using easing_func = std::function<double(double prog)>;
+  using progress_callback = base::function<void(double)>;
+  using easing_func = base::function<double(double)>;
 
   using duration_type = std::chrono::duration<double, std::milli>;
 
