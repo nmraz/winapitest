@@ -112,24 +112,28 @@ void file::close() {
 
 file::complete_type file::read(offset_type offset, void* buf, unsigned long count) {
   auto overlapped = make_overlapped(offset);
+  auto fut = overlapped->prom.get_future();
 
   if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
     overlapped->prom.set_exception(std::system_error(win::last_error_code()));
-    return overlapped->prom.get_future();
   } else {
-    return overlapped.release()->prom.get_future();
+    overlapped.release();
   }
+
+  return fut;
 }
 
 file::complete_type file::write(offset_type offset, const void* buf, unsigned long count) {
   auto overlapped = make_overlapped(offset);
+  auto fut = overlapped->prom.get_future();
 
   if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->prom.set_exception(std::system_error(win::last_error_code()));;
-    return overlapped->prom.get_future();
+    overlapped->prom.set_exception(std::system_error(win::last_error_code()));
   } else {
-    return overlapped.release()->prom.get_future();
+    overlapped.release();
   }
+
+  return fut;
 }
 
 
