@@ -3,10 +3,10 @@
 #include "base/assert.h"
 #include "base/auto_restore.h"
 #include "base/finally.h"
+#include "base/function.h"
 #include "base/non_copyable.h"
 #include "base/signal/slot_handle.h"
 #include <algorithm>
-#include <functional>
 #include <utility>
 #include <vector>
 
@@ -24,7 +24,7 @@ struct slot_rep_base {
 template<typename... Args>
 class signal : public non_copy_movable {
 public:
-  using slot_type = std::function<void(Args...)>;
+  using slot_type = function<void(Args...)>;
 
   slot_handle connect(slot_type slot);
   void operator()(Args... args);
