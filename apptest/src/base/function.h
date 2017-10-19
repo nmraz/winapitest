@@ -138,7 +138,7 @@ public:
   void reset();
   void swap(function& other) noexcept;
   
-  operator bool() const { return !!impl_; }
+  explicit operator bool() const { return !!impl_; }
   Ret operator()(Args... args) const;
   
 private:
