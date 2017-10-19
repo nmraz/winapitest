@@ -167,12 +167,10 @@ function<Ret(Args...)>::function(F func) {
 
 template<typename Ret, typename... Args>
 function<Ret(Args...)>& function<Ret(Args...)>::operator=(function&& rhs) noexcept {
-  if (this == &rhs) {
-    return *this;
+  if (this != &rhs) {
+    reset();
+    move_from(std::move(rhs));
   }
-
-  reset();
-  move_from(std::move(rhs));
   return *this;
 }
 
