@@ -181,6 +181,7 @@ template<typename F, typename>
 function<Ret(Args...)>& function<Ret(Args...)>::operator=(F func) {
   reset();
   set_from(std::move(func));
+  return *this;
 }
 
 
