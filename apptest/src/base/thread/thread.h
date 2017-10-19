@@ -1,9 +1,9 @@
 #pragma once
 
+#include "base/function.h"
 #include "base/event_loop/event_loop.h"
 #include "base/event_loop/loop_task_runner.h"
 #include <condition_variable>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -13,7 +13,7 @@ namespace base {
 
 class thread {
 public:
-  using loop_factory = std::function<std::unique_ptr<event_loop>()>;
+  using loop_factory = function<std::unique_ptr<event_loop>()>;
 
   thread(loop_factory factory);
   thread(loop_factory factory, std::string name);
