@@ -126,7 +126,7 @@ class function<Ret(Args...)> : public non_copyable {
   
 public:
   constexpr function() = default;
-  constexpr function(std::nullptr_t) : function() {}
+  constexpr function(std::nullptr_t) {}
   function(function&& rhs) noexcept;
   
   template<typename F, typename = enable_if_compatible<F>>
