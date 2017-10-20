@@ -42,10 +42,12 @@ struct func_impl_base {
 
 template<typename F, typename Ret, typename... Args>
 class func_impl : public func_impl_base<Ret, Args...> {
-  func_impl(F&& func) : func_(std::move(func)) {}
+  template<typename G>
+  func_impl(G&& func) : func_(std::forward<G>(func)) {}
 
 public:
-  static func_impl* create(F&& func, void* space);
+  template<typename G>
+  static func_impl* create(G&& func, void* space);
 
   func_impl_base<Ret, Args...>* move(void* space) noexcept override;
   void destroy() override;
@@ -57,11 +59,12 @@ private:
 };
 
 template<typename F, typename Ret, typename... Args>
-func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(F&& func, [[maybe_unused]] void* space) {
+template<typename G>
+func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(G&& func, [[maybe_unused]] void* space) {
   if constexpr (needs_heap<func_impl>) {
-    return new func_impl(std::move(func));
+    return new func_impl(std::forward<G>(func));
   } else {
-    return new (space) func_impl(std::move(func));
+    return new (space) func_impl(std::forward<G>(func));
   }
 }
 
@@ -113,10 +116,13 @@ constexpr bool func_is_null(Mem Class::* ptr) {
 template<typename Ret, typename... Args>
 class function<Ret(Args...)> : public non_copyable {
   template<typename F>
-  using enable_if_compatible = std::enable_if_t<
+  using enable_if_compatible_impl = std::enable_if_t<
     std::is_invocable_r_v<Ret, F&, Args&&...>
     && !std::is_same_v<F, function>
   >;
+
+  template<typename F>
+  using enable_if_compatible = enable_if_compatible_impl<std::decay_t<F>>;
   
 public:
   constexpr function() = default;
@@ -124,7 +130,7 @@ public:
   function(function&& rhs) noexcept;
   
   template<typename F, typename = enable_if_compatible<F>>
-  function(F func);
+  function(F&& func);
   
   ~function() { reset(); }
   
@@ -132,7 +138,7 @@ public:
   function& operator=(function&& rhs) noexcept;
   
   template<typename F, typename = enable_if_compatible<F>>
-  function& operator=(F func);
+  function& operator=(F&& func);
   
   void reset();
   void swap(function& other) noexcept;
@@ -162,8 +168,8 @@ function<Ret(Args...)>::function(function&& rhs) noexcept {
 
 template<typename Ret, typename... Args>
 template<typename F, typename>
-function<Ret(Args...)>::function(F func) {
-  set_from(std::move(func));
+function<Ret(Args...)>::function(F&& func) {
+  set_from(std::forward<F>(func));
 }
 
 template<typename Ret, typename... Args>
@@ -177,9 +183,9 @@ function<Ret(Args...)>& function<Ret(Args...)>::operator=(function&& rhs) noexce
 
 template<typename Ret, typename... Args>
 template<typename F, typename>
-function<Ret(Args...)>& function<Ret(Args...)>::operator=(F func) {
+function<Ret(Args...)>& function<Ret(Args...)>::operator=(F&& func) {
   reset();
-  set_from(std::move(func));
+  set_from(std::forward<F>(func));
   return *this;
 }
 
@@ -224,7 +230,9 @@ void function<Ret(Args...)>::set_from(F&& func) {
     return;  // already empty
   }
 
-  impl_ = impl::func_impl<F, Ret, Args...>::create(std::move(func), get_space());
+  using impl_type = impl::func_impl<std::decay_t<F>, Ret, Args...>;
+
+  impl_ = impl_type::create(std::forward<F>(func), get_space());
 }
 
 template<typename Ret, typename... Args>
