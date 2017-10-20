@@ -47,7 +47,7 @@ class func_impl : public func_impl_base<Ret, Args...> {
 
 public:
   template<typename G>
-  static func_impl* create(G&& func, void* space);
+  static func_impl* create(G&& func, [[maybe_unused]] void* space);
 
   func_impl_base<Ret, Args...>* move(void* space) noexcept override;
   void destroy() override;
