@@ -4,7 +4,7 @@
 
 namespace base::impl {
 
-std::shared_ptr<task_runner> default_then_task_runner() {
+std::weak_ptr<task_runner> default_then_task_runner() {
   return loop_task_runner::current();
 }
 

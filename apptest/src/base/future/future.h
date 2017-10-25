@@ -35,7 +35,7 @@ void set_cont(future<T> fut, Cont&& cont) {
 }
 
 // task runner used for posting future::then calls (may be different for different threads)
-std::shared_ptr<task_runner> default_then_task_runner();
+std::weak_ptr<task_runner> default_then_task_runner();
 
 }  // namespace impl
 
@@ -100,11 +100,11 @@ public:
   void swap(future& other) noexcept;
 
   template<typename Cont>
-  auto then(Cont&& cont, std::shared_ptr<task_runner> runner);
+  auto then(std::weak_ptr<task_runner> runner, Cont&& cont);
 
   template<typename Cont>
   auto then(Cont&& cont) {
-    return then(std::forward<Cont>(cont), impl::default_then_task_runner());
+    return then(impl::default_then_task_runner(), std::forward<Cont>(cont));
   }
 
   bool is_valid() const { return !!core_; }
@@ -256,7 +256,7 @@ void future<T>::swap(future& other) noexcept {
 
 template<typename T>
 template<typename Cont>
-auto future<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
+auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
   check_valid();
 
   using result_type = std::decay_t<std::invoke_result_t<Cont&&, future_val<T>&&>>;
@@ -270,13 +270,15 @@ auto future<T>::then(Cont&& cont, std::shared_ptr<task_runner> runner) {
     prom = std::move(prom),
     runner = std::move(runner)
   ](future_val<T>&& val) mutable {
-    runner->post_task([
-      cont = std::forward<Cont>(cont),
-      prom = std::move(prom),
-      val = std::move(val)
-    ]() mutable {
-      call_then_cont<returns_future>(std::forward<Cont>(cont), std::move(val), std::move(prom));
-    });
+    if (auto strong_runner = runner.lock()) {
+      strong_runner->post_task([
+        cont = std::forward<Cont>(cont),
+        prom = std::move(prom),
+        val = std::move(val)
+      ]() mutable {
+        call_then_cont<returns_future>(std::forward<Cont>(cont), std::move(val), std::move(prom));
+      });
+    }
   });
 
   return fut;
