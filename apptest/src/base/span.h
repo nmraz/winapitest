@@ -21,18 +21,42 @@ constexpr bool is_span = is_span_impl<std::decay_t<T>>;
 template<typename From, typename To>
 constexpr bool is_safe_array_conv = std::is_convertible_v<From(&)[], To(&)[]>;
 
-template<typename Cont>
-constexpr bool has_integral_size = std::is_integral_v<decltype(std::declval<Cont&>().size())>;
+
+struct has_integral_size_tag {};  // MSVC expression SFINAE workaround
+
+template<typename Cont, typename = void>
+constexpr bool has_integral_size = false;
+
+template<
+  typename Cont,
+  std::void_t<
+    has_integral_size_tag,
+    decltype(std::declval<Cont&>().size())
+  >
+> constexpr bool has_integral_size = std::is_integral_v<decltype(std::declval<Cont&>().size())>;
+
 
 template<typename Data, typename T>
 constexpr bool is_convertible_data = std::is_pointer_v<Data>
   && is_safe_array_conv<std::remove_pointer_t<Data>, T>;
 
-template<typename Cont, typename T>
-constexpr bool has_convertible_data = is_convertible_data<
+struct has_convertible_data_tag {};  // MSVC expression SFINAE workaround
+
+template<typename Cont, typename T, typename = void>
+constexpr bool has_convertible_data = false;
+
+template<
+  typename Cont,
+  typename T,
+  std::void_t<
+    has_convertible_data_tag,
+    decltype(std::declval<Cont&>().data())
+  >
+> constexpr bool has_convertible_data = is_convertible_data<
   decltype(std::declval<Cont&>().data()),
   T
 >;
+
 
 template<typename Cont, typename T>
 constexpr bool is_compatible_container = !is_span<Cont> && has_convertible_data<Cont, T>
