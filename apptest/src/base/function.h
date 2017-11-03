@@ -134,7 +134,7 @@ public:
   
   ~function() { reset(); }
   
-  function& operator=(std::nullptr_t) { reset(); }
+  function& operator=(std::nullptr_t);
   function& operator=(function&& rhs) noexcept;
   
   template<typename F, typename = enable_if_compatible<F>>
@@ -170,6 +170,12 @@ template<typename Ret, typename... Args>
 template<typename F, typename>
 function<Ret(Args...)>::function(F&& func) {
   set_from(std::forward<F>(func));
+}
+
+template<typename Ret, typename... Args>
+function<Ret(Args...)>& function<Ret(Args...)>::operator=(std::nullptr_t) {
+  reset();
+  return *this;
 }
 
 template<typename Ret, typename... Args>
