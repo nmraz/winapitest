@@ -7,6 +7,7 @@ namespace ui {
 namespace {
 
 constexpr UINT wake_msg = WM_USER;
+constexpr UINT_PTR task_timer_id = 1;
 
 DWORD get_win_wait_time(const base::task::delay_type& delay) {
   auto millis = std::chrono::ceil<std::chrono::milliseconds>(delay);
@@ -90,6 +91,7 @@ LRESULT event_loop::handle_message(UINT msg) {
   }
 
   if (!is_current()) {
+    kill_timer();
     return 0;  // let the current loop do the processing
   }
 
@@ -120,6 +122,10 @@ void event_loop::clear_wake_flag() {
 }
 
 
+void event_loop::kill_timer() {
+  ::KillTimer(message_window_.get(), task_timer_id);
+}
+
 void event_loop::reschedule_timer() {
   auto next_run_time = get_next_run_time();
 
@@ -131,13 +137,13 @@ void event_loop::reschedule_timer() {
     auto delay = *next_run_time - base::task::clock_type::now();
     
     if (delay > base::task::delay_type::zero()) {
-      ::SetTimer(message_window_.get(), 1, get_win_wait_time(delay), nullptr);
+      ::SetTimer(message_window_.get(), task_timer_id, get_win_wait_time(delay), nullptr);
     } else {
       wake_up();  // task overdue, run now
     }
 
   } else {
-    ::KillTimer(message_window_.get(), 1);
+    kill_timer();
   }
 
   current_next_run_time_ = next_run_time;

@@ -17,6 +17,8 @@ public:
 private:
   LRESULT handle_message(UINT msg);
   void clear_wake_flag();
+
+  void kill_timer();
   void reschedule_timer();
 
   base::win::message_window message_window_;
