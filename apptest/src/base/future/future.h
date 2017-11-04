@@ -76,7 +76,7 @@ public:
 private:
   void check_valid() const {
     if (!core_) {
-      throw no_state();
+      throw no_future_state();
     }
   }
 
@@ -120,7 +120,7 @@ private:
 
   void check_valid() const {
     if (!is_valid()) {
-      throw no_state();
+      throw no_future_state();
     }
   }
 

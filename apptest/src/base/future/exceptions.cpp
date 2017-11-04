@@ -2,7 +2,7 @@
 
 namespace base {
 
-no_state::no_state()
+no_future_state::no_future_state()
   : future_error("No state") {
 }
 

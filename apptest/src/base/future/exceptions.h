@@ -12,9 +12,9 @@ public:
 
 // common
 
-class no_state : public future_error {
+class no_future_state : public future_error {
 public:
-  no_state();
+  no_future_state();
 };
 
 
