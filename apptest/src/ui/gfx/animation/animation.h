@@ -30,13 +30,13 @@ public:
   void set_callback(progress_callback callback) { callback_ = std::move(callback); }
 
   void animate_to(double progress);
-  void jump_to(double progress);
+  void set(double progress);
 
   void enter();
   void leave();
 
   void stop();
-  void reset() { jump_to(0.0); }
+  void reset() { set(0.0); }
 
   bool is_running() const { return is_running_; }
 

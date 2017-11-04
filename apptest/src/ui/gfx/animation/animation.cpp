@@ -78,7 +78,7 @@ void animation::animate_to(double target_progress) {
   start();
 }
 
-void animation::jump_to(double progress) {
+void animation::set(double progress) {
   stop();
   progress_ = progress;
   callback_(progress_);
@@ -105,7 +105,7 @@ void animation::stop() {
 
 void animation::start() {
   if (computed_duration_ == 0.0ms) {
-    jump_to(target_progress_);
+    set(target_progress_);
     return;
   }
 
