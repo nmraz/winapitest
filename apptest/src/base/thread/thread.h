@@ -35,7 +35,6 @@ private:
   // wait mechanism for task_runner
   mutable std::mutex runner_lock_;
   mutable std::condition_variable runner_cv_;
-  bool has_runner_ = false;
 
   loop_task_runner::ptr runner_;
   std::thread thread_;  // the thread must be constructed (and started) last!
