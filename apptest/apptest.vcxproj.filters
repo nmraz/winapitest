@@ -114,9 +114,6 @@
     <ClCompile Include="src\base\task_runner\cancellation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\task_runner\inline_task_runner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\future\future_val.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -261,9 +258,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\task_runner\cancellation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\task_runner\inline_task_runner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\task_runner\run_task.h">
