@@ -178,6 +178,7 @@ template<typename T>
 void promise<T>::set(future_val<T> val) {
   check_valid();
   core_->fulfill(std::move(val));
+  core_ = nullptr;
 }
 
 template<typename T>
