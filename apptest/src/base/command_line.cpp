@@ -62,7 +62,7 @@ command_line::command_line(const wchar_t* cmd_line) {
 }
 
 
-std::optional<std::string> command_line::get_switch(std::string_view name) const {
+std::optional<std::string_view> command_line::get_switch(std::string_view name) const {
   auto it = switches_.find(name);
 
   if (it == switches_.end()) {

@@ -17,13 +17,13 @@ public:
   command_line(int argc, const wchar_t* const* argv);
   explicit command_line(const wchar_t* cmd_line);
 
-  std::optional<std::string> get_switch(std::string_view name) const;
+  std::optional<std::string_view> get_switch(std::string_view name) const;
   bool has_flag(std::string_view name) const;
 
   const args& get_args() const { return args_; }
   const switches& get_switches() const { return switches_; }
 
-  std::string get_program() const { return program_; }
+  std::string_view get_program() const { return program_; }
   std::string to_string() const;
 
   void set_switch(std::string name, std::string value = "");
