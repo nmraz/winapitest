@@ -54,7 +54,6 @@ void thread::run(loop_factory factory) {
   set_task_runner(loop_task_runner::current());
   loop->run();
   ASSERT(quit_properly) << "Thread should not quit of its own accord";
-  cleanup_current_thread_name();
 }
 
 void thread::named_run(loop_factory factory, std::string name) {

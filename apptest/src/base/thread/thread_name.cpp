@@ -60,6 +60,22 @@ void set_windows_thread_name(std::string_view name) {
 std::map<std::thread::id, std::string> thread_name_map;
 std::mutex thread_name_lock;
 
+
+struct thread_name_cleaner {
+  ~thread_name_cleaner();
+};
+
+thread_name_cleaner::~thread_name_cleaner() {
+  std::lock_guard<std::mutex> hold(thread_name_lock);
+
+  auto it = thread_name_map.find(std::this_thread::get_id());
+  if (it != thread_name_map.end()) {
+    thread_name_map.erase(it);
+  }
+}
+
+thread_local thread_name_cleaner cleaner;
+
 }  // namespace
 
 void set_current_thread_name(std::string name) {
@@ -67,15 +83,6 @@ void set_current_thread_name(std::string name) {
 
   std::lock_guard<std::mutex> hold(thread_name_lock);
   thread_name_map[std::this_thread::get_id()] = std::move(name);
-}
-
-void cleanup_current_thread_name() {
-  std::lock_guard<std::mutex> hold(thread_name_lock);
-
-  auto it = thread_name_map.find(std::this_thread::get_id());
-  if (it != thread_name_map.end()) {
-    thread_name_map.erase(it);
-  }
 }
 
 
