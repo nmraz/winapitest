@@ -130,12 +130,6 @@ private:
   template<typename Cont>
   void set_cont(Cont&& cont);
 
-  template<
-    typename ReturnsFuture,
-    typename Cont,
-    typename Val
-  > static void call_then_cont(Cont&& cont, Val&& val, promise<typename ReturnsFuture::inner_type> prom);
-
   std::shared_ptr<impl::future_core<T>> core_;
 };
 
