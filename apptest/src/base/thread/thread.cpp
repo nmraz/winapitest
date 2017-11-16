@@ -50,8 +50,8 @@ std::string thread::name() const {
 // PRIVATE
 
 void thread::run(loop_factory factory) {
-  std::unique_ptr<event_loop> loop = factory();
   set_task_runner(loop_task_runner::current());
+  std::unique_ptr<event_loop> loop = factory();
   loop->run();
   ASSERT(quit_properly) << "Thread should not quit of its own accord";
 }
