@@ -7,12 +7,20 @@
 namespace base {
 
 template<typename Cb>
-auto run_task(std::shared_ptr<task_runner> runner, Cb&& callback)
-  -> future<typename impl::is_future<std::decay_t<std::invoke_result_t<Cb&&>>>::inner_type> {
-  return make_future()
-    .then(std::move(runner), [callback = std::forward<Cb>(callback)](auto&&) mutable {
+auto run_task(task_runner& runner, Cb&& callback)
+  -> future<typename impl::is_future<std::decay_t<decltype(std::forward<Cb>(callback)())>>::inner_type> {
+  using ret_type = std::decay_t<decltype(std::forward<Cb>(callback)())>;
+
+  promise<typename impl::is_future<ret_type>::inner_type> prom;
+  auto fut = prom.get_future();
+  
+  runner.post_task([callback = std::forward<Cb>(callback), prom = std::move(prom)]() mutable {
+    prom.set_from([&callback] {
       return std::forward<Cb>(callback)();
     });
+  });
+
+  return fut;
 }
 
 }  // namespace base

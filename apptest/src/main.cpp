@@ -54,7 +54,7 @@ int wmain(int argc, const wchar_t** argv) {
     auto file = std::make_shared<base::file>();
     auto data = std::make_shared<std::string>(3000, 'h');
 
-    base::run_task(io_thread.task_runner(), [file, data] {
+    base::run_task(*io_thread.task_runner(), [file, data] {
       LOG(info) << "Opening and writing to file";
 
       file->open("test.txt", base::file::out, base::file::create_disp::create_always);
