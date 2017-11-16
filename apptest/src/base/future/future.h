@@ -80,6 +80,9 @@ private:
     }
   }
 
+  template<typename ReturnsFuture, typename F>
+  void set_from_helper(F&& f);
+
   std::shared_ptr<impl::future_core<T>> core_;
   bool future_retrieved_ = false;
 };
@@ -211,16 +214,10 @@ void promise<T>::set_value() {  // enabled when T is void
 template<typename T>
 template<typename F>
 void promise<T>::set_from(F&& f) {
-  try {
-    if constexpr (std::is_void_v<T>) {
-      std::forward<F>(f)();
-      set_value();
-    } else {
-      set_value(std::forward<F>(f)());
-    }
-  } catch (...) {
-    set_exception(std::current_exception());
-  }
+  using ret_type = std::decay_t<decltype(std::forward<F>(f)())>;
+  using returns_future = impl::is_future<ret_type>;
+
+  set_from_helper<returns_future>(std::forward<F>(f));
 }
 
 template<typename T>
@@ -238,6 +235,26 @@ template<typename T>
 bool promise<T>::is_fulfilled() const {
   check_valid();
   return core_->is_fulfilled();
+}
+
+template<typename T>
+template<typename ReturnsFuture, typename F>
+void promise<T>::set_from_helper(F&& f) {
+  try {
+    if constexpr (ReturnsFuture::value) {  // future return type
+      auto&& fut = std::forward<F>(f)();  // f must be called before *this is moved from
+      impl::set_cont(std::forward<decltype(fut)>(fut), [self = std::move(*this)](auto&& cont_val) mutable {
+        self.set(std::forward<decltype(cont_val)>(cont_val));
+      });
+    } else if constexpr (std::is_void_v<T>) {  // void return type
+      std::forward<F>(f)();
+      set_value();
+    } else {  // other (non-future) return type
+      set_value(std::forward<F>(f)());
+    }
+  } catch (...) {
+    set_exception(std::current_exception());
+  }
 }
 
 
@@ -276,7 +293,9 @@ auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
         prom = std::move(prom),
         val = std::move(val)
       ]() mutable {
-        call_then_cont<returns_future>(std::forward<Cont>(cont), std::move(val), std::move(prom));
+        prom.set_from([cont = std::forward<Cont>(cont), val = std::move(val)]() mutable {
+          return std::forward<Cont>(cont)(std::move(val));
+        });
       });
     }
   });
@@ -290,25 +309,6 @@ void future<T>::set_cont(Cont&& cont) {
   check_valid();
   core_->set_cont(std::forward<Cont>(cont));
   core_ = nullptr;
-}
-
-template<typename T>
-template<typename ReturnsFuture, typename Cont, typename Val>
-void future<T>::call_then_cont(Cont&& cont, Val&& val, promise<typename ReturnsFuture::inner_type> prom) {
-  if constexpr (ReturnsFuture::value) {  // future return type
-    try {
-      std::forward<Cont>(cont)(std::move(val))
-        .set_cont([prom = std::move(prom)](auto&& cont_val) mutable {
-          prom.set(std::forward<decltype(cont_val)>(cont_val));
-        });
-    } catch (...) {
-      prom.set_exception(std::current_exception());
-    }
-  } else {  // non-future return type
-    prom.set_from([&]() mutable {
-      return std::forward<Cont>(cont)(std::move(val));
-    });
-  }
 }
 
 
