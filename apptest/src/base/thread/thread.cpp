@@ -42,7 +42,7 @@ loop_task_runner::ptr thread::task_runner() const {
 }
 
 
-const std::string& thread::name() const {
+std::string thread::name() const {
   return get_thread_name(get_id());
 }
 

@@ -86,12 +86,12 @@ void set_current_thread_name(std::string name) {
 }
 
 
-const std::string& get_thread_name(std::thread::id id) {
+std::string get_thread_name(std::thread::id id) {
   std::lock_guard<std::mutex> hold(thread_name_lock);
   return thread_name_map[id];
 }
 
-const std::string& get_current_thread_name() {
+std::string get_current_thread_name() {
   return get_thread_name(std::this_thread::get_id());
 }
 
