@@ -59,7 +59,7 @@ public:
   template<
     typename U,
     typename T2 = T,
-    typename = std::enable_if_t<!std::is_void_v<T>>
+    typename = std::enable_if_t<!std::is_void_v<T2>>
   > void set_value(U&& val);
 
   template<
@@ -191,7 +191,6 @@ void promise<T>::set_exception(Exc&& exc) {
 template<typename T>
 template<typename U, typename T2, typename>
 void promise<T>::set_value(U&& val) {  // enabled when T is non-void
-  // to keep this dependant, use T2 instead of T
   future_val<T2> fut_val;
   fut_val.set_value(std::forward<U>(val));
   set(std::move(fut_val));
@@ -200,7 +199,6 @@ void promise<T>::set_value(U&& val) {  // enabled when T is non-void
 template<typename T>
 template<typename T2, typename>
 void promise<T>::set_value() {  // enabled when T is void
-  // to keep this dependant, use T2 instead of void
   future_val<T2> val;
   val.set_value();
   set(std::move(val));
