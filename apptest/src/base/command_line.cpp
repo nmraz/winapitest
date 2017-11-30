@@ -80,10 +80,10 @@ bool command_line::has_flag(std::string_view name) const {
 std::string command_line::to_string() const {
   std::string ret = program_;
 
-  for (const auto& sw : switches_) {
-    ret += ' ' + quote(switch_sep.data() + sw.first);
-    if (sw.second.size()) {
-      ret += switch_val_delim.data() + quote(sw.second);
+  for (const auto& [name, val] : switches_) {
+    ret += ' ' + quote(switch_sep.data() + name);
+    if (!val.empty()) {
+      ret += switch_val_delim.data() + quote(val);
     }
   }
 
