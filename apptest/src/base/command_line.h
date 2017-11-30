@@ -23,7 +23,7 @@ public:
   args& get_args() { return args_; }
   const args& get_args() const { return args_; }
 
-  switches get_switches() { return switches_; }
+  switches& get_switches() { return switches_; }
   const switches& get_switches() const { return switches_; }
 
   std::string_view get_program() const { return program_; }
