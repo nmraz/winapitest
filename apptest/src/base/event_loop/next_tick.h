@@ -5,7 +5,7 @@
 namespace base {
 namespace impl {
 
-void do_set_timeout(task::callback_type&& callback, const task::delay_type& delay);
+void do_set_timeout(task::callback_type&& callback, task::delay_type delay);
 
 }  // namespace impl
 
