@@ -117,7 +117,7 @@ void animation::start() {
   }
 }
 
-void animation::step(const base::task::run_time_type& now) {
+void animation::step(base::task::run_time_type now) {
   auto elapsed_time = now - start_time_;
   double relative_progress = std::min(elapsed_time / computed_duration_, 1.0);
   

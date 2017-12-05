@@ -44,7 +44,7 @@ private:
   friend impl::animation_controller;
 
   void start();
-  void step(const base::task::run_time_type& now);
+  void step(base::task::run_time_type now);
 
   progress_callback callback_;
   easing_func easing_;
