@@ -57,7 +57,7 @@ private:
 
   duration_type duration_;
   duration_type computed_duration_;  // used by animate_to
-  std::chrono::steady_clock::time_point start_time_;
+  base::task::run_time_type start_time_;
 };
 
 }  // namespace gfx
