@@ -6,12 +6,11 @@
 namespace gfx {
 namespace impl {
 
-// NOTE: using variable templates here confuses intellisense
 template<typename T>
-using enable_if_floating = std::enable_if_t<std::is_floating_point<T>{}, int>;
+using enable_if_floating = std::enable_if_t<std::is_floating_point_v<T>, int>;
 
 template<typename T>
-using enable_if_integral = std::enable_if_t<std::is_integral<T>{}, int>;
+using enable_if_integral = std::enable_if_t<std::is_integral_v<T>, int>;
 
 
 template<typename T>
