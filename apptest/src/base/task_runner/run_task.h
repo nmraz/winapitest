@@ -7,8 +7,7 @@
 namespace base {
 
 template<typename Cb>
-auto run_task(task_runner& runner, Cb&& callback)
-  -> future<typename impl::is_future<std::decay_t<decltype(std::forward<Cb>(callback)())>>::inner_type> {
+auto run_task(task_runner& runner, Cb&& callback) {
   using ret_type = std::decay_t<decltype(std::forward<Cb>(callback)())>;
 
   promise<typename impl::is_future<ret_type>::inner_type> prom;
