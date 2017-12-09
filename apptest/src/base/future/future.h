@@ -269,7 +269,7 @@ template<typename Cont>
 auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
   check_valid();
 
-  using result_type = std::decay_t<std::invoke_result_t<Cont&&, future_val<T>&&>>;
+  using result_type = std::decay_t<decltype(std::declval<Cont>()(std::declval<future_val<T>>()))>;
   using returns_future = impl::is_future<result_type>;
 
   promise<typename returns_future::inner_type> prom;
