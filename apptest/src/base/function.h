@@ -105,6 +105,11 @@ constexpr bool func_is_null(const function<Sig>& fn) {
   return !fn;
 }
 
+template<typename Sig>
+constexpr bool func_is_null(const std::function<Sig>& fn) {
+  return !fn;
+}
+
 template<typename T>
 constexpr bool func_is_null(T* ptr) {
   return !ptr;
