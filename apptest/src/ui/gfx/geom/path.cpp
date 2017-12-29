@@ -413,22 +413,13 @@ rectf path::bounds() const {
   return impl::d2d_rect_to_rect(ret);
 }
 
-pointf path::point_at(float dist) const {
-  D2D1_POINT_2F ret;
+std::pair<pointf, pointf> path::point_tangent_at(float dist) const {
+  D2D1_POINT_2F pt, tangent;
   base::win::throw_if_failed(
-    d2d_geom()->ComputePointAtLength(dist, nullptr, &ret, nullptr),
-    "Failed to compute point on path"
+    d2d_geom()->ComputePointAtLength(dist, nullptr, &pt, &tangent),
+    "Failed to compute point information on path"
   );
-  return impl::d2d_point_to_point(ret);
-}
-
-pointf path::tangent_at(float dist) const {
-  D2D1_POINT_2F ret;
-  base::win::throw_if_failed(
-    d2d_geom()->ComputePointAtLength(dist, nullptr, nullptr, &ret),
-    "Failed to compute tangent to path"
-  );
-  return impl::d2d_point_to_point(ret);
+  return { impl::d2d_point_to_point(pt), impl::d2d_point_to_point(tangent) };
 }
 
 

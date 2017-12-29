@@ -231,8 +231,7 @@ public:
   float length() const;
   float area() const;
   rectf bounds() const;
-  pointf point_at(float dist) const;
-  pointf tangent_at(float dist) const;
+  std::pair<pointf, pointf> point_tangent_at(float dist) const;
 
   path_relation compare(const path& other) const;
   bool contains(const pointf& pt) const;
