@@ -71,7 +71,7 @@ func_impl<F, Ret, Args...>* func_impl<F, Ret, Args...>::create(G&& func, [[maybe
 template<typename F, typename Ret, typename... Args>
 func_impl_base<Ret, Args...>* func_impl<F, Ret, Args...>::move(void* space) noexcept {
   ASSERT(!needs_heap<func_impl>) << "Attempting to move heap-allocated function into local space";
-  return new (space) func_impl(std::move(func_));
+  return new (space) func_impl(std::move(*this));
 }
 
 template<typename F, typename Ret, typename... Args>
