@@ -200,8 +200,7 @@ function<Ret(Args...)>& function<Ret(Args...)>::operator=(function&& rhs) noexce
 template<typename Ret, typename... Args>
 template<typename F, typename>
 function<Ret(Args...)>& function<Ret(Args...)>::operator=(F&& func) {
-  reset();
-  set_from(std::forward<F>(func));
+  function(std::forward<F>(func)).swap(*this);
   return *this;
 }
 
