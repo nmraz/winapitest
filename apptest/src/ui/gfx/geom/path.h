@@ -8,6 +8,7 @@
 #include "ui/gfx/matrix.h"
 #include <d2d1_1.h>
 #include <initializer_list>
+#include <mutex>
 #include <variant>
 #include <vector>
 
@@ -157,6 +158,12 @@ public:
   using reverse_iterator = verb_list::reverse_iterator;
   using const_reverse_iterator = verb_list::const_reverse_iterator;
 
+  path() = default;
+  path(const path& rhs);
+  path(path&& rhs) noexcept;
+
+  path& operator=(path rhs);
+
   iterator begin() { return verbs().begin(); }
   const_iterator begin() const { return verbs().begin(); }
   const_iterator cbegin() const { return verbs().cbegin(); }
@@ -247,11 +254,11 @@ private:
   verb_list& verbs();
   const verb_list& verbs() const;
 
-
   verb_list verbs_;
   fill_mode fill_mode_ = fill_mode::winding;
 
   mutable impl::d2d_path_geom_ptr d2d_geom_;
+  mutable std::mutex d2d_geom_lock_;  // protects d2d_geom_ in const situations
 };
 
 

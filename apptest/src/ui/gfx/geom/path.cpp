@@ -170,6 +170,25 @@ path_d2d_sink::path_d2d_sink(path* p)
 }  // namespace
 
 
+path::path(const path& rhs)
+  : verbs_(rhs.verbs_)
+  , fill_mode_(rhs.fill_mode_) {
+  std::lock_guard<std::mutex> hold(rhs.d2d_geom_lock_);
+  d2d_geom_ = rhs.d2d_geom_;
+}
+
+path::path(path&& rhs) noexcept
+  : verbs_(std::move(rhs.verbs_))
+  , fill_mode_(rhs.fill_mode_)
+  , d2d_geom_(std::move(rhs.d2d_geom_)) {  // no lock - safety is only guaranteed on const operations
+}
+
+path& path::operator=(path rhs) {
+  rhs.swap(*this);
+  return *this;
+}
+
+
 path_verb& path::operator[](std::size_t idx) {
   ASSERT(idx < size()) << "Out of bounds access";
   return verbs()[idx];
@@ -205,6 +224,7 @@ const path_verb& path::back() const {
 void path::swap(path& other) noexcept {
   using std::swap;
 
+  // no lock - safety is only guaranteed on const operations
   swap(verbs_, other.verbs_);
   swap(fill_mode_, other.fill_mode_);
   swap(d2d_geom_, other.d2d_geom_);
@@ -443,13 +463,15 @@ bool path::contains(const pointf& pt) const {
 
 
 const impl::d2d_path_geom_ptr& path::d2d_geom() const {
+  std::lock_guard<std::mutex> hold(d2d_geom_lock_);
+
   if (!d2d_geom_) {
     d2d_geom_ = create_path_geom();
     impl::d2d_geom_sink_ptr sink;
     base::win::throw_if_failed(d2d_geom_->Open(sink.addr()), "Failed to open path sink");
     stream_to(sink.get());
   }
-  return d2d_geom_;
+  return d2d_geom_;  // will not be mutated again until a non-const operation is performed
 }
 
 impl::d2d_geom_sink_ptr path::d2d_sink() {
@@ -458,7 +480,7 @@ impl::d2d_geom_sink_ptr path::d2d_sink() {
 
 
 void path::mark_dirty() {
-  d2d_geom_ = nullptr;
+  d2d_geom_ = nullptr;  // no lock - safety is only guaranteed on const operations
 }
 
 void path::stream_to(ID2D1GeometrySink* sink) const {
