@@ -3,6 +3,7 @@
 #include "base/function.h"
 #include "base/non_copyable.h"
 #include "base/task_runner/task.h"
+#include "ui/gfx/util.h"
 #include <chrono>
 
 namespace gfx {
@@ -35,7 +36,7 @@ private:
   void step(base::task::run_time_type now);
 
   easing_func easing_;
-  bool is_running_;
+  bool is_running_ = false;
 
   duration_type duration_;
   base::task::run_time_type start_time_;
@@ -44,51 +45,69 @@ private:
 }  // namespace impl
 
 
-class animation : public base::non_copy_movable {
+template<typename T>
+struct default_anim_traits {
+  static T lerp(const T& from, const T& to, double t) {
+    return lerp(from, to, t);  // ADL
+  }
+};
+
+
+template<typename T, typename Traits = default_anim_traits<T>>
+class animation : public impl::animation_base {
 public:
-  using progress_callback = base::function<void(double)>;
-  using easing_func = base::function<double(double)>;
+  using progress_callback = base::function<void(animation&)>;
 
-  using duration_type = std::chrono::duration<double, std::milli>;
+  explicit animation(easing_func easing, progress_callback callback);
 
+  void set(const T& val);
+  void animate_to(const T& val);
 
-  explicit animation(easing_func easing, progress_callback callback = nullptr);
-  ~animation();
-
-  void set_duration(const duration_type& duration) { duration_ = duration; }
-  duration_type duration() const { return duration_; }
-
-  void set_callback(progress_callback callback) { callback_ = std::move(callback); }
-
-  void animate_to(double progress);
-  void set(double progress);
-
-  void enter();
-  void leave();
-
-  void stop();
-  void reset() { set(0.0); }
-
-  bool is_running() const { return is_running_; }
+  T val() const { return val_; }
 
 private:
-  friend impl::animation_controller;
-
-  void start();
-  void step(base::task::run_time_type now);
+  void do_step(double prog) override;
+  void update(const T& val);
 
   progress_callback callback_;
-  easing_func easing_;
 
-  bool is_running_ = false;
-
-  double progress_ = 0.0;
-  double initial_progress_;
-  double target_progress_;  // used by animate_to
-
-  duration_type duration_;
-  duration_type computed_duration_;  // used by animate_to
-  base::task::run_time_type start_time_;
+  T val_{};
+  T initial_val_;
+  T target_val_;
 };
+
+
+template<typename T, typename Traits>
+animation<T, Traits>::animation(easing_func easing, progress_callback callback)
+  : impl::animation_base(std::move(easing))
+  , callback_(std::move(callback)) {
+}
+
+template<typename T, typename Traits>
+void animation<T, Traits>::set(const T& val) {
+  stop();
+  update(val);
+}
+
+template<typename T, typename Traits>
+void animation<T, Traits>::animate_to(const T& val) {
+  target_val_ = val;
+  initial_val_ = val_;
+  start();
+}
+
+
+// PRIVATE
+
+template<typename T, typename Traits>
+void animation<T, Traits>::do_step(double prog) {
+  update(Traits::lerp(initial_val_, target_val_, prog));
+}
+
+template<typename T, typename Traits>
+void animation<T, Traits>::update(const T& val) {
+  val_ = val;
+  callback_(*this);
+}
 
 }  // namespace gfx

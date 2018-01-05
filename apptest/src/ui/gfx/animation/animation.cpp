@@ -10,20 +10,19 @@ using namespace std::chrono_literals;
 
 constexpr auto animation_interval = 1.s / 60;
 
-namespace gfx {
-namespace impl {
+namespace gfx::impl {
 
 struct animation_controller {
-  void start_animation(animation* anim);
-  void stop_animation(animation* anim);
+  void start_animation(animation_base* anim);
+  void stop_animation(animation_base* anim);
 
   void on_tick();
 
   base::timer timer_{ [this] { on_tick(); } };
-  std::vector<animation*> animations_;
+  std::vector<animation_base*> animations_;
 };
 
-void animation_controller::start_animation(animation* anim) {
+void animation_controller::start_animation(animation_base* anim) {
   if (animations_.empty()) {
     timer_.set(animation_interval, true);
   }
@@ -31,7 +30,7 @@ void animation_controller::start_animation(animation* anim) {
   animations_.push_back(anim);
 }
 
-void animation_controller::stop_animation(animation* anim) {
+void animation_controller::stop_animation(animation_base* anim) {
   auto anim_pos = std::find(animations_.begin(), animations_.end(), anim);
 
   ASSERT(anim_pos != animations_.end()) << "Animation not running";
@@ -46,12 +45,10 @@ void animation_controller::stop_animation(animation* anim) {
 void animation_controller::on_tick() {
   auto now = base::task::clock_type::now();
 
-  for (animation* anim : animations_) {
+  for (animation_base* anim : animations_) {
     anim->step(now);
   }
 }
-
-}  // namespace impl
 
 namespace {
 
@@ -60,52 +57,21 @@ impl::animation_controller anim_controller;
 }  // namespace
 
 
-animation::animation(easing_func easing, progress_callback callback)
-  : callback_(std::move(callback))
-  , easing_(std::move(easing)) {
+animation_base::animation_base(easing_func easing)
+  : easing_(std::move(easing)) {
 }
 
-animation::~animation() {
+animation_base::~animation_base() {
   stop();
 }
 
 
-void animation::animate_to(double target_progress) {
-  target_progress_ = target_progress;
-  initial_progress_ = progress_;
+// PROTECTED
 
-  computed_duration_ = std::abs(progress_ - target_progress_) * duration_;
-  start();
-}
-
-void animation::set(double progress) {
-  stop();
-  progress_ = progress;
-  callback_(progress_);
-}
-
-
-void animation::enter() {
-  animate_to(1.0);
-}
-
-void animation::leave() {
-  animate_to(0.0);
-}
-
-void animation::stop() {
-  if (is_running_) {
-    anim_controller.stop_animation(this);
-    is_running_ = false;
-  }
-}
-
-
-// PRIVATE
-
-void animation::start() {
-  if (computed_duration_ == 0.0ms) {
-    set(target_progress_);
+void animation_base::start() {
+  if (duration_ == 0.0ms) {
+    stop();
+    do_step(1.0);
     return;
   }
 
@@ -117,17 +83,25 @@ void animation::start() {
   }
 }
 
-void animation::step(base::task::run_time_type now) {
+void animation_base::stop() {
+  if (is_running_) {
+    anim_controller.stop_animation(this);
+    is_running_ = false;
+  }
+}
+
+
+// PRIVATE
+
+void animation_base::step(base::task::run_time_type now) {
   auto elapsed_time = now - start_time_;
-  double relative_progress = std::min(elapsed_time / computed_duration_, 1.0);
-  
-  if (relative_progress == 1.0) {
+  double prog = std::min(elapsed_time / duration_, 1.0);
+
+  if (prog == 1.0) {
     stop();
   }
 
-  progress_ = initial_progress_ + (target_progress_ - initial_progress_) * easing_(relative_progress);
-
-  callback_(progress_);
+  do_step(prog);
 }
 
-}  // namespace gfx
+}  // namespace gfx::impl
