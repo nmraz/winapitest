@@ -59,7 +59,7 @@ class animation : public impl::animation_base {
 public:
   using progress_callback = base::function<void(animation&)>;
 
-  explicit animation(easing_func easing, progress_callback callback);
+  animation(easing_func easing, progress_callback callback);
 
   void set(const T& val);
   void animate_to(const T& val);
