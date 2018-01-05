@@ -81,27 +81,18 @@ int wmain(int argc, const wchar_t** argv) {
   LOG(info) << "Path area: " << p.area();
 
 
-  gfx::animation anim(gfx::easing::ease_in);
-
-  anim.set_callback([&](double value) {
-    LOG(trace) << value;
+  gfx::animation<gfx::pointf> anim(gfx::easing::ease_in, [](gfx::animation<gfx::pointf>& anim) {
+    gfx::pointf val = anim.val();
+    LOG(trace) << "(" << val.x << ", " << val.y << ")";
 
     if (!anim.is_running()) {
-      LOG(info) << "Done";
+      LOG(info) << "Animation complete";
     }
   });
+
+  anim.set({ 1, 2 });
   anim.set_duration(500ms);
-  anim.enter();
-
-  base::set_timeout([&]() {
-    LOG(info) << "Leaving";
-    anim.leave();
-  }, 300ms);
-
-  base::set_timeout([&]() {
-    LOG(info) << "Entering";
-    anim.enter();
-  }, 400ms);
+  anim.animate_to({ 3, 4 });
 
 
   ui::event_loop loop;
