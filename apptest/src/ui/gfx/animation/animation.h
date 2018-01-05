@@ -48,6 +48,7 @@ private:
 template<typename T>
 struct default_anim_traits {
   static T lerp(const T& from, const T& to, double t) {
+    using gfx::lerp;  // prevent lerp from binding to the current function
     return lerp(from, to, t);  // ADL
   }
 };
