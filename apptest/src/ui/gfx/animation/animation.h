@@ -10,6 +10,37 @@ namespace impl {
 
 struct animation_controller;
 
+class animation_base : public base::non_copy_movable {
+public:
+  using easing_func = base::function<double(double)>;
+  using duration_type = std::chrono::duration<double, std::milli>;
+
+  explicit animation_base(easing_func easing);
+  ~animation_base();
+
+  void set_duration(duration_type duration) { duration_ = duration; }
+  duration_type duration() const { return duration_; }
+
+  bool is_running() const { return is_running_; }
+
+protected:
+  void start();
+  void stop();
+
+  virtual void do_step(double prog) = 0;
+
+private:
+  friend animation_controller;
+
+  void step(base::task::run_time_type now);
+
+  easing_func easing_;
+  bool is_running_;
+
+  duration_type duration_;
+  base::task::run_time_type start_time_;
+};
+
 }  // namespace impl
 
 
