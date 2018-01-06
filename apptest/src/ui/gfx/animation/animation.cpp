@@ -1,6 +1,7 @@
 #include "animation.h"
 
 #include "base/assert.h"
+#include "base/auto_restore.h"
 #include "base/timer.h"
 #include <algorithm>
 #include <cmath>
@@ -20,35 +21,51 @@ struct animation_controller {
 
   base::timer timer_{ [this] { on_tick(); } };
   std::vector<animation_base*> animations_;
+
+  int animation_count_ = 0;
+  bool in_tick_ = false;
 };
 
 void animation_controller::start_animation(animation_base* anim) {
-  if (animations_.empty()) {
+  animations_.push_back(anim);
+
+  if (!animation_count_++) {
     timer_.set(animation_interval, true);
   }
-
-  animations_.push_back(anim);
 }
 
 void animation_controller::stop_animation(animation_base* anim) {
   auto anim_pos = std::find(animations_.begin(), animations_.end(), anim);
 
   ASSERT(anim_pos != animations_.end()) << "Animation not running";
-  animations_.erase(anim_pos);
+  if (in_tick_) {
+    *anim_pos = nullptr;
+  } else {
+    animations_.erase(anim_pos);
+  }
 
-  if (animations_.empty()) {
+  if (!--animation_count_) {
     timer_.cancel();
   }
 }
 
 
 void animation_controller::on_tick() {
-  auto now = base::task::clock_type::now();
+  {
+    base::auto_restore<bool> hold_in_tick(in_tick_, true);
+    auto now = base::task::clock_type::now();
 
-  for (animation_base* anim : animations_) {
-    anim->step(now);
+    for (animation_base* anim : animations_) {
+      if (anim) {
+        anim->step(now);
+      }
+    }
   }
+
+  // clean up animations which stopped during this tick
+  animations_.erase(std::remove(animations_.begin(), animations_.end(), nullptr), animations_.end());
 }
+
 
 namespace {
 
