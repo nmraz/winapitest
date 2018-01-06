@@ -164,6 +164,12 @@ constexpr bool operator!=(const rect<T>& lhs, const rect<T>& rhs) {
 }
 
 
+template<typename T>
+constexpr rect<T> lerp(const rect<T>& from, const rect<T>& to, double t) {
+  return { lerp(from.origin(), to.origin(), t), lerp(from.get_size(), to.get_size(), t) };
+}
+
+
 using rectf = rect<float>;
 using recti = rect<int>;
 
