@@ -150,6 +150,15 @@ constexpr bool operator!=(const size<T>& lhs, const size<T>& rhs) {
 }
 
 
+template<typename T>
+constexpr size<T> lerp(const size<T>& from, const size<T>& to, double t) {
+  return {
+    static_cast<T>(from.width() + (to.width() - from.width()) * t),
+    static_cast<T>(from.height() + (to.height() - from.height()) * t)
+  };
+}
+
+
 using sizei = size<int>;
 using sizef = size<float>;
 
