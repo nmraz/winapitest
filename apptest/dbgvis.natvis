@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="base::impl::func_impl&lt;*&gt;">
+    <DisplayString>{func_}</DisplayString>
+    <Expand>
+      <Item Name="[functor]">func_</Item>
+    </Expand>
+  </Type>
+  <Type Name="base::function&lt;*&gt;">
+    <DisplayString Condition="impl_ == 0">empty</DisplayString>
+    <DisplayString Condition="impl_ != 0">{*impl_}</DisplayString>
+    <Expand>
+      <ExpandedItem Condition="impl_ != 0">*impl_</ExpandedItem>
+    </Expand>
+  </Type>
+</AutoVisualizer>

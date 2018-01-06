@@ -288,4 +288,7 @@
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="dbgvis.natvis" />
+  </ItemGroup>
 </Project>
