@@ -28,6 +28,9 @@ public:
   void enter() { animate_to(1.0); }
   void leave() { animate_to(0.0); }
 
+  void finish() { set(1.0); }
+  void reset() { set(0.0); }
+
   double prog() const { return anim_.val(); }
 
 private:
