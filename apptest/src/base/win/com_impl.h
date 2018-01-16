@@ -43,12 +43,12 @@ private:
 
 template<typename T>
 STDMETHODIMP_(ULONG) com_impl_base<T>::AddRef() {
-  return ref_count_.fetch_add(1, std::memory_order_relaxed);
+  return ref_count_.fetch_add(1, std::memory_order_relaxed) + 1;
 }
 
 template<typename T>
 STDMETHODIMP_(ULONG) com_impl_base<T>::Release() {
-  ULONG new_count = ref_count_.fetch_sub(1, std::memory_order_acq_rel);
+  ULONG new_count = ref_count_.fetch_sub(1, std::memory_order_acq_rel) - 1;
   if (!new_count) {
     delete this;
   }
