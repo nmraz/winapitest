@@ -9,11 +9,20 @@ std::error_code last_error_code() {
 }
 
 [[noreturn]] void throw_last_error(const char* what) {
-  throw std::system_error(last_error_code(), what);
+  auto code = last_error_code();
+  if (code.value() == ERROR_OUTOFMEMORY) {
+    throw std::bad_alloc();
+  }
+
+  throw std::system_error(code, what);
 }
 
 void throw_if_failed(HRESULT hr, const char* what) {
   if (!SUCCEEDED(hr)) {
+    if (hr == E_OUTOFMEMORY) {
+      throw std::bad_alloc();
+    }
+
     throw std::system_error(static_cast<int>(hr), std::system_category(),  what);
   }
 }

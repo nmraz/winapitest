@@ -33,6 +33,10 @@ HRESULT exception_boundary(F&& f) noexcept {
     return except_bound_impl::call_f(std::forward<F>(f), except_bound_impl::disptach_tag_for<F>{});
   } catch (const std::bad_alloc&) {
     return E_OUTOFMEMORY;
+  } catch (const std::out_of_range&) {
+    return E_BOUNDS;
+  } catch (const std::invalid_argument&) {
+    return E_INVALIDARG;
   } catch (const std::system_error& e) {
     auto code = e.code();
     if (code.category() == std::system_category()) {
