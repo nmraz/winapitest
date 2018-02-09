@@ -286,7 +286,7 @@ auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
         prom = std::move(prom),
         val = std::move(val)
       ]() mutable {
-        prom.set_from([&cont, val = std::move(val)]() mutable {
+        prom.set_from([&] {
           return std::forward<Cont>(cont)(std::move(val));
         });
       });
