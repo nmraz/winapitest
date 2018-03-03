@@ -50,6 +50,9 @@ std::weak_ptr<task_runner> default_then_task_runner();
 
 }  // namespace impl
 
+template<typename T>
+using unwrap_future_t = typename impl::unwrap_future<T>::inner_type;
+
 
 template<typename T>
 class promise : public non_copyable {
