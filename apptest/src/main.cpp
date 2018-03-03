@@ -51,15 +51,15 @@ int wmain(int argc, const wchar_t** argv) {
     timer1.set(5s);
     timer2.set(2s);
 
-    auto file = std::make_shared<base::file>();
-    auto data = std::make_shared<std::string>(3000, 'h');
-
-    base::run_task(*io_thread.task_runner(), [file, data] {
+    base::run_task(*io_thread.task_runner(), [] {
       LOG(info) << "Opening and writing to file";
 
-      file->open("test.txt", base::file::out, base::file::create_disp::create_always);
-      return file->write(0, *data);
-    }).then([file, data](base::future_val<unsigned long> bytes_written) {
+      auto file = std::make_shared<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
+      return file->write(0, "Test file!").then([file](auto&& bytes_written) {
+        LOG(info) << "Closing file";
+        return bytes_written;
+      });
+    }).then([](base::future_val<unsigned long> bytes_written) {
       try {
         LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
       } catch (const std::exception& e) {
