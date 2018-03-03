@@ -19,12 +19,23 @@ class future;
 namespace impl {
 
 template<typename T>
-struct is_future : std::false_type {
+struct unwrap_future {
+  static constexpr bool is_future = false;
+  static constexpr bool is_future_val = false;
   using inner_type = T;
 };
 
 template<typename T>
-struct is_future<future<T>> : std::true_type {
+struct unwrap_future<future<T>> {
+  static constexpr bool is_future = true;
+  static constexpr bool is_future_val = false;
+  using inner_type = T;
+};
+
+template<typename T>
+struct unwrap_future<future_val<T>> {
+  static constexpr bool is_future = false;
+  static constexpr bool is_future_val = true;
   using inner_type = T;
 };
 
@@ -80,7 +91,7 @@ private:
     }
   }
 
-  template<typename ReturnsFuture, typename F>
+  template<typename UnwrapedReturn, typename F>
   void set_from_helper(F&& f);
 
   std::shared_ptr<impl::future_core<T>> core_;
@@ -208,7 +219,7 @@ template<typename T>
 template<typename F>
 void promise<T>::set_from(F&& f) {
   using ret_type = std::decay_t<decltype(std::forward<F>(f)())>;
-  using returns_future = impl::is_future<ret_type>;
+  using returns_future = impl::unwrap_future<ret_type>;
 
   set_from_helper<returns_future>(std::forward<F>(f));
 }
@@ -231,14 +242,16 @@ bool promise<T>::is_fulfilled() const {
 }
 
 template<typename T>
-template<typename ReturnsFuture, typename F>
+template<typename UnwrapedReturn, typename F>
 void promise<T>::set_from_helper(F&& f) {
   try {
-    if constexpr (ReturnsFuture::value) {  // future return type
+    if constexpr (UnwrapedReturn::is_future) {  // future return type
       auto&& fut = std::forward<F>(f)();  // f must be called before *this is moved from
       impl::set_cont(std::forward<decltype(fut)>(fut), [self = std::move(*this)](auto&& cont_val) mutable {
         self.set(std::forward<decltype(cont_val)>(cont_val));
       });
+    } else if constexpr (UnwrapedReturn::is_future_val) {  // future_val return type
+      set(std::forward<F>(f)());
     } else if constexpr (std::is_void_v<T>) {  // void return type
       std::forward<F>(f)();
       set_value();
@@ -270,7 +283,7 @@ auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
   check_valid();
 
   using result_type = std::decay_t<decltype(std::declval<Cont>()(std::declval<future_val<T>>()))>;
-  using returns_future = impl::is_future<result_type>;
+  using returns_future = impl::unwrap_future<result_type>;
 
   promise<typename returns_future::inner_type> prom;
   auto fut = prom.get_future();
