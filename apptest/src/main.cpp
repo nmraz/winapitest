@@ -54,8 +54,10 @@ int wmain(int argc, const wchar_t** argv) {
     base::run_task(*io_thread.task_runner(), [] {
       LOG(info) << "Opening and writing to file";
 
-      auto file = std::make_shared<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
-      return file->write(0, "Test file!").then([file](auto&& bytes_written) {
+      auto file_holder = std::make_unique<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
+      base::file* file = file_holder.get();
+
+      return file->write(0, "Test file!").then([file_holder = std::move(file_holder)](auto&& bytes_written) {
         LOG(info) << "Closing file";
         return bytes_written;
       });
