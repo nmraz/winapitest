@@ -9,7 +9,7 @@
 #define ASSERT(COND) ASSERT_IMPL(COND)
 #else
 // can't just make this empty, as we still need streaming support
-#define ASSERT(COND) __assume(COND), ASSERT_IMPL(true)
+#define ASSERT(COND) ASSERT_IMPL(true)
 #endif
 
 #define NOTREACHED() ASSERT(base::not_reached)
