@@ -173,7 +173,6 @@
     <ClCompile Include="src\base\future\future_val.cpp" />
     <ClCompile Include="src\base\task_runner\cancellation.cpp" />
     <ClCompile Include="src\base\task_runner\task.cpp" />
-    <ClCompile Include="src\base\event_loop\task_event_loop.cpp" />
     <ClCompile Include="src\base\logging\logging.cpp" />
     <ClCompile Include="src\base\logging\logging_sinks.cpp" />
     <ClCompile Include="src\base\signal\scoped_slot_handle.cpp" />
@@ -216,7 +215,6 @@
     <ClInclude Include="src\base\task_runner\cancellation.h" />
     <ClInclude Include="src\base\task_runner\run_task.h" />
     <ClInclude Include="src\base\task_runner\task.h" />
-    <ClInclude Include="src\base\event_loop\task_event_loop.h" />
     <ClInclude Include="src\base\finally.h" />
     <ClInclude Include="src\base\logging\logging.h" />
     <ClInclude Include="src\base\logging\logging_sinks.h" />

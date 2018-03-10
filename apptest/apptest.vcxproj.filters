@@ -63,9 +63,6 @@
     <ClCompile Include="src\base\event_loop\event_loop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\event_loop\task_event_loop.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\win\message_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -183,9 +180,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\event_loop\event_loop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\event_loop\task_event_loop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\base\win\message_window.h">
