@@ -4,6 +4,7 @@
 #include "base/future/impl/core.h"
 #include "base/non_copyable.h"
 #include "base/task_runner/task_runner.h"
+#include <functional>
 #include <memory>
 #include <optional>
 
@@ -260,6 +261,53 @@ bool promise<T>::is_fulfilled() const {
 
 // future<T>
 
+namespace impl {
+
+template<bool Wrap, typename Cont, typename T>
+struct cont_call_ret {
+  using type = std::invoke_result_t<Cont, expected<T>>;
+};
+
+template<typename Cont, typename T>
+struct cont_call_ret<false, Cont, T> {
+  using type = std::invoke_result_t<Cont, T>;
+};
+
+template<typename Cont, typename T>
+struct cont_call_info {
+  static constexpr bool call_wrapped = std::is_invocable_v<Cont, expected<T>>;
+  static constexpr bool call_unwrapped = std::is_invocable_v<Cont, T>;
+
+  static_assert(call_wrapped || call_unwrapped, "Illegal signature for future continuation");
+
+  using ret_type = std::decay_t<typename cont_call_ret<call_wrapped, Cont, T>::type>;
+};
+
+template<typename Prom, typename Cont, typename T>
+void call_cont(Prom& prom, Cont&& cont, expected<T>&& val) {
+  using call_info = cont_call_info<Cont, T>;
+
+  if constexpr (call_info::call_wrapped) {  // call_wrapped - pass `val` directly
+    prom.set_from([&] {
+      return std::invoke(std::forward<Cont>(cont), std::move(val));
+    });
+  } else {  // call_unwrapped - call `get()` on `val` first
+    if (val.has_exception()) {
+      prom.set_exception(val.get_exception());
+    } else {
+      prom.set_from([&] {
+        if constexpr (std::is_void_v<T>) {
+          std::forward<Cont>(cont)();
+        } else {
+          return std::invoke(std::forward<Cont>(cont), std::move(val).get());
+        }
+      });
+    }
+  }
+}
+
+}  // namespace impl
+
 template<typename T>
 future<T>::future(std::shared_ptr<impl::future_core<T>> core)
   : core_(std::move(core)) {
@@ -276,7 +324,7 @@ template<typename Cont>
 auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
   check_valid();
 
-  using result_type = std::decay_t<decltype(std::declval<Cont>()(std::declval<expected<T>>()))>;
+  using result_type = typename impl::cont_call_info<Cont, T>::ret_type;
 
   promise<unwrap_future_t<result_type>> prom;
   auto fut = prom.get_future();
@@ -292,9 +340,7 @@ auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
         prom = std::move(prom),
         val = std::move(val)
       ]() mutable {
-        prom.set_from([&] {
-          return std::forward<Cont>(cont)(std::move(val));
-        });
+        impl::call_cont(prom, std::forward<Cont>(cont), std::move(val));
       });
     }
   });
