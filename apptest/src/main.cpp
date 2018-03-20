@@ -59,6 +59,7 @@ int wmain(int argc, const wchar_t** argv) {
 
       return file->write(0, "Test file!").then([file_holder = std::move(file_holder)](auto&& result) {
         LOG(info) << "Closing file";
+        file_holder->close();
         return result;
       });
     }).then([](base::expected<unsigned long> result) {
