@@ -290,7 +290,7 @@ void call_cont(Prom& prom, Cont&& cont, expected<T>&& val) {
     } else {
       prom.set_from([&] {
         if constexpr (std::is_void_v<T>) {
-          std::forward<Cont>(cont)();
+          return std::forward<Cont>(cont)();
         } else {
           return std::invoke(std::forward<Cont>(cont), std::move(val).get());
         }
