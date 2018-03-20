@@ -19,22 +19,22 @@ public:
   void set_cont(Cont&& cont);
   void fulfill(expected<T>&& val);
 
-  bool is_fulfilled() const {
-    return !val_.empty();
-  }
-
 private:
   void call_cont(std::unique_lock<std::mutex> hold) noexcept;
 
   expected<T> val_;
   function<void(expected<T>&&)> cont_;
   std::mutex lock_;  // protects val_, cont_
+
+  bool cont_set_ = false;
+  bool fulfilled_ = false;
 };
 
 
 template<typename T>
 future_core<T>::future_core(expected<T>&& val)
-  : val_(std::move(val)) {
+  : val_(std::move(val))
+  , fulfilled_(true) {
 }
 
 template<typename T>
@@ -42,8 +42,9 @@ template<typename Cont>
 void future_core<T>::set_cont(Cont&& cont) {
   std::unique_lock<std::mutex> hold(lock_);
 
-  ASSERT(!cont_) << "Future continuation already set";
+  ASSERT(!cont_set_) << "Future continuation already set";
   cont_ = std::forward<Cont>(cont);
+  cont_set_ = true;
 
   call_cont(std::move(hold));
 }
@@ -52,8 +53,9 @@ template<typename T>
 void future_core<T>::fulfill(expected<T>&& val) {
   std::unique_lock<std::mutex> hold(lock_);
 
-  ASSERT(!is_fulfilled()) << "Promise already fulfilled";
+  ASSERT(!fulfilled_) << "Promise already fulfilled";
   val_ = std::move(val);
+  fulfilled_ = true;
 
   call_cont(std::move(hold));
 }
@@ -63,7 +65,7 @@ void future_core<T>::fulfill(expected<T>&& val) {
 
 template<typename T>
 void future_core<T>::call_cont(std::unique_lock<std::mutex> hold) noexcept {
-  if (cont_ && is_fulfilled()) {
+  if (cont_set_ && fulfilled_) {
     hold.unlock();
 
     // at this point, it is safe to access cont_ and val_ without locking,
