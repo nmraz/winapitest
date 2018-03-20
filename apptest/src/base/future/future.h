@@ -286,9 +286,8 @@ auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
   check_valid();
 
   using result_type = std::decay_t<decltype(std::declval<Cont>()(std::declval<expected<T>>()))>;
-  using returns_future = impl::unwrap_future<result_type>;
 
-  promise<typename returns_future::inner_type> prom;
+  promise<unwrap_future_t<result_type>> prom;
   auto fut = prom.get_future();
 
   set_cont([
