@@ -353,14 +353,14 @@ void future<T>::set_cont(Cont&& cont) {
 template<typename T>
 future<T> make_future(expected<T> val) {
   auto core = std::make_shared<impl::future_core<T>>(std::move(val));
-  return future<T>(core);
+  return future<T>(std::move(core));
 }
 
 template<typename T>
 future<std::decay_t<T>> make_future(T&& val) {
   expected<std::decay_t<T>> fut_val;
-  val.set_value(std::forward<T>(val));
-  return make_future(std::move(val));
+  fut_val.set_value(std::forward<T>(val));
+  return make_future(std::move(fut_val));
 }
 
 inline future<void> make_future() {
