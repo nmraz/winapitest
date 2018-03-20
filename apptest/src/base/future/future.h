@@ -21,21 +21,21 @@ namespace impl {
 template<typename T>
 struct unwrap_future {
   static constexpr bool is_future = false;
-  static constexpr bool is_future_val = false;
+  static constexpr bool is_expected = false;
   using inner_type = T;
 };
 
 template<typename T>
 struct unwrap_future<future<T>> {
   static constexpr bool is_future = true;
-  static constexpr bool is_future_val = false;
+  static constexpr bool is_expected = false;
   using inner_type = T;
 };
 
 template<typename T>
-struct unwrap_future<future_val<T>> {
+struct unwrap_future<expected<T>> {
   static constexpr bool is_future = false;
-  static constexpr bool is_future_val = true;
+  static constexpr bool is_expected = true;
   using inner_type = T;
 };
 
@@ -64,7 +64,7 @@ public:
   promise& operator=(promise rhs) noexcept;
   void swap(promise& other) noexcept;
 
-  void set(future_val<T> val);
+  void set(expected<T> val);
 
   void set_exception(std::exception_ptr exc);
   template<typename Exc>
@@ -111,7 +111,7 @@ template<typename T>
 class future : public non_copyable {
 public:
   template<typename T>
-  friend future<T> make_future(future_val<T> val);
+  friend future<T> make_future(expected<T> val);
 
   future() = default;
   void swap(future& other) noexcept;
@@ -183,7 +183,7 @@ void promise<T>::swap(promise& other) noexcept {
 }
 
 template<typename T>
-void promise<T>::set(future_val<T> val) {
+void promise<T>::set(expected<T> val) {
   check_valid();
   core_->fulfill(std::move(val));
   core_ = nullptr;
@@ -191,7 +191,7 @@ void promise<T>::set(future_val<T> val) {
 
 template<typename T>
 void promise<T>::set_exception(std::exception_ptr exc) {
-  future_val<T> val;
+  expected<T> val;
   val.set_exception(exc);
   set(std::move(val));
 }
@@ -205,7 +205,7 @@ void promise<T>::set_exception(Exc&& exc) {
 template<typename T>
 template<typename U, typename T2, typename>
 void promise<T>::set_value(U&& val) {  // enabled when T is non-void
-  future_val<T2> fut_val;
+  expected<T2> fut_val;
   fut_val.set_value(std::forward<U>(val));
   set(std::move(fut_val));
 }
@@ -213,7 +213,7 @@ void promise<T>::set_value(U&& val) {  // enabled when T is non-void
 template<typename T>
 template<typename T2, typename>
 void promise<T>::set_value() {  // enabled when T is void
-  future_val<T2> val;
+  expected<T2> val;
   val.set_value();
   set(std::move(val));
 }
@@ -253,7 +253,7 @@ void promise<T>::set_from_helper(F&& f) {
       impl::set_cont(std::forward<decltype(fut)>(fut), [self = std::move(*this)](auto&& cont_val) mutable {
         self.set(std::forward<decltype(cont_val)>(cont_val));
       });
-    } else if constexpr (UnwrapedReturn::is_future_val) {  // future_val return type
+    } else if constexpr (UnwrapedReturn::is_expected) {  // expected<T> return type
       set(std::forward<F>(f)());
     } else if constexpr (std::is_void_v<T>) {  // void return type
       std::forward<F>(f)();
@@ -285,7 +285,7 @@ template<typename Cont>
 auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
   check_valid();
 
-  using result_type = std::decay_t<decltype(std::declval<Cont>()(std::declval<future_val<T>>()))>;
+  using result_type = std::decay_t<decltype(std::declval<Cont>()(std::declval<expected<T>>()))>;
   using returns_future = impl::unwrap_future<result_type>;
 
   promise<typename returns_future::inner_type> prom;
@@ -295,7 +295,7 @@ auto future<T>::then(std::weak_ptr<task_runner> runner, Cont&& cont) {
     cont = std::forward<Cont>(cont),
     prom = std::move(prom),
     runner = std::move(runner)
-  ](future_val<T>&& val) mutable {
+  ](expected<T>&& val) mutable {
     if (auto strong_runner = runner.lock()) {
       strong_runner->post_task([
         cont = std::forward<Cont>(cont),
@@ -322,20 +322,20 @@ void future<T>::set_cont(Cont&& cont) {
 
 
 template<typename T>
-future<T> make_future(future_val<T> val) {
+future<T> make_future(expected<T> val) {
   auto core = std::make_shared<impl::future_core<T>>(std::move(val));
   return future<T>(core);
 }
 
 template<typename T>
 future<std::decay_t<T>> make_future(T&& val) {
-  future_val<std::decay_t<T>> fut_val;
+  expected<std::decay_t<T>> fut_val;
   val.set_value(std::forward<T>(val));
   return make_future(std::move(val));
 }
 
 inline future<void> make_future() {
-  future_val<void> val;
+  expected<void> val;
   val.set_value();
   return make_future(std::move(val));
 }

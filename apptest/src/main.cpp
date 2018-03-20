@@ -61,7 +61,7 @@ int wmain(int argc, const wchar_t** argv) {
         LOG(info) << "Closing file";
         return bytes_written;
       });
-    }).then([](base::future_val<unsigned long> bytes_written) {
+    }).then([](base::expected<unsigned long> bytes_written) {
       try {
         LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
       } catch (const std::exception& e) {

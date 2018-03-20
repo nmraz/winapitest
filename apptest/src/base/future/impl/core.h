@@ -13,11 +13,11 @@ template<typename T>
 class future_core : public non_copy_movable {
 public:
   future_core() = default;
-  future_core(future_val<T>&& val);
+  future_core(expected<T>&& val);
 
   template<typename Cont>
   void set_cont(Cont&& cont);
-  void fulfill(future_val<T>&& val);
+  void fulfill(expected<T>&& val);
 
   bool is_fulfilled() const {
     return !val_.empty();
@@ -26,14 +26,14 @@ public:
 private:
   void call_cont(std::unique_lock<std::mutex> hold) noexcept;
 
-  future_val<T> val_;
-  function<void(future_val<T>&&)> cont_;
+  expected<T> val_;
+  function<void(expected<T>&&)> cont_;
   std::mutex lock_;  // protects val_, cont_
 };
 
 
 template<typename T>
-future_core<T>::future_core(future_val<T>&& val)
+future_core<T>::future_core(expected<T>&& val)
   : val_(std::move(val)) {
 }
 
@@ -49,7 +49,7 @@ void future_core<T>::set_cont(Cont&& cont) {
 }
 
 template<typename T>
-void future_core<T>::fulfill(future_val<T>&& val) {
+void future_core<T>::fulfill(expected<T>&& val) {
   std::unique_lock<std::mutex> hold(lock_);
 
   ASSERT(!is_fulfilled()) << "Promise already fulfilled";

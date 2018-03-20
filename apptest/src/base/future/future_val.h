@@ -7,16 +7,16 @@
 
 namespace base {
 
-class bad_future_val : public std::logic_error {
+class bad_expected_access : public std::logic_error {
 public:
-  bad_future_val();
+  bad_expected_access();
 };
 
 
 namespace impl {
 
 template<typename T>
-class future_val_base {
+class expected_base {
 public:
   void set_exception(std::exception_ptr exc);
   template<typename Exc>
@@ -34,18 +34,18 @@ protected:
 
 
 template<typename T>
-void future_val_base<T>::set_exception(std::exception_ptr exc) {
+void expected_base<T>::set_exception(std::exception_ptr exc) {
   val_.template emplace<2>(std::move(exc));
 }
 
 template<typename T>
 template<typename Exc>
-void future_val_base<T>::set_exception(Exc&& exc) {
+void expected_base<T>::set_exception(Exc&& exc) {
   set_exception(std::make_exception_ptr(std::forward<Exc>(exc)));
 }
 
 template<typename T>
-void future_val_base<T>::reset() {
+void expected_base<T>::reset() {
   val_.template emplace<0>();
 }
 
@@ -53,7 +53,7 @@ void future_val_base<T>::reset() {
 
 
 template<typename T>
-class future_val : public impl::future_val_base<T> {
+class expected : public impl::expected_base<T> {
 public:
   template<typename U>
   void set_value(U&& val);
@@ -67,12 +67,12 @@ public:
 
 template<typename T>
 template<typename U>
-void future_val<T>::set_value(U&& val) {
+void expected<T>::set_value(U&& val) {
   this->val_.template emplace<1>(std::forward<U>(val));
 }
 
 template<typename T>
-T& future_val<T>::get() & {
+T& expected<T>::get() & {
 
   // note: we can't use std::visit since T may be std::monostate or std::exception_ptr
   if (this->has_value()) {
@@ -80,46 +80,46 @@ T& future_val<T>::get() & {
   } else if (this->has_exception()) {
     std::rethrow_exception(std::get<2>(this->val_));
   } else {
-    throw bad_future_val();
+    throw bad_expected_access();
   }
 }
 
 template<typename T>
-const T& future_val<T>::get() const & {
+const T& expected<T>::get() const & {
   if (this->has_value()) {
     return std::get<1>(this->val_);
   } else if (this->has_exception()) {
     std::rethrow_exception(std::get<2>(this->val_));
   } else {
-    throw bad_future_val();
+    throw bad_expected_access();
   }
 }
 
 template<typename T>
-T&& future_val<T>::get() && {
+T&& expected<T>::get() && {
   if (this->has_value()) {
     return std::get<1>(std::move(this->val_));
   } else if (this->has_exception()) {
     std::rethrow_exception(std::get<2>(std::move(this->val_)));
   } else {
-    throw bad_future_val();
+    throw bad_expected_access();
   }
 }
 
 template<typename T>
-const T&& future_val<T>::get() const && {
+const T&& expected<T>::get() const && {
   if (this->has_value()) {
     return std::get<1>(std::move(this->val_));
   } else if (this->has_exception()) {
     std::rethrow_exception(std::get<2>(std::move(this->val_)));
   } else {
-    throw bad_future_val();
+    throw bad_expected_access();
   }
 }
 
 
 template<>
-class future_val<void> : public impl::future_val_base<char> {
+class expected<void> : public impl::expected_base<char> {
 public:
   void set_value() {
     val_.emplace<1>();
@@ -129,7 +129,7 @@ public:
     if (has_exception()) {
       std::rethrow_exception(std::get<2>(val_));
     } else if (!has_value()) {
-      throw bad_future_val();
+      throw bad_expected_access();
     }
   }
 };
