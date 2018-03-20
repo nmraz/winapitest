@@ -168,9 +168,9 @@
     <ClCompile Include="src\base\event_loop\event_loop.cpp" />
     <ClCompile Include="src\base\event_loop\next_tick.cpp" />
     <ClCompile Include="src\base\event_loop\loop_task_runner.cpp" />
+    <ClCompile Include="src\base\expected.cpp" />
     <ClCompile Include="src\base\future\exceptions.cpp" />
     <ClCompile Include="src\base\future\future.cpp" />
-    <ClCompile Include="src\base\future\future_val.cpp" />
     <ClCompile Include="src\base\task_runner\cancellation.cpp" />
     <ClCompile Include="src\base\task_runner\task.cpp" />
     <ClCompile Include="src\base\logging\logging.cpp" />
@@ -207,11 +207,11 @@
     <ClInclude Include="src\base\event_loop\event_loop.h" />
     <ClInclude Include="src\base\event_loop\next_tick.h" />
     <ClInclude Include="src\base\event_loop\loop_task_runner.h" />
+    <ClInclude Include="src\base\expected.h" />
     <ClInclude Include="src\base\function.h" />
     <ClInclude Include="src\base\future\exceptions.h" />
     <ClInclude Include="src\base\future\future.h" />
     <ClInclude Include="src\base\future\impl\core.h" />
-    <ClInclude Include="src\base\future\future_val.h" />
     <ClInclude Include="src\base\task_runner\cancellation.h" />
     <ClInclude Include="src\base\task_runner\run_task.h" />
     <ClInclude Include="src\base\task_runner\task.h" />
