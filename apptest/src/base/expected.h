@@ -28,6 +28,13 @@ public:
   bool has_value() const { return val_.index() == 1; }
   bool has_exception() const { return val_.index() == 2; }
 
+  std::exception_ptr get_exception() const {
+    if (has_exception()) {
+      return std::get<2>(val_);
+    }
+    return nullptr;
+  }
+
 protected:
   std::variant<std::monostate, T, std::exception_ptr> val_;
 };
