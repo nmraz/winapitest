@@ -86,7 +86,6 @@ public:
   void set_from(F&& f);
 
   future<T> get_future();
-  bool is_fulfilled() const;
 
 private:
   void check_valid() const {
@@ -162,7 +161,7 @@ promise<T>::promise()
 
 template<typename T>
 promise<T>::~promise() {
-  if (core_ && !is_fulfilled()) {
+  if (core_) {
     set_exception(abandoned_promise());
   }
 }
@@ -250,12 +249,6 @@ future<T> promise<T>::get_future() {
 
   future_retrieved_ = true;
   return future<T>(core_);
-}
-
-template<typename T>
-bool promise<T>::is_fulfilled() const {
-  check_valid();
-  return core_->is_fulfilled();
 }
 
 
