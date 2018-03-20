@@ -5,6 +5,7 @@
 #include "base/function.h"
 #include "base/future/exceptions.h"
 #include "base/non_copyable.h"
+#include <exception>
 #include <mutex>
 
 namespace base::impl {
@@ -14,6 +15,8 @@ class future_core : public non_copy_movable {
 public:
   future_core() = default;
   future_core(expected<T>&& val);
+
+  ~future_core();
 
   template<typename Cont>
   void set_cont(Cont&& cont);
@@ -35,6 +38,13 @@ template<typename T>
 future_core<T>::future_core(expected<T>&& val)
   : val_(std::move(val))
   , fulfilled_(true) {
+}
+
+template<typename T>
+future_core<T>::~future_core() {
+  if (val_.has_exception()) {
+    std::terminate();
+  }
 }
 
 template<typename T>
@@ -71,6 +81,7 @@ void future_core<T>::call_cont(std::unique_lock<std::mutex> hold) noexcept {
     // at this point, it is safe to access cont_ and val_ without locking,
     // since they are guaranteed not to be mutated elsewhere
     cont_(std::move(val_));
+    val_.reset();
   }
 }
 
