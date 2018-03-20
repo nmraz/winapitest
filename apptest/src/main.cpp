@@ -57,13 +57,14 @@ int wmain(int argc, const wchar_t** argv) {
       auto file_holder = std::make_unique<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
       base::file* file = file_holder.get();
 
-      return file->write(0, "Test file!").then([file_holder = std::move(file_holder)](auto&& bytes_written) {
+      return file->write(0, "Test file!").then([file_holder = std::move(file_holder)](auto&& result) {
         LOG(info) << "Closing file";
-        return bytes_written;
+        return result;
       });
-    }).then([](base::expected<unsigned long> bytes_written) {
+    }).then([](base::expected<unsigned long> result) {
       try {
-        LOG(info) << "Wrote " << bytes_written.get() << " bytes of data";
+        unsigned long bytes_written = result.get();
+        LOG(info) << "Wrote " << bytes_written << " bytes of data";
       } catch (const std::exception& e) {
         LOG(error) << "Failed to write to file: " << e.what();
       }
