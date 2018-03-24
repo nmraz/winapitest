@@ -41,11 +41,6 @@ struct unwrap_future<expected<T>> {
 };
 
 
-template<typename T, typename Cont>
-void set_cont(future<T> fut, Cont&& cont) {
-  fut.set_cont(std::forward<Cont>(cont));
-}
-
 // task runner used for posting future::then calls (may be different for different threads)
 std::weak_ptr<task_runner> default_then_task_runner();
 
@@ -124,11 +119,11 @@ public:
   bool is_valid() const { return !!core_; }
 
 private:
-  friend class promise<T>;
   template<typename T>
   friend class future;
-  template<typename T, typename Cont>
-  friend void impl::set_cont(future<T> fut, Cont&& cont);
+
+  template<typename T>
+  friend class promise;
 
   future(std::shared_ptr<impl::future_core<T>> core);
 
@@ -223,8 +218,7 @@ void promise<T>::set_from(F&& f) {
 
   try {
     if constexpr (unwrapped_return::is_future) {  // future<T> return type
-      auto&& fut = std::forward<F>(f)();  // f must be called before *this is moved from
-      impl::set_cont(std::forward<decltype(fut)>(fut), [self = std::move(*this)](auto&& cont_val) mutable {
+      std::forward<F>(f)().set_cont([self = std::move(*this)](auto&& cont_val) mutable {
         self.set(std::forward<decltype(cont_val)>(cont_val));
       });
     } else if constexpr (unwrapped_return::is_expected) {  // expected<T> return type
