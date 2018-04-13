@@ -34,7 +34,7 @@ bool event_loop::do_work() {
   }
 
   // we process task_runner tasks directly in this case
-  if (msg.hwnd == message_window_.get()) {
+  while (msg.hwnd == message_window_.get()) {
     bool was_wake_msg = msg.message == wake_msg;
 
     // avoid starving normal window messages
