@@ -41,7 +41,7 @@ bool event_loop::do_work() {
     bool has_other_message = ::PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE);
 
     if (was_wake_msg) {
-      clear_wake_flag();  // make sure that we can wake up again
+      post_wake_msg();  // ensure that there is always a wake_msg in the queue
     }
 
     if (!has_other_message) {
@@ -55,8 +55,6 @@ bool event_loop::do_work() {
     return false;
   }
 
-  wake_up();  // in case we enter a nested loop here
-
   ::TranslateMessage(&msg);
   ::DispatchMessageW(&msg);
 
@@ -65,6 +63,11 @@ bool event_loop::do_work() {
 
 
 void event_loop::sleep(const base::task::delay_type* delay) {
+  MSG msg;
+  if (::PeekMessageW(&msg, message_window_.get(), 0, 0, PM_REMOVE) && msg.message == wake_msg) {
+    clear_wake_flag();
+  }
+
   DWORD wait_time = INFINITE;
   if (delay) {
     wait_time = get_win_wait_time(*delay);
@@ -74,11 +77,9 @@ void event_loop::sleep(const base::task::delay_type* delay) {
 }
 
 void event_loop::wake_up() {
-  if (posted_wake_up_.exchange(true, std::memory_order_relaxed)) {  // already woke up
-    return;
+  if (!posted_wake_up_.exchange(true, std::memory_order_relaxed)) {
+    post_wake_msg();
   }
-
-  ::PostMessageW(message_window_.get(), wake_msg, 0, 0);
 }
 
 
@@ -116,6 +117,10 @@ LRESULT event_loop::handle_message(UINT msg) {
   return 0;
 }
 
+
+void event_loop::post_wake_msg() {
+  ::PostMessageW(message_window_.get(), wake_msg, 0, 0);
+}
 
 void event_loop::clear_wake_flag() {
   posted_wake_up_.store(false, std::memory_order_relaxed);
