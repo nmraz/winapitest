@@ -5,6 +5,11 @@
 #include <utility>
 
 namespace base {
+namespace {
+
+thread_local loop_task_runner::ptr current_runner;
+
+}  // namespace
 
 void loop_task_runner::post_quit() {
   post_task([this] { quit_now(); });
@@ -21,9 +26,14 @@ void loop_task_runner::quit_now() {
 
 
 // static
+void loop_task_runner::init_for_this_thread() {
+  current_runner = ptr(new loop_task_runner);
+}
+
+// static
 loop_task_runner::ptr loop_task_runner::current() {
-  static thread_local ptr runner(new loop_task_runner);
-  return runner;
+  ASSERT(current_runner) << "Loop task runner not initialized on this thread";
+  return current_runner;
 }
 
 

@@ -50,6 +50,7 @@ std::string thread::name() const {
 // PRIVATE
 
 void thread::run(loop_factory factory) {
+  loop_task_runner::init_for_this_thread();
   set_task_runner(loop_task_runner::current());
   std::unique_ptr<event_loop> loop = factory();
   loop->run();

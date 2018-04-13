@@ -22,6 +22,7 @@ public:
   void quit_now();
   void post_quit();
 
+  static void init_for_this_thread();
   static ptr current();
 
 private:

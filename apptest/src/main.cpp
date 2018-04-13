@@ -26,6 +26,8 @@ int wmain(int argc, const wchar_t** argv) {
   base::win::scoped_co_init init_com;
 
   logging::init(std::make_unique<logging::stdout_sink>(), logging::level::trace, cmd_line.has_flag("logging-colorize"));
+  
+  base::loop_task_runner::init_for_this_thread();
   base::set_current_thread_name("Main");
 
   base::timer timer1, timer2;
