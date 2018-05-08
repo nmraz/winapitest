@@ -71,7 +71,7 @@ slot_handle signal<Args...>::connect(slot_type slot) {
 
 template<typename... Args>
 void signal<Args...>::operator()(Args... args) {
-  auto call_tidy = finally([this] { tidy(); });
+  final_act call_tidy([this] { tidy(); });
   {
     auto_restore<int> restore(emit_depth_);
     ++emit_depth_;
