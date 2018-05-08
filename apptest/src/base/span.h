@@ -22,8 +22,6 @@ template<typename From, typename To>
 constexpr bool is_safe_array_conv = std::is_convertible_v<From(&)[], To(&)[]>;
 
 
-struct has_size_tag {};  // MSVC expression SFINAE bug workaround
-
 template<typename Cont, typename = void>
 constexpr bool has_integral_size = false;
 
@@ -31,7 +29,6 @@ template<typename Cont>
 constexpr bool has_integral_size<
   Cont,
   std::void_t<
-    has_size_tag,
     decltype(std::declval<Cont&>().size())
   >
 > = std::is_integral_v<decltype(std::declval<Cont&>().size())>;
@@ -42,8 +39,6 @@ constexpr bool is_convertible_data = std::is_pointer_v<Data>
   && is_safe_array_conv<std::remove_pointer_t<Data>, T>;
 
 
-struct has_data_tag {};  // MSVC expression SFINAE bug workaround
-
 template<typename Cont, typename T, typename = void>
 constexpr bool has_convertible_data = false;
 
@@ -52,7 +47,6 @@ constexpr bool has_convertible_data<
   Cont,
   T,
   std::void_t<
-    has_data_tag,
     decltype(std::declval<Cont&>().data())
   >
 > = is_convertible_data<
