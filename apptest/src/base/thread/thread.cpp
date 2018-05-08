@@ -36,7 +36,7 @@ void thread::stop(bool wait) {
 
 
 loop_task_runner::ptr thread::task_runner() const {
-  std::unique_lock<std::mutex> hold(runner_lock_);
+  std::unique_lock hold(runner_lock_);
   runner_cv_.wait(hold, [this] { return !!runner_; });  // wait until the runner exists
   return runner_;
 }
@@ -64,7 +64,7 @@ void thread::named_run(loop_factory factory, std::string name) {
 
 
 void thread::set_task_runner(loop_task_runner::ptr runner) {
-  std::lock_guard<std::mutex> hold(runner_lock_);
+  std::lock_guard hold(runner_lock_);
   runner_ = std::move(runner);
   runner_cv_.notify_all();
 }

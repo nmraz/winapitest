@@ -50,7 +50,7 @@ future_core<T>::~future_core() {
 template<typename T>
 template<typename Cont>
 void future_core<T>::set_cont(Cont&& cont) {
-  std::unique_lock<std::mutex> hold(lock_);
+  std::unique_lock hold(lock_);
 
   ASSERT(!cont_set_) << "Future continuation already set";
   cont_ = std::forward<Cont>(cont);
@@ -61,7 +61,7 @@ void future_core<T>::set_cont(Cont&& cont) {
 
 template<typename T>
 void future_core<T>::fulfill(expected<T>&& val) {
-  std::unique_lock<std::mutex> hold(lock_);
+  std::unique_lock hold(lock_);
 
   ASSERT(!fulfilled_) << "Promise already fulfilled";
   val_ = std::move(val);

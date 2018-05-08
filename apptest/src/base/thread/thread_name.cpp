@@ -66,7 +66,7 @@ struct thread_name_cleaner {
 };
 
 thread_name_cleaner::~thread_name_cleaner() {
-  std::lock_guard<std::mutex> hold(thread_name_lock);
+  std::lock_guard hold(thread_name_lock);
 
   auto it = thread_name_map.find(std::this_thread::get_id());
   if (it != thread_name_map.end()) {
@@ -81,13 +81,13 @@ thread_local thread_name_cleaner cleaner;
 void set_current_thread_name(std::string name) {
   set_windows_thread_name(name.c_str());
 
-  std::lock_guard<std::mutex> hold(thread_name_lock);
+  std::lock_guard hold(thread_name_lock);
   thread_name_map[std::this_thread::get_id()] = std::move(name);
 }
 
 
 std::string get_thread_name(std::thread::id id) {
-  std::lock_guard<std::mutex> hold(thread_name_lock);
+  std::lock_guard hold(thread_name_lock);
   
   auto it = thread_name_map.find(id);
   if (it != thread_name_map.end()) {
