@@ -295,4 +295,40 @@ bool operator!=(std::nullptr_t, const function<Ret(Args...)>& func) {
   return !!func;
 }
 
+
+// DEDUCTION GUIDES
+
+namespace impl {
+
+template<typename T>
+struct get_signature;
+
+template<typename T, typename Ret, typename... Args>
+struct get_signature<Ret(T::*)(Args...)> {
+  using type = Ret(Args...);
+};
+
+template<typename T, typename Ret, typename... Args>
+struct get_signature<Ret(T::*)(Args...) const> {
+  using type = Ret(Args...);
+};
+
+template<typename T, typename Ret, typename... Args>
+struct get_signature<Ret(T::*)(Args...) &> {
+  using type = Ret(Args...);
+};
+
+template<typename T, typename Ret, typename... Args>
+struct get_signature<Ret(T::*)(Args...) const &> {
+  using type = Ret(Args...);
+};
+
+}  // namespace impl
+
+template<typename Ret, typename... Args>
+function(Ret(*)(Args...)) -> function<Ret(Args...)>;
+
+template<typename F>
+function(F) -> function<typename impl::get_signature<decltype(&F::operator())>::type>;
+
 }  // namespace base
