@@ -73,7 +73,7 @@ template<typename... Args>
 void signal<Args...>::operator()(Args... args) {
   final_act call_tidy([this] { tidy(); });
   {
-    auto_restore<int> restore(emit_depth_);
+    auto_restore restore(emit_depth_);
     ++emit_depth_;
 
     // iterators may be invalidated, use indices instead

@@ -44,7 +44,7 @@ event_loop::event_loop()
 
 void event_loop::run() {
   loop_pusher push(this);
-  auto_restore<int> restore_nesting(current_nesting_level);
+  auto_restore restore_nesting(current_nesting_level);
 
   ++current_nesting_level;
   should_quit_ = false;

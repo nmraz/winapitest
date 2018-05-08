@@ -52,7 +52,7 @@ void animation_controller::stop_animation(animation_base* anim) {
 
 void animation_controller::on_tick() {
   {
-    base::auto_restore<bool> hold_in_tick(in_tick_, true);
+    base::auto_restore hold_in_tick(in_tick_, true);
     auto now = base::task::clock_type::now();
 
     for (animation_base* anim : animations_) {
