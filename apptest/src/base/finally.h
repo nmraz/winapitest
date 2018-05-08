@@ -26,15 +26,4 @@ final_act<F>::~final_act() {
   func_();
 }
 
-
-template<typename F>
-constexpr auto finally(const F& func) {
-  return final_act<F>(f);
-}
-
-template<typename F>
-constexpr auto finally(F&& func) {
-  return final_act<F>(std::forward<F>(func));
-}
-
 }  // namespace base
