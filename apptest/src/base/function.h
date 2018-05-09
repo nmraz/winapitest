@@ -120,7 +120,7 @@ constexpr bool func_is_null(Mem Class::* ptr) {
   return !ptr;
 }
 
-}
+}  // namespace impl
 
 
 template<typename Ret, typename... Args>
