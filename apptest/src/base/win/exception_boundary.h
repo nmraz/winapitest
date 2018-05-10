@@ -11,7 +11,7 @@ namespace base::win {
 template<typename F>
 HRESULT exception_boundary(F&& f) noexcept {
   try {
-    if constexpr (std::is_same_v<std::decay_t<decltype(std::forward<F>(f)())>, HRESULT>) {
+    if constexpr (std::is_convertible_v<decltype(std::forward<F>(f)()), HRESULT>) {
       return std::forward<F>(f)();
     } else {
       std::forward<F>(f)();
