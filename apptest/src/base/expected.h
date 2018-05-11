@@ -70,6 +70,11 @@ void expected_base<T>::reset() {
 template<typename T>
 class expected : public impl::expected_base<T> {
 public:
+  constexpr expected() = default;
+
+  template<typename U, typename = std::enable_if_t<!std::is_same_v<std::decay_t<U>, expected>>>
+  expected(U&& val);
+
   template<typename U>
   void set_value(U&& val);
 
@@ -79,6 +84,12 @@ public:
   const T&& get() const &&;
 };
 
+
+template<typename T>
+template<typename U, typename>
+expected<T>::expected(U&& val) {
+  set_value(std::forward<U>(val));
+}
 
 template<typename T>
 template<typename U>
@@ -132,5 +143,9 @@ public:
     }
   }
 };
+
+
+template<typename T>
+expected(T) -> expected<std::decay_t<T>>;
 
 }  // namespace base
