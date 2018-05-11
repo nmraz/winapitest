@@ -18,31 +18,39 @@ namespace impl {
 template<typename T>
 class expected_base {
 public:
+  static_assert(!std::is_same_v<T, std::exception_ptr>, "expected<std::exception_ptr> is not supported. Use expected<void> insted.");
+  static_assert(!std::is_same_v<T, std::monostate>, "expected<std::monostate> is not supported. Use expected<void> insted.");
+
   void set_exception(std::exception_ptr exc);
   template<typename Exc>
   void set_exception(Exc&& exc);
 
   void reset();
 
-  bool empty() const { return val_.index() == 0; }
-  bool has_value() const { return val_.index() == 1; }
-  bool has_exception() const { return val_.index() == 2; }
+  bool empty() const { return std::holds_alternative<std::monostate>(val_); }
+  bool has_value() const { return std::holds_alternative<T>(val_); }
+  bool has_exception() const { return std::holds_alternative<std::exception_ptr>(val_); }
 
   std::exception_ptr get_exception() const {
-    if (has_exception()) {
-      return std::get<2>(val_);
-    }
-    return nullptr;
+    const std::exception_ptr* ptr = std::get_if<std::exception_ptr>(&val_);
+    return ptr ? *ptr : nullptr;
   }
 
 protected:
+  [[noreturn]] void rethrow_exception() const {
+    if (auto exc = get_exception()) {
+      std::rethrow_exception(exc);
+    }
+    throw bad_expected_access();
+  }
+
   std::variant<std::monostate, T, std::exception_ptr> val_;
 };
 
 
 template<typename T>
 void expected_base<T>::set_exception(std::exception_ptr exc) {
-  val_.template emplace<2>(std::move(exc));
+  val_ = std::move(exc);
 }
 
 template<typename T>
@@ -53,7 +61,7 @@ void expected_base<T>::set_exception(Exc&& exc) {
 
 template<typename T>
 void expected_base<T>::reset() {
-  val_.template emplace<0>();
+  val_ = std::monostate{};
 }
 
 }  // namespace impl
@@ -75,53 +83,39 @@ public:
 template<typename T>
 template<typename U>
 void expected<T>::set_value(U&& val) {
-  this->val_.template emplace<1>(std::forward<U>(val));
+  this->val_ = static_cast<T>(std::forward<U>(val));
 }
 
 template<typename T>
 T& expected<T>::get() & {
-
-  // note: we can't use std::visit since T may be std::monostate or std::exception_ptr
   if (this->has_value()) {
-    return std::get<1>(this->val_);
-  } else if (this->has_exception()) {
-    std::rethrow_exception(std::get<2>(this->val_));
-  } else {
-    throw bad_expected_access();
+    return std::get<T>(this->val_);
   }
+  this->rethrow_exception();
 }
 
 template<typename T>
 const T& expected<T>::get() const & {
   if (this->has_value()) {
-    return std::get<1>(this->val_);
-  } else if (this->has_exception()) {
-    std::rethrow_exception(std::get<2>(this->val_));
-  } else {
-    throw bad_expected_access();
+    return std::get<T>(this->val_);
   }
+  this->rethrow_exception();
 }
 
 template<typename T>
 T&& expected<T>::get() && {
   if (this->has_value()) {
-    return std::get<1>(std::move(this->val_));
-  } else if (this->has_exception()) {
-    std::rethrow_exception(std::get<2>(std::move(this->val_)));
-  } else {
-    throw bad_expected_access();
+    return std::get<T>(std::move(this->val_));
   }
+  this->rethrow_exception();
 }
 
 template<typename T>
 const T&& expected<T>::get() const && {
   if (this->has_value()) {
-    return std::get<1>(std::move(this->val_));
-  } else if (this->has_exception()) {
-    std::rethrow_exception(std::get<2>(std::move(this->val_)));
-  } else {
-    throw bad_expected_access();
+    return std::get<T>(std::move(this->val_));
   }
+  this->rethrow_exception();
 }
 
 
@@ -129,14 +123,12 @@ template<>
 class expected<void> : public impl::expected_base<char> {
 public:
   void set_value() {
-    val_.emplace<1>();
+    val_ = char{};
   }
 
   void get() const {
-    if (has_exception()) {
-      std::rethrow_exception(std::get<2>(val_));
-    } else if (!has_value()) {
-      throw bad_expected_access();
+    if (!has_value()) {
+      rethrow_exception();
     }
   }
 };
