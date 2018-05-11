@@ -77,7 +77,7 @@ void CALLBACK on_io_complete(DWORD err, DWORD bytes_transferred, OVERLAPPED* win
   if (err) {
     overlapped->prom.set_exception(std::system_error(err, std::system_category()));
   } else {
-    overlapped->prom.set_value(bytes_transferred);
+    overlapped->prom.set(bytes_transferred);
   }
 }
 

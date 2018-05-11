@@ -62,21 +62,15 @@ public:
 
   void set(expected<T> val);
 
+  template<
+    typename T2 = T,
+    typename = std::enable_if_t<std::is_void_v<T2>>
+  > void set();
+
   void set_exception(std::exception_ptr exc);
   template<typename Exc>
   void set_exception(Exc&& exc);
 
-  template<
-    typename U,
-    typename T2 = T,
-    typename = std::enable_if_t<!std::is_void_v<T2>>
-  > void set_value(U&& val);
-
-  template<
-    typename T2 = T,
-    typename = std::enable_if_t<std::is_void_v<T2>>
-  > void set_value();
-  
   template<typename F>
   void set_from(F&& f);
 
@@ -195,16 +189,8 @@ void promise<T>::set_exception(Exc&& exc) {
 }
 
 template<typename T>
-template<typename U, typename T2, typename>
-void promise<T>::set_value(U&& val) {  // enabled when T is non-void
-  expected<T2> fut_val;
-  fut_val.set_value(std::forward<U>(val));
-  set(std::move(fut_val));
-}
-
-template<typename T>
 template<typename T2, typename>
-void promise<T>::set_value() {  // enabled when T is void
+void promise<T>::set() {  // enabled when T is void
   expected<T2> val;
   val.set_value();
   set(std::move(val));
@@ -221,13 +207,11 @@ void promise<T>::set_from(F&& f) {
       std::forward<F>(f)().set_cont([self = std::move(*this)](auto&& cont_val) mutable {
         self.set(std::forward<decltype(cont_val)>(cont_val));
       });
-    } else if constexpr (unwrapped_return::is_expected) {  // expected<T> return type
-      set(std::forward<F>(f)());
     } else if constexpr (std::is_void_v<T>) {  // void return type
       std::forward<F>(f)();
-      set_value();
+      set();
     } else {  // other (non-future) return type
-      set_value(std::forward<F>(f)());
+      set(std::forward<F>(f)());
     }
   } catch (...) {
     set_exception(std::current_exception());
@@ -351,10 +335,8 @@ future<T> make_future(expected<T> val) {
 }
 
 template<typename T>
-future<std::decay_t<T>> make_future(T&& val) {
-  expected<std::decay_t<T>> fut_val;
-  fut_val.set_value(std::forward<T>(val));
-  return make_future(std::move(fut_val));
+auto make_future(T&& val) {
+  return make_future(expected{ std::forward<T>(val) });
 }
 
 inline future<void> make_future() {
