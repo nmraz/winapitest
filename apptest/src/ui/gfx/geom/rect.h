@@ -15,7 +15,7 @@ public:
   static constexpr struct by_xywh_tag {} by_xywh{};
   static constexpr struct by_bounds_tag {} by_bounds{};
 
-  constexpr rect();
+  constexpr rect() = default;
   constexpr rect(const point<T>& origin, const size<T>& size);
 
   constexpr rect(by_xywh_tag, T x, T y, T width, T height);
@@ -65,15 +65,10 @@ public:
   constexpr void intersect(const rect& other);
 
 private:
-  point<T> origin_;
-  size<T> size_;
+  point<T> origin_{};
+  size<T> size_{};
 };
 
-
-template<typename T>
-constexpr rect<T>::rect()
-  : rect(0, 0, 0, 0) {
-}
 
 template<typename T>
 constexpr rect<T>::rect(const point<T>& origin, const size<T>& sz)
