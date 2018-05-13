@@ -10,10 +10,10 @@
 #include "base/thread/thread.h"
 #include "base/thread/thread_name.h"
 #include "base/win/scoped_co_init.h"
+#include "base/win/win_event_loop.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
 #include "ui/gfx/geom/path.h"
-#include "ui/ui_event_loop.h"
 
 namespace chrono = std::chrono;
 using namespace std::literals;
@@ -101,6 +101,6 @@ int wmain(int argc, const wchar_t** argv) {
   anim.animate_to({ 3, 4 });
 
 
-  ui::event_loop loop;
+  base::win::win_event_loop loop;
   loop.run();
 }

@@ -1,15 +1,15 @@
-#include "ui_event_loop.h"
+#include "win_event_loop.h"
 
 #include <algorithm>
 #include <Windows.h>
 
-namespace ui {
+namespace base::win {
 namespace {
 
 constexpr UINT wake_msg = WM_USER;
 constexpr UINT_PTR task_timer_id = 1;
 
-DWORD get_win_wait_time(const base::task::delay_type& delay) {
+DWORD get_win_wait_time(const task::delay_type& delay) {
   auto millis = std::chrono::ceil<std::chrono::milliseconds>(delay);
   return static_cast<DWORD>(millis.count());
 }
@@ -17,7 +17,7 @@ DWORD get_win_wait_time(const base::task::delay_type& delay) {
 }  // namepsace
 
 
-event_loop::event_loop()
+win_event_loop::win_event_loop()
   : message_window_([this] (UINT msg, WPARAM, LPARAM) {
     return handle_message(msg);
   })
@@ -25,7 +25,7 @@ event_loop::event_loop()
 }
 
 
-bool event_loop::do_work() {
+bool win_event_loop::do_work() {
   reschedule_timer();
 
   MSG msg;
@@ -62,7 +62,7 @@ bool event_loop::do_work() {
 }
 
 
-void event_loop::sleep(const base::task::delay_type* delay) {
+void win_event_loop::sleep(const base::task::delay_type* delay) {
   MSG msg;
   if (::PeekMessageW(&msg, message_window_.get(), 0, 0, PM_REMOVE) && msg.message == wake_msg) {
     clear_wake_flag();
@@ -76,7 +76,7 @@ void event_loop::sleep(const base::task::delay_type* delay) {
   ::MsgWaitForMultipleObjects(0, nullptr, false, wait_time, QS_ALLINPUT);
 }
 
-void event_loop::wake_up() {
+void win_event_loop::wake_up() {
   if (!posted_wake_up_.exchange(true, std::memory_order_relaxed)) {
     post_wake_msg();
   }
@@ -85,7 +85,7 @@ void event_loop::wake_up() {
 
 // PRIVATE
 
-LRESULT event_loop::handle_message(UINT msg) {
+LRESULT win_event_loop::handle_message(UINT msg) {
   if (msg == wake_msg) {
     // this must *always* be cleared, even if we aren't doing anything else
     clear_wake_flag();
@@ -118,20 +118,20 @@ LRESULT event_loop::handle_message(UINT msg) {
 }
 
 
-void event_loop::post_wake_msg() {
+void win_event_loop::post_wake_msg() {
   ::PostMessageW(message_window_.get(), wake_msg, 0, 0);
 }
 
-void event_loop::clear_wake_flag() {
+void win_event_loop::clear_wake_flag() {
   posted_wake_up_.store(false, std::memory_order_relaxed);
 }
 
 
-void event_loop::kill_timer() {
+void win_event_loop::kill_timer() {
   ::KillTimer(message_window_.get(), task_timer_id);
 }
 
-void event_loop::reschedule_timer() {
+void win_event_loop::reschedule_timer() {
   auto next_run_time = get_next_run_time();
 
   if (next_run_time == current_next_run_time_) {
@@ -139,9 +139,9 @@ void event_loop::reschedule_timer() {
   }
 
   if (next_run_time) {
-    auto delay = *next_run_time - base::task::clock_type::now();
+    auto delay = *next_run_time - task::clock_type::now();
     
-    if (delay > base::task::delay_type::zero()) {
+    if (delay > task::delay_type::zero()) {
       ::SetTimer(message_window_.get(), task_timer_id, get_win_wait_time(delay), nullptr);
     } else {
       wake_up();  // task overdue, run now
@@ -154,4 +154,4 @@ void event_loop::reschedule_timer() {
   current_next_run_time_ = next_run_time;
 }
 
-}  // namespace ui
+}  // namespace base::win
