@@ -5,12 +5,12 @@
 
 namespace base::win {
 
-using handle = HANDLE;  // trigger compiler error if handle is the wrong type in the header
+using native_handle = HANDLE;  // trigger compiler error if native_handle is the wrong type in the header
 
 scoped_handle::scoped_handle()
   : handle_(nullptr) {}
 
-scoped_handle::scoped_handle(handle handle)
+scoped_handle::scoped_handle(native_handle handle)
   : handle_(handle) {}
 
 scoped_handle::scoped_handle(scoped_handle&& rhs) noexcept
@@ -24,7 +24,7 @@ scoped_handle::~scoped_handle() {
 }
 
 
-scoped_handle& scoped_handle::operator=(handle handle) {
+scoped_handle& scoped_handle::operator=(native_handle handle) {
   scoped_handle(handle).swap(*this);
 
   return *this;
