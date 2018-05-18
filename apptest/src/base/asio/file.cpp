@@ -90,7 +90,7 @@ file::file(std::string_view name, int desired_access, create_disp disp, int shar
 
 
 void file::open(std::string_view name, int desired_access, create_disp disp, int share) {
-  handle_ = ::CreateFileW(
+  handle_.set(::CreateFileW(
     widen(name).c_str(),
     get_win_access(desired_access),
     get_win_share_mode(share),
@@ -98,7 +98,7 @@ void file::open(std::string_view name, int desired_access, create_disp disp, int
     get_win_create_disp(disp),
     FILE_FLAG_OVERLAPPED,
     nullptr
-  );
+  ));
 
   if (!handle_) {
     win::throw_last_error("Failed to open file");

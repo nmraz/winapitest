@@ -15,12 +15,14 @@ public:
 
   ~scoped_handle();
 
-  scoped_handle& operator=(native_handle handle);
   scoped_handle& operator=(scoped_handle rhs) noexcept;
 
+  void set(native_handle handle);
   native_handle get() const { return handle_; }
-  void swap(scoped_handle& other) noexcept;
+  
   void release();
+
+  void swap(scoped_handle& other) noexcept;
 
   explicit operator bool() const;
 

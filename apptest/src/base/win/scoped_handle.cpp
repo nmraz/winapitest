@@ -24,12 +24,6 @@ scoped_handle::~scoped_handle() {
 }
 
 
-scoped_handle& scoped_handle::operator=(native_handle handle) {
-  scoped_handle(handle).swap(*this);
-
-  return *this;
-}
-
 scoped_handle& scoped_handle::operator=(scoped_handle rhs) noexcept {
   rhs.swap(*this);
 
@@ -37,8 +31,8 @@ scoped_handle& scoped_handle::operator=(scoped_handle rhs) noexcept {
 }
 
 
-void scoped_handle::swap(scoped_handle& other) noexcept {
-  std::swap(handle_, other.handle_);
+void scoped_handle::set(native_handle handle) {
+  *this = scoped_handle(handle);
 }
 
 
@@ -47,6 +41,10 @@ void scoped_handle::release() {
     ::CloseHandle(handle_);
     handle_ = nullptr;
   }
+}
+
+void scoped_handle::swap(scoped_handle& other) noexcept {
+  std::swap(handle_, other.handle_);
 }
 
 
