@@ -21,6 +21,7 @@ public:
   native_handle get() const { return handle_; }
   
   void release();
+  native_handle detatch();
 
   void swap(scoped_handle& other) noexcept;
 

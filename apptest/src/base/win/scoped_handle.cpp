@@ -43,6 +43,11 @@ void scoped_handle::release() {
   }
 }
 
+native_handle scoped_handle::detatch() {
+  return std::exchange(handle_, nullptr);
+}
+
+
 void scoped_handle::swap(scoped_handle& other) noexcept {
   std::swap(handle_, other.handle_);
 }
