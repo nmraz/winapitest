@@ -5,20 +5,17 @@
 
 namespace base {
 
-class scoped_slot_handle : public non_copyable, private slot_handle {
+class scoped_slot_handle : public slot_handle, public non_copyable {
 public:
-  using slot_handle::disconnect;
-  using slot_handle::connected;
-  using slot_handle::block;
-  using slot_handle::blocked;
-  using slot_handle::operator=;
-
   scoped_slot_handle() = default;
   scoped_slot_handle(const slot_handle& rhs);
   scoped_slot_handle(slot_handle&& rhs);
   ~scoped_slot_handle() { disconnect(); }
 
-  slot_handle release() { return std::move(*this); }
+  scoped_slot_handle& operator=(const slot_handle& rhs);
+  scoped_slot_handle& operator=(slot_handle&& rhs);
+
+  slot_handle detatch() { return std::move(*this); }
 };
 
 }  // namespace base
