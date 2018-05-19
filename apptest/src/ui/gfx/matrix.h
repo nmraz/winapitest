@@ -3,22 +3,27 @@
 namespace gfx {
 
 template<typename T, int M, int N>
-struct matrix {
-  T data[M][N];
+class matrix {
+public:
+  template<typename... Args, typename = std::enable_if_t<std::conjunction_v<std::is_convertible<Args, T>...>>>
+  constexpr matrix(Args... args) : data_{ static_cast<T>(args)... } {}
 
   constexpr T& operator()(int row, int col);
   constexpr const T& operator()(int row, int col) const;
+
+private:
+  T data_[M][N];
 };
 
 
 template<typename T, int M, int N>
 constexpr T& matrix<T, M, N>::operator()(int row, int col) {
-  return data[row][col];
+  return data_[row][col];
 }
 
 template<typename T, int M, int N>
 constexpr const T& matrix<T, M, N>::operator()(int row, int col) const {
-  return data[row][col];
+  return data_[row][col];
 }
 
 
