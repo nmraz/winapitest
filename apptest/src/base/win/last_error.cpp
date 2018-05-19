@@ -4,12 +4,12 @@
 
 namespace base::win {
 
-std::error_code last_error_code() {
+std::error_code last_error() {
   return std::error_code(::GetLastError(), std::system_category());
 }
 
 [[noreturn]] void throw_last_error(const char* what) {
-  auto code = last_error_code();
+  auto code = last_error();
   if (code.value() == ERROR_OUTOFMEMORY) {
     throw std::bad_alloc();
   }

@@ -115,7 +115,7 @@ file::complete_type file::read(offset_type offset, void* buf, unsigned long coun
   auto fut = overlapped->prom.get_future();
 
   if (!::ReadFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->prom.set_exception(std::system_error(win::last_error_code()));
+    overlapped->prom.set_exception(std::system_error(win::last_error()));
   } else {
     overlapped.release();
   }
@@ -128,7 +128,7 @@ file::complete_type file::write(offset_type offset, const void* buf, unsigned lo
   auto fut = overlapped->prom.get_future();
 
   if (!::WriteFileEx(handle_.get(), buf, count, overlapped.get(), on_io_complete)) {
-    overlapped->prom.set_exception(std::system_error(win::last_error_code()));
+    overlapped->prom.set_exception(std::system_error(win::last_error()));
   } else {
     overlapped.release();
   }
