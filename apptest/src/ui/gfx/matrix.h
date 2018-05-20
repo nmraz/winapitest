@@ -5,6 +5,11 @@ namespace gfx {
 template<typename T, int M, int N>
 class matrix {
 public:
+  using element_type = T;
+
+  static constexpr int rows = M;
+  static constexpr int cols = N;
+
   template<typename... Args, typename = std::enable_if_t<std::conjunction_v<std::is_convertible<Args, T>...>>>
   constexpr matrix(Args... args) : data_{ static_cast<T>(args)... } {}
 
