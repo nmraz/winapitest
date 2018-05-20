@@ -12,6 +12,8 @@ namespace gfx {
 template<typename T>
 class rect {
 public:
+  using element_type = T;
+
   static constexpr struct by_xywh_tag {} by_xywh{};
   static constexpr struct by_bounds_tag {} by_bounds{};
 

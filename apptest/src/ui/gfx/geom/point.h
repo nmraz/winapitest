@@ -4,6 +4,8 @@ namespace gfx {
 
 template<typename T>
 struct point {
+  using element_type = T;
+
   constexpr point();
   constexpr point(T x, T y);
 

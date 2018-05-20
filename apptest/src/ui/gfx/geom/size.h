@@ -7,6 +7,8 @@ namespace gfx {
 
 template<typename T>
 struct size {
+  using element_type = T;
+
   constexpr size();
   constexpr size(T width, T height);
 
