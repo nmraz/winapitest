@@ -206,6 +206,10 @@ constexpr bool operator!=(const matrix<T, M, N>& lhs, const matrix<T, M, N>& rhs
 }
 
 
+template<typename E, typename = std::enable_if_t<impl::is_matrix_expr<E>>>
+matrix(const E&) -> matrix<typename E::element_type, E::rows, E::cols>;
+
+
 template<int M, int N>
 using matf = matrix<float, M, N>;
 
