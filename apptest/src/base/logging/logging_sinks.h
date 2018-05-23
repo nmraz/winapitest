@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/logging/logging.h"
+#include <filesystem>
 #include <fstream>
 #include <string_view>
 
@@ -8,7 +9,7 @@ namespace logging {
 
 class file_sink : public sink {
 public:
-  explicit file_sink(std::string_view name);
+  explicit file_sink(const std::filesystem::path& name);
 
   void write(const char* str) override;
 

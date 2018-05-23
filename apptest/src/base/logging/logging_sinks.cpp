@@ -6,8 +6,8 @@
 
 namespace logging {
 
-file_sink::file_sink(std::string_view name)
-  : file_(base::widen(name)) {
+file_sink::file_sink(const std::filesystem::path& name)
+  : file_(name) {
   file_ << "\xef\xbb\xbf";  // write utf-8 bom for windows compatibility
 }
 

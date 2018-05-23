@@ -3,6 +3,7 @@
 #include "base/future/future.h"
 #include "base/win/scoped_handle.h"
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <iterator>
 #include <string_view>
@@ -37,9 +38,9 @@ public:
   using complete_type = future<unsigned long>;
 
   file() = default;
-  file(std::string_view name, int desired_access, create_disp disp, int share = share_read | share_write);
+  file(const std::filesystem::path& name, int desired_access, create_disp disp, int share = share_read | share_write);
 
-  void open(std::string_view name, int desired_access, create_disp disp, int share = share_read | share_write);
+  void open(const std::filesystem::path& name, int desired_access, create_disp disp, int share = share_read | share_write);
   void close();
 
 

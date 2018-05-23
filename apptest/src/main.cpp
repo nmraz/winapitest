@@ -14,6 +14,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/easing.h"
 #include "ui/gfx/geom/path.h"
+#include <filesystem>
 
 namespace chrono = std::chrono;
 using namespace std::literals;
@@ -56,7 +57,11 @@ int wmain(int argc, const wchar_t** argv) {
     base::run_task(*io_thread.task_runner(), [] {
       LOG(info) << "Opening and writing to file";
 
-      auto file_holder = std::make_unique<base::file>("test.txt", base::file::out, base::file::create_disp::create_always);
+      auto file_holder = std::make_unique<base::file>(
+        std::filesystem::u8path("test.txt"),
+        base::file::out,
+        base::file::create_disp::create_always
+      );
       base::file* file = file_holder.get();
 
       return file->write(0, "Test file!").then([file_holder = std::move(file_holder)](auto&& result) {
