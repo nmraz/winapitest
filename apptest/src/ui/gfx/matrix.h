@@ -94,6 +94,9 @@ public:
   template<typename E, typename = std::enable_if_t<impl::are_compatible_matrix_exprs<matrix, E>>>
   constexpr matrix(const E& expr);
 
+  template<typename E, typename = std::enable_if_t<impl::are_compatible_matrix_exprs<matrix, E>>>
+  constexpr matrix& operator=(const E& expr);
+
   constexpr T& operator()(int row, int col);
   constexpr const T& operator()(int row, int col) const;
 
@@ -114,6 +117,12 @@ template<typename T, int M, int N>
 template<typename E, typename>
 constexpr matrix<T, M, N>::matrix(const E& expr)
   : data_{}  {
+  *this = expr;
+}
+
+template<typename T, int M, int N>
+template<typename E, typename>
+constexpr matrix<T, M, N>& matrix<T, M, N>::operator=(const E& expr) {
   for (int i = 0; i < M; i++) {
     for (int j = 0; j < N; j++) {
       (*this)(i, j) = expr(i, j);
