@@ -17,7 +17,7 @@ constexpr T three_pi_over_two = T(4.71238898038468985769396507491925432L);
 
 template<typename T>
 constexpr inline T lerp(T from, T to, double t) {
-  return static_cast<T>(from + (to - from) * t);
+  return static_cast<T>((1 - t) * from + t * to);
 }
 
 
