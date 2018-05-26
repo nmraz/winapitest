@@ -1,6 +1,7 @@
 #include "path.h"
 
 #include "base/assert.h"
+#include "base/span.h"
 #include "base/win/com_impl.h"
 #include "base/win/exception_boundary.h"
 #include "base/win/last_error.h"
@@ -124,19 +125,19 @@ STDMETHODIMP_(void) path_d2d_sink::AddArc(const D2D1_ARC_SEGMENT* arc) {
 
 STDMETHODIMP_(void) path_d2d_sink::AddLines(const D2D1_POINT_2F* points, UINT count) {
   run_in_boundary([&] {
-    for (std::size_t i = 0; i < count; ++i) {
-      path_->line_to(impl::d2d_point_to_point(points[i]));
+    for (const auto& point : base::span{ points, count }) {
+      path_->line_to(impl::d2d_point_to_point(point));
     }
   });
 }
 
 STDMETHODIMP_(void) path_d2d_sink::AddBeziers(const D2D1_BEZIER_SEGMENT* beziers, UINT count) {
   run_in_boundary([&] {
-    for (std::size_t i = 0; i < count; ++i) {
+    for (const auto& bezier : base::span{ beziers, count }) {
       path_->cubic_to(
-        impl::d2d_point_to_point(beziers[i].point1),
-        impl::d2d_point_to_point(beziers[i].point2),
-        impl::d2d_point_to_point(beziers[i].point3)
+        impl::d2d_point_to_point(bezier.point1),
+        impl::d2d_point_to_point(bezier.point2),
+        impl::d2d_point_to_point(bezier.point3)
       );
     }
   });
@@ -144,10 +145,10 @@ STDMETHODIMP_(void) path_d2d_sink::AddBeziers(const D2D1_BEZIER_SEGMENT* beziers
 
 STDMETHODIMP_(void) path_d2d_sink::AddQuadraticBeziers(const D2D1_QUADRATIC_BEZIER_SEGMENT* beziers, UINT count) {
   run_in_boundary([&] {
-    for (std::size_t i = 0; i < count; ++i) {
+    for (const auto& bezier : base::span{ beziers, count }) {
       path_->quad_to(
-        impl::d2d_point_to_point(beziers[i].point1),
-        impl::d2d_point_to_point(beziers[i].point2)
+        impl::d2d_point_to_point(bezier.point1),
+        impl::d2d_point_to_point(bezier.point2)
       );
     }
   });
