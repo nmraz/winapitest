@@ -196,6 +196,7 @@
     <ClCompile Include="src\ui\gfx\color.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\gfx\geom\path.cpp" />
+    <ClCompile Include="src\ui\gfx\stroke_style.cpp" />
     <ClCompile Include="src\ui\gfx\transform.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -246,6 +247,7 @@
     <ClInclude Include="src\ui\gfx\geom\rect.h" />
     <ClInclude Include="src\ui\gfx\geom\size.h" />
     <ClInclude Include="src\ui\gfx\geom\path.h" />
+    <ClInclude Include="src\ui\gfx\stroke_style.h" />
     <ClInclude Include="src\ui\gfx\transform.h" />
     <ClInclude Include="src\ui\gfx\util.h" />
     <ClInclude Include="src\ui\gfx\d2d\convs.h" />
