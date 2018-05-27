@@ -92,7 +92,7 @@ constexpr bool try_invert(mat33f& tform) {
 }
 
 constexpr void invert(mat33f& tform) {
-  bool inverted = tform.invert();
+  [[maybe_unused]] bool inverted = try_invert(tform);
   ASSERT(inverted) << "Transform not invertible";
 }
 
