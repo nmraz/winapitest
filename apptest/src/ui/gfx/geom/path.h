@@ -1,6 +1,7 @@
 #pragma once
 
 #include "base/win/com_ptr.h"
+#include "ui/gfx/stroke_style.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/geom/rect.h"
 #include "ui/gfx/geom/round_rect.h"
@@ -234,6 +235,7 @@ public:
   path outline() const;
   path transform(const mat33f& tform) const;
   path combine(const path& other, path_op op) const;
+  path widen(float stroke_width, const stroke_style& stroke = {}) const;
 
   float length() const;
   float area() const;
@@ -242,6 +244,7 @@ public:
 
   path_relation compare(const path& other) const;
   bool contains(const pointf& pt) const;
+  bool stroke_contains(const pointf& pt, float stroke_width, const stroke_style& stroke = {}) const;
 
 
   const impl::d2d_path_geom_ptr& d2d_geom() const;

@@ -406,6 +406,20 @@ path path::combine(const path& other, path_op op) const {
   return ret;
 }
 
+path path::widen(float stroke_width, const stroke_style& stroke) const {
+  path ret;
+  base::win::throw_if_failed(
+    d2d_geom()->Widen(
+      stroke_width,
+      stroke.d2d_stroke_style().get(),
+      nullptr,
+      ret.d2d_sink().get()
+    ),
+    "Failed to widen path"
+  );
+  return ret;
+}
+
 
 float path::length() const {
   float ret;
@@ -458,6 +472,21 @@ bool path::contains(const pointf& pt) const {
   base::win::throw_if_failed(
     d2d_geom()->FillContainsPoint(impl::point_to_d2d_point(pt), nullptr, &ret),
     "Failed to hit-test path"
+  );
+  return ret;
+}
+
+bool path::stroke_contains(const pointf& pt, float stroke_width, const stroke_style& stroke) const {
+  BOOL ret;
+  base::win::throw_if_failed(
+    d2d_geom()->StrokeContainsPoint(
+      impl::point_to_d2d_point(pt),
+      stroke_width,
+      stroke.d2d_stroke_style().get(),
+      nullptr,
+      &ret
+    ),
+    "Failed to hit-test path stroke"
   );
   return ret;
 }
