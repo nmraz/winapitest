@@ -70,7 +70,7 @@ constexpr inline bool is_invertible(const mat33f& tform) {
   return determinant(tform) != 0.f;
 }
 
-constexpr bool invert(mat33f& tform) {
+constexpr bool try_invert(mat33f& tform) {
   float det = determinant(tform);
   if (!det) {
     return false;
@@ -89,6 +89,12 @@ constexpr bool invert(mat33f& tform) {
     1.f
   };
   return true;
+}
+
+constexpr mat33f invert(mat33f tform) {
+  bool inverted = tform.invert();
+  ASSERT(inverted) << "Transform not invertible";
+  return tform;
 }
 
 
