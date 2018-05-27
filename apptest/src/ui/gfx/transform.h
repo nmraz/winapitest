@@ -91,10 +91,9 @@ constexpr bool try_invert(mat33f& tform) {
   return true;
 }
 
-constexpr mat33f invert(mat33f tform) {
+constexpr void invert(mat33f& tform) {
   bool inverted = tform.invert();
   ASSERT(inverted) << "Transform not invertible";
-  return tform;
 }
 
 
