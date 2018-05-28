@@ -284,6 +284,9 @@
     <ClInclude Include="src\ui\gfx\stroke_style.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gfx\resource\cached_resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />

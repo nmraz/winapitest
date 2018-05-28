@@ -247,6 +247,7 @@
     <ClInclude Include="src\ui\gfx\geom\rect.h" />
     <ClInclude Include="src\ui\gfx\geom\size.h" />
     <ClInclude Include="src\ui\gfx\geom\path.h" />
+    <ClInclude Include="src\ui\gfx\resource\cached_resource.h" />
     <ClInclude Include="src\ui\gfx\stroke_style.h" />
     <ClInclude Include="src\ui\gfx\transform.h" />
     <ClInclude Include="src\ui\gfx\util.h" />
