@@ -13,6 +13,8 @@ public:
     virtual void key_destroyed(resource_key* res) = 0;
   };
 
+  ~resource_key();
+
   resource_version version() const { return ver_; }
   void invalidate() { ver_++; }
 
