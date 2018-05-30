@@ -10,11 +10,8 @@ bool is_valid(resource_key* key, cached_resource* res) {
 }  // namespace
 
 void resource_cache::add(resource_key* key, std::unique_ptr<cached_resource> res) {
-  {
-    std::lock_guard hold(lock_);
-    entries_.insert_or_assign(key, std::move(res));
-  }
-  key->add_holder(this);
+  std::lock_guard hold(lock_);
+  do_add(key, std::move(res));
 }
 
 void resource_cache::remove(resource_key* key) {
@@ -50,6 +47,16 @@ void resource_cache::purge_invalid() {
 
 // PRIVATE
 
+void resource_cache::do_add(resource_key* key, std::unique_ptr<cached_resource> res) {
+  entries_.insert_or_assign(key, std::move(res));
+  key->add_holder(this);
+}
+
+resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
+  it->first->remove_holder(this);
+  return entries_.erase(it);
+}
+
 cached_resource* resource_cache::do_find(resource_key* key) {
   auto it = entries_.find(key);
   if (it == entries_.end()) {
@@ -62,11 +69,6 @@ cached_resource* resource_cache::do_find(resource_key* key) {
     return nullptr;
   }
   return res;
-}
-
-resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
-  it->first->remove_holder(this);
-  return entries_.erase(it);
 }
 
 }  // namespace gfx

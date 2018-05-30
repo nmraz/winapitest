@@ -25,8 +25,9 @@ private:
   using entry_map = std::unordered_map<resource_key*, std::unique_ptr<cached_resource>>;
   using entry_iter = entry_map::iterator;
 
-  cached_resource* do_find(resource_key* key);
+  void do_add(resource_key* key, std::unique_ptr<cached_resource> res);
   entry_iter do_remove(entry_iter it);
+  cached_resource* do_find(resource_key* key);
 
   void key_destroyed(resource_key* key) override { remove(key); }
 
