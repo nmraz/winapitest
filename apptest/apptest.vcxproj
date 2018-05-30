@@ -196,6 +196,7 @@
     <ClCompile Include="src\ui\gfx\color.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\gfx\geom\path.cpp" />
+    <ClCompile Include="src\ui\gfx\resource\resource_cache.cpp" />
     <ClCompile Include="src\ui\gfx\resource\resource_key.cpp" />
     <ClCompile Include="src\ui\gfx\stroke_style.cpp" />
     <ClCompile Include="src\ui\gfx\transform.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="src\ui\gfx\geom\path.h" />
     <ClInclude Include="src\ui\gfx\resource\resource_key.h" />
     <ClInclude Include="src\ui\gfx\resource\cached_resource.h" />
+    <ClInclude Include="src\ui\gfx\resource\resource_cache.h" />
     <ClInclude Include="src\ui\gfx\stroke_style.h" />
     <ClInclude Include="src\ui\gfx\transform.h" />
     <ClInclude Include="src\ui\gfx\util.h" />
