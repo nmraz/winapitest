@@ -16,13 +16,15 @@ public:
   ~resource_key();
 
   resource_version version() const { return ver_; }
-  void invalidate() { ver_++; }
+  void invalidate() {
+    ver_ = static_cast<resource_version>(static_cast<unsigned int>(ver_) + 1);
+  }
 
   void add_holder(holder* h);
   void remove_holder(holder* h);
 
 private:
-  resource_version ver_ = 0;
+  resource_version ver_{ 0 };
 
   std::vector<holder*> holders_;
   std::mutex holder_lock_;  // protects holders_

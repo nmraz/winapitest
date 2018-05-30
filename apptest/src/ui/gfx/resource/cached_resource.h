@@ -2,7 +2,7 @@
 
 namespace gfx {
 
-using resource_version = unsigned int;
+enum class resource_version : unsigned int {};
 
 class cached_resource {
 public:
