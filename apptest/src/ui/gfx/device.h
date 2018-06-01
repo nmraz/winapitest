@@ -6,24 +6,30 @@
 #include <memory>
 
 namespace gfx {
+namespace impl {
+
+using d3d_device_ptr = base::win::com_ptr<ID3D11Device>;
+using d2d_device_ptr = base::win::com_ptr<ID2D1Device>;
+
+}  // namespace impl
 
 class device {
 public:
   using ptr = std::shared_ptr<device>;
 
   static ptr create();
-  static ptr create(base::win::com_ptr<ID3D11Device> d3d_device);
+  static ptr create(impl::d3d_device_ptr d3d_device);
 
   bool is_lost() const;
 
-  const base::win::com_ptr<ID3D11Device>& d3d_device();
-  const base::win::com_ptr<ID2D1Device>& d2d_device();
+  const impl::d3d_device_ptr& d3d_device();
+  const impl::d2d_device_ptr& d2d_device();
 
 private:
-  device(base::win::com_ptr<ID3D11Device> d3d_device);
+  device(impl::d3d_device_ptr d3d_device);
 
-  base::win::com_ptr<ID3D11Device> d3d_device_;
-  base::win::com_ptr<ID2D1Device> d2d_device_;
+  impl::d3d_device_ptr d3d_device_;
+  impl::d2d_device_ptr d2d_device_;
 };
 
 }  // namespace gfx
