@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/non_copyable.h"
 #include "base/win/com_ptr.h"
 #include <d2d1_1.h>
 #include <d3d11.h>
@@ -13,7 +14,7 @@ using d2d_device_ptr = base::win::com_ptr<ID2D1Device>;
 
 }  // namespace impl
 
-class device {
+class device : public base::non_copy_movable {
 public:
   using ptr = std::shared_ptr<device>;
 
