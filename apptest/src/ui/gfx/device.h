@@ -22,8 +22,8 @@ public:
 
   bool is_lost() const;
 
-  const impl::d3d_device_ptr& d3d_device();
-  const impl::d2d_device_ptr& d2d_device();
+  const impl::d3d_device_ptr& d3d_device() { return d3d_device_; }
+  const impl::d2d_device_ptr& d2d_device() { return d2d_device_; }
 
 private:
   device(impl::d3d_device_ptr d3d_device);
