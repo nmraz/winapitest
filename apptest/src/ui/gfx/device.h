@@ -2,6 +2,7 @@
 
 #include "base/non_copyable.h"
 #include "base/win/com_ptr.h"
+#include "ui/gfx/resource/resource_cache.h"
 #include <d2d1_1.h>
 #include <d3d11.h>
 #include <memory>
@@ -26,11 +27,15 @@ public:
   const impl::d3d_device_ptr& d3d_device() { return d3d_device_; }
   const impl::d2d_device_ptr& d2d_device() { return d2d_device_; }
 
+  resource_cache& cache() { return cache_; }
+
 private:
   device(impl::d3d_device_ptr d3d_device);
 
   impl::d3d_device_ptr d3d_device_;
   impl::d2d_device_ptr d2d_device_;
+
+  resource_cache cache_;
 };
 
 }  // namespace gfx
