@@ -135,6 +135,9 @@
     <ClCompile Include="src\ui\gfx\device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ui\gfx\device_impl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\logging\logging.h">
@@ -306,6 +309,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ui\gfx\image\image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui\gfx\device_impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

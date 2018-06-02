@@ -189,6 +189,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ui\gfx\animation\reversible_animation.cpp" />
     <ClCompile Include="src\ui\gfx\device.cpp" />
+    <ClCompile Include="src\ui\gfx\device_impl.cpp" />
     <ClCompile Include="src\ui\gfx\geom\point.cpp" />
     <ClCompile Include="src\ui\gfx\geom\round_rect.cpp" />
     <ClCompile Include="src\base\win\win_event_loop.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="src\base\win\scoped_handle.h" />
     <ClInclude Include="src\ui\gfx\animation\reversible_animation.h" />
     <ClInclude Include="src\ui\gfx\device.h" />
+    <ClInclude Include="src\ui\gfx\device_impl.h" />
     <ClInclude Include="src\ui\gfx\geom\round_rect.h" />
     <ClInclude Include="src\base\win\win_event_loop.h" />
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
