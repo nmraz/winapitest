@@ -14,11 +14,16 @@ public:
   const d3d_device_ptr& d3d_device() { return d3d_device_; }
   const d2d_device_ptr& d2d_device() { return d2d_device_; }
 
+  d2d_dc_ptr create_dc();
+  const d2d_dc_ptr& resource_dc() { return resource_dc_; }
+
   resource_cache& cache() { return cache_; }
 
 private:
   d3d_device_ptr d3d_device_;
   d2d_device_ptr d2d_device_;
+
+  d2d_dc_ptr resource_dc_;
 
   resource_cache cache_;
 };

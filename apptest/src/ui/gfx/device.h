@@ -11,6 +11,7 @@ namespace impl {
 
 using d3d_device_ptr = base::win::com_ptr<ID3D11Device>;
 using d2d_device_ptr = base::win::com_ptr<ID2D1Device>;
+using d2d_dc_ptr = base::win::com_ptr<ID2D1DeviceContext>;
 
 }  // namespace impl
 
