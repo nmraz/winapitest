@@ -323,6 +323,9 @@
     <ClInclude Include="src\ui\gfx\image\bitmap_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gfx\image\device_bitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />
