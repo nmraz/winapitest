@@ -249,6 +249,7 @@
     <ClInclude Include="src\ui\gfx\animation\animation.h" />
     <ClInclude Include="src\ui\gfx\animation\easing.h" />
     <ClInclude Include="src\ui\gfx\color.h" />
+    <ClInclude Include="src\ui\gfx\image\bitmap_info.h" />
     <ClInclude Include="src\ui\gfx\image\device_image.h" />
     <ClInclude Include="src\ui\gfx\image\image.h" />
     <ClInclude Include="src\ui\gfx\matrix.h" />
