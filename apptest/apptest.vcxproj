@@ -198,6 +198,7 @@
     <ClCompile Include="src\ui\gfx\color.cpp" />
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\gfx\geom\path.cpp" />
+    <ClCompile Include="src\ui\gfx\image\device_bitmap.cpp" />
     <ClCompile Include="src\ui\gfx\resource\resource_cache.cpp" />
     <ClCompile Include="src\ui\gfx\resource\resource_key.cpp" />
     <ClCompile Include="src\ui\gfx\stroke_style.cpp" />
