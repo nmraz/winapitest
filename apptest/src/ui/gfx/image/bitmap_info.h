@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ui/gfx/util.h"
 #include <d2d1.h>
 
 namespace gfx {
@@ -21,7 +22,7 @@ enum class alpha_mode {
 class bitmap_info {
 public:
   constexpr bitmap_info(pixel_format format = pixel_format::unknown,
-    alpha_mode mode = alpha_mode::unknown, float dpix = 96, float dpiy = 96)
+    alpha_mode mode = alpha_mode::unknown, float dpix = default_dpi, float dpiy = default_dpi)
     : format_(format)
     , alpha_(mode)
     , dpix_(dpix)
