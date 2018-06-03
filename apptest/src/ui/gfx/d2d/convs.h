@@ -39,6 +39,14 @@ constexpr sizef d2d_size_to_size(const D2D1_SIZE_F& sz) {
   return { sz.width, sz.height };
 }
 
+constexpr D2D1_SIZE_U size_to_d2d_size(const sizei& sz) {
+  return { static_cast<UINT32>(sz.width()), static_cast<UINT32>(sz.height()) };
+}
+
+constexpr sizei d2d_size_to_size(const D2D1_SIZE_U& sz) {
+  return { static_cast<int>(sz.width), static_cast<int>(sz.height) };
+}
+
 
 constexpr D2D1_RECT_F rect_to_d2d_rect(const rectf& rc) {
   return {
