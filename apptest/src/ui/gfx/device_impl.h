@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/gfx/device.h"
+#include "ui/gfx/d2d/resource_types.h"
 #include "ui/gfx/resource/resource_cache.h"
 
 namespace gfx::impl {

@@ -1,17 +1,10 @@
 #pragma once
 
-#include "base/win/com_ptr.h"
+#include "ui/gfx/d2d/resource_types.h"
 #include "ui/gfx/image/bitmap_info.h"
 #include "ui/gfx/image/device_image.h"
-#include <d2d1_1.h>
 
 namespace gfx {
-namespace impl {
-
-using d2d_bitmap_ptr = base::win::com_ptr<ID2D1Bitmap1>;
-
-}  // namespace impl
-
 
 class device_bitmap : public device_image {
 public:
