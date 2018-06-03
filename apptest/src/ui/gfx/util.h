@@ -31,4 +31,15 @@ constexpr inline T rad_to_deg(T rad) {
   return rad * 180 / pi<T>;
 }
 
+
+constexpr float default_dpi = 96;
+
+constexpr inline int dip_to_px(float dip_val, float dpi) {
+  return static_cast<int>(dip_val * dpi / default_dpi);
+}
+
+constexpr inline float px_to_dip(int px_val, float dpi) {
+  return px_val * default_dpi / dpi;
+}
+
 }  // namespace gfx
