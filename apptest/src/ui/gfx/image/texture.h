@@ -7,7 +7,7 @@
 
 namespace gfx {
 
-class device_bitmap : public device_image {
+class texture : public device_image {
 public:
   const bitmap_info& info() const { return info_; }
 
@@ -18,7 +18,7 @@ public:
   impl::d2d_image_ptr d2d_image(impl::device_impl*) override { return d2d_bitmap(); }
 
 protected:
-  device_bitmap(device::ptr dev, impl::d2d_bitmap_ptr d2d_bitmap, const bitmap_info& info);
+  texture(device::ptr dev, impl::d2d_bitmap_ptr d2d_bitmap, const bitmap_info& info);
 
 private:
   impl::d2d_bitmap_ptr d2d_bitmap_;

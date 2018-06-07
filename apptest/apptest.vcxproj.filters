@@ -138,7 +138,7 @@
     <ClCompile Include="src\ui\gfx\device_impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ui\gfx\image\device_bitmap.cpp">
+    <ClCompile Include="src\ui\gfx\image\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -326,10 +326,10 @@
     <ClInclude Include="src\ui\gfx\image\bitmap_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\gfx\image\device_bitmap.h">
+    <ClInclude Include="src\ui\gfx\d2d\resource_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ui\gfx\d2d\resource_types.h">
+    <ClInclude Include="src\ui\gfx\image\texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
