@@ -1,14 +1,19 @@
 #pragma once
 
+#include "base/span.h"
 #include "ui/gfx/d2d/resource_types.h"
 #include "ui/gfx/geom/size.h"
 #include "ui/gfx/image/bitmap_info.h"
 #include "ui/gfx/image/device_image.h"
+#include <memory>
 
 namespace gfx {
 
 class texture : public device_image {
 public:
+  static std::unique_ptr<texture> create(device::ptr dev, const bitmap_info& info,
+    const sizei& size, base::span<const std::byte> data);
+
   const bitmap_info& info() const { return info_; }
 
   sizef size() const;
