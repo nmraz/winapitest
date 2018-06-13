@@ -13,7 +13,7 @@ class device_impl;
 
 struct image : base::non_copy_movable {
   virtual ~image() {}
-  virtual impl::d2d_image_ptr d2d_image(impl::device_impl* device) = 0;
+  virtual impl::d2d_image_ptr d2d_image(impl::device_impl* device) const = 0;
 };
 
 }  // namespace gfx

@@ -21,7 +21,7 @@ public:
   sizei pixel_size() const;
 
   const impl::d2d_bitmap_ptr& d2d_bitmap() const { return d2d_bitmap_; }
-  impl::d2d_image_ptr d2d_image(impl::device_impl*) override { return d2d_bitmap(); }
+  impl::d2d_image_ptr d2d_image(impl::device_impl*) const override { return d2d_bitmap(); }
 
 protected:
   texture(device::ptr dev, impl::d2d_bitmap_ptr d2d_bitmap, const bitmap_info& info);
