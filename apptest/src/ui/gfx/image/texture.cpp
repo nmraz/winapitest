@@ -4,6 +4,23 @@
 #include "ui/gfx/d2d/convs.h"
 
 namespace gfx {
+namespace {
+
+bitmap_info info_from_d2d_bitmap(const ID2D1Bitmap1* bitmap) {
+  auto pix_format = bitmap->GetPixelFormat();
+  float dpix, dpiy;
+  bitmap->GetDpi(&dpix, &dpiy);
+
+  return {
+    static_cast<pixel_format>(pix_format.format),
+    static_cast<alpha_mode>(pix_format.alphaMode),
+    dpix,
+    dpiy
+  };
+}
+
+}  // namespace
+
 
 std::unique_ptr<texture> texture::create(device::ptr dev, const bitmap_info& info,
   const sizei& size, base::span<const std::byte> data) {
@@ -11,6 +28,11 @@ std::unique_ptr<texture> texture::create(device::ptr dev, const bitmap_info& inf
 
   return std::unique_ptr<texture>(new texture(std::move(dev),
     dev_impl->create_bitmap(info, size, D2D1_BITMAP_OPTIONS_NONE, data), info));
+}
+
+std::unique_ptr<texture> texture::create(device::ptr dev, impl::d2d_bitmap_ptr d2d_bitmap) {
+  return std::unique_ptr<texture>(new texture(std::move(dev), std::move(d2d_bitmap),
+    info_from_d2d_bitmap(d2d_bitmap.get())));
 }
 
 

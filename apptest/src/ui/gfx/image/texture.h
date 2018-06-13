@@ -13,6 +13,7 @@ class texture : public device_image {
 public:
   static std::unique_ptr<texture> create(device::ptr dev, const bitmap_info& info,
     const sizei& size, base::span<const std::byte> data);
+  static std::unique_ptr<texture> create(device::ptr dev, impl::d2d_bitmap_ptr d2d_bitmap);
 
   const bitmap_info& info() const { return info_; }
 
