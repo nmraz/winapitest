@@ -1,5 +1,35 @@
 #pragma once
 
+#include "base/span.h"
+#include "ui/gfx/color.h"
+#include "ui/gfx/d2d/resource_types.h"
+#include "ui/gfx/geom/point.h"
+#include "ui/gfx/geom/size.h"
+#include "ui/gfx/image/bitmap_info.h"
+#include <cstddef>
+
 namespace gfx {
+
+class mapped_texture {
+  ~mapped_texture();
+
+  const bitmap_info& info() const;
+
+  sizef size() const;
+  sizei pixel_size() const;
+  int pitch() const;
+
+  base::span<const std::byte> pixels() const;
+  color pixel_at(const pointi& pt);
+
+private:
+  friend class texture;
+
+  mapped_texture(impl::d2d_bitmap_ptr mappable_bitmap, const bitmap_info& info);
+
+  impl::d2d_bitmap_ptr bitmap_;
+  D2D1_MAPPED_RECT mapped_;
+  bitmap_info info_;
+};
 
 }  // namespace gfx
