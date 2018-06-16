@@ -1,5 +1,6 @@
 #pragma once
 
+#include "base/non_copyable.h"
 #include "base/span.h"
 #include "ui/gfx/color.h"
 #include "ui/gfx/d2d/resource_types.h"
@@ -10,7 +11,7 @@
 
 namespace gfx {
 
-class mapped_texture {
+class mapped_texture : public base::non_copyable {
   ~mapped_texture();
 
   const bitmap_info& info() const;
