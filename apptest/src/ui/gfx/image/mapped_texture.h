@@ -14,11 +14,11 @@ namespace gfx {
 class mapped_texture : public base::non_copyable {
   ~mapped_texture();
 
-  const bitmap_info& info() const;
+  const bitmap_info& info() const { return info_; }
 
   sizef size() const;
   sizei pixel_size() const;
-  int pitch() const;
+  int pitch() const { return mapped_.pitch; }
 
   base::span<const std::byte> pixels() const;
   color pixel_at(const pointi& pt);
