@@ -5,6 +5,7 @@
 #include "ui/gfx/geom/size.h"
 #include "ui/gfx/image/bitmap_info.h"
 #include "ui/gfx/image/device_image.h"
+#include "ui/gfx/image/mapped_texture.h"
 #include <memory>
 
 namespace gfx {
@@ -19,6 +20,8 @@ public:
 
   sizef size() const;
   sizei pixel_size() const;
+
+  mapped_texture map() const;
 
   const impl::d2d_bitmap_ptr& d2d_bitmap() const { return d2d_bitmap_; }
   impl::d2d_image_ptr d2d_image(impl::device_impl*) const override { return d2d_bitmap(); }
