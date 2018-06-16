@@ -1,5 +1,6 @@
 #include "texture.h"
 
+#include "base/win/last_error.h"
 #include "ui/gfx/device_impl.h"
 #include "ui/gfx/d2d/convs.h"
 
@@ -48,12 +49,20 @@ sizei texture::pixel_size() const {
 mapped_texture texture::map() const {
   impl::device_impl* dev = static_cast<impl::device_impl*>(device());
   impl::d2d_bitmap_ptr mappable_bitmap = dev->create_bitmap(info(), pixel_size(),
-    D2D1_BITMAP_OPTIONS_CPU_READ);
+    D2D1_BITMAP_OPTIONS_CPU_READ | D2D1_BITMAP_OPTIONS_CANNOT_DRAW);
 
   D2D1_POINT_2U dest_pt = { 0, 0 };
-  D2D1_RECT_U src_rect = { 0, 0, pixel_size().width(), pixel_size().height() };
+  D2D1_RECT_U src_rect = {
+    0,
+    0,
+    static_cast<UINT32>(pixel_size().width()),
+    static_cast<UINT32>(pixel_size().height())
+  };
 
-  mappable_bitmap->CopyFromBitmap(&dest_pt, d2d_bitmap_.get(), &src_rect);
+  base::win::throw_if_failed(
+    mappable_bitmap->CopyFromBitmap(&dest_pt, d2d_bitmap_.get(), &src_rect),
+    "Failed to copy GPU texture"
+  );
   return { std::move(mappable_bitmap), info() };
 }
 
