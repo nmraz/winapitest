@@ -271,7 +271,7 @@ void path::arc_to(const pointf& end, float radius, arc_size size, sweep_dir dir)
 
 void path::arc_to(const pointf& center, const sizef& radius, float start_angle, float sweep_angle,
   float rotation_angle, bool force_move) {
-  mat33f point_transform = transform::rotate(rotation_angle) * transform::translate(center.x, center.y);
+  mat33f point_transform = transform::rotate(rotation_angle) * transform::translate(center.x(), center.y());
 
   pointf start = transform::apply(point_transform,
     point_for_angle(start_angle, radius.width(), radius.height()));
