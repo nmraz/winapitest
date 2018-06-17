@@ -43,40 +43,40 @@ bool round_rect::contains(const pointf& pt) {
   rect_corner containing_corner;
   pointf local_pt;
 
-  if (pt.x < bounds_.x() + radius(rect_corner::top_left).width()
-    && pt.y < bounds_.y() + radius(rect_corner::top_left).height()) {  // top-left
+  if (pt.x() < bounds_.x() + radius(rect_corner::top_left).width()
+    && pt.y() < bounds_.y() + radius(rect_corner::top_left).height()) {  // top-left
 
     containing_corner = rect_corner::top_left;
     local_pt.set(
-      bounds_.x() + radius(rect_corner::top_left).width() - pt.x,
-      bounds_.y() + radius(rect_corner::top_left).height() - pt.y
+      bounds_.x() + radius(rect_corner::top_left).width() - pt.x(),
+      bounds_.y() + radius(rect_corner::top_left).height() - pt.y()
     );
 
-  } else if (pt.x > bounds_.right() - radius(rect_corner::top_right).width()
-    && pt.y < bounds_.y() + radius(rect_corner::top_right).height()) {  // top-right
+  } else if (pt.x() > bounds_.right() - radius(rect_corner::top_right).width()
+    && pt.y() < bounds_.y() + radius(rect_corner::top_right).height()) {  // top-right
 
     containing_corner = rect_corner::top_right;
     local_pt.set(
-      pt.x - bounds_.right() + radius(rect_corner::top_right).width(),
-      bounds_.y() + radius(rect_corner::top_right).height() - pt.y
+      pt.x() - bounds_.right() + radius(rect_corner::top_right).width(),
+      bounds_.y() + radius(rect_corner::top_right).height() - pt.y()
     );
 
-  } else if (pt.x > bounds_.right() - radius(rect_corner::bottom_right).width()
-    && pt.y > bounds_.bottom() - radius(rect_corner::bottom_right).height()) {  // bottom-right
+  } else if (pt.x() > bounds_.right() - radius(rect_corner::bottom_right).width()
+    && pt.y() > bounds_.bottom() - radius(rect_corner::bottom_right).height()) {  // bottom-right
 
     containing_corner = rect_corner::bottom_right;
     local_pt.set(
-      pt.x - bounds_.right() + radius(rect_corner::bottom_right).width(),
-      pt.y - bounds_.bottom() + radius(rect_corner::bottom_right).height()
+      pt.x() - bounds_.right() + radius(rect_corner::bottom_right).width(),
+      pt.y() - bounds_.bottom() + radius(rect_corner::bottom_right).height()
     );
 
-  } else if (pt.x < bounds_.x() + radius(rect_corner::bottom_left).width()
-    && pt.y > bounds_.bottom() - radius(rect_corner::bottom_left).height()) {  // bottom-left
+  } else if (pt.x() < bounds_.x() + radius(rect_corner::bottom_left).width()
+    && pt.y() > bounds_.bottom() - radius(rect_corner::bottom_left).height()) {  // bottom-left
 
     containing_corner = rect_corner::bottom_left;
     local_pt.set(
-      bounds_.x() + radius(rect_corner::bottom_left).width() - pt.y,
-      pt.y - bounds_.bottom() + radius(rect_corner::bottom_left).height()
+      bounds_.x() + radius(rect_corner::bottom_left).width() - pt.x(),
+      pt.y() - bounds_.bottom() + radius(rect_corner::bottom_left).height()
     );
 
   } else {  // not in a corner
@@ -87,7 +87,7 @@ bool round_rect::contains(const pointf& pt) {
   float ry = radius(containing_corner).height();
 
   // ellipse equation, multiplied by (rx*ry)^2
-  return ry * ry * local_pt.x * local_pt.x + rx * rx * local_pt.y * local_pt.y <= rx * rx * ry * ry;
+  return ry * ry * local_pt.x() * local_pt.x() + rx * rx * local_pt.y() * local_pt.y() <= rx * rx * ry * ry;
 }
 
 
