@@ -47,7 +47,7 @@ mat33f rotate(float theta);
 
 constexpr inline mat33f centered_about(const mat33f& tform, const pointf& center) {
   // translate `center` to origin, apply transform, and translate back
-  return translate(-center.x, -center.y) * tform * translate(center.x, center.y);
+  return translate(-center.x(), -center.y()) * tform * translate(center.x(), center.y());
 }
 
 
@@ -102,8 +102,8 @@ constexpr pointf apply(const mat33f& tform, const pointf& pt) {
 
   // postmultiply `pt` by `tform`
   return {
-    pt.x * tform(0, 0) + pt.y * tform(1, 0) + tform(2, 0),
-    pt.x * tform(0, 1) + pt.y * tform(1, 1) + tform(2, 1)
+    pt.x() * tform(0, 0) + pt.y() * tform(1, 0) + tform(2, 0),
+    pt.x() * tform(0, 1) + pt.y() * tform(1, 1) + tform(2, 1)
   };
 }
 
