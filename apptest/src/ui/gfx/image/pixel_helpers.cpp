@@ -28,7 +28,7 @@ void unpack(P packed, U&... unpacked) {
   unpack_helper<Bits...>(std::index_sequence_for<U...>{}, packed, unpacked...);
 }
 
-template<std::size_t... Bits, typename P, typename... U, std::size_t... I>
+template<typename P, std::size_t... Bits, typename... U, std::size_t... I>
 P pack_helper(std::index_sequence<I...>, U... unpacked) {
   return (((unpacked & mask_for<P>(Bits)) << partial_sum_after<I, I...>(Bits...)) | ...);
 }
@@ -36,7 +36,7 @@ P pack_helper(std::index_sequence<I...>, U... unpacked) {
 template<typename P, std::size_t... Bits, typename... U>
 P pack(U... unpacked) {
   static_assert(sizeof...(Bits) == sizeof...(U));
-  return pack_helper<Bits, P>(std::index_sequence_for<U...>{}, unpacked...);
+  return pack_helper<P, Bits...>(std::index_sequence_for<U...>{}, unpacked...);
 }
 
 }  // namespace
