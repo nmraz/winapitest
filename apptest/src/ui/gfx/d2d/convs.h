@@ -23,7 +23,7 @@ constexpr D2D1_COLOR_F color_to_d2d_color(color col) {
 
 
 constexpr D2D1_POINT_2F point_to_d2d_point(const pointf& pt) {
-  return { pt.x, pt.y };
+  return { pt.x(), pt.y() };
 }
 
 constexpr pointf d2d_point_to_point(const D2D1_POINT_2F& pt) {
