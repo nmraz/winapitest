@@ -94,7 +94,7 @@ int wmain(int argc, const wchar_t** argv) {
 
   gfx::animation<gfx::pointf> anim(gfx::easing::ease_in, [](gfx::animation<gfx::pointf>& anim) {
     gfx::pointf val = anim.val();
-    LOG(trace) << "(" << val.x << ", " << val.y << ")";
+    LOG(trace) << "(" << val.x() << ", " << val.y() << ")";
 
     if (!anim.is_running()) {
       LOG(info) << "Animation complete";
