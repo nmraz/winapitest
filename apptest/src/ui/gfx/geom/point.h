@@ -12,9 +12,15 @@ struct point {
   template<typename U, typename = std::enable_if_t<std::is_convertible_v<U, T>>>
   constexpr point(const point<U>& other);
 
-  void set(T new_x, T new_y);
+  constexpr T x() const { return x_; }
+  constexpr T y() const { return y_; }
 
-  T x, y;
+  constexpr void set(T new_x, T new_y);
+  constexpr void set_x(T new_x);
+  constexpr void set_y(T new_y);
+
+private:
+  T x_, y_;
 };
 
 
@@ -25,35 +31,44 @@ constexpr point<T>::point()
 
 template<typename T>
 constexpr point<T>::point(T x, T y)
-  : x(x)
-  , y(y) {
+  : x_(x)
+  , y_(y) {
 }
 
 template<typename T>
 template<typename U, typename>
 constexpr point<T>::point(const point<U>& other)
-  : x(other.x)
-  , y(other.y) {
+  : x_(other.x_)
+  , y_(other.y_) {
 }
 
 
 template<typename T>
-void point<T>::set(T new_x, T new_y) {
-  x = new_x;
-  y = new_y;
+constexpr void point<T>::set(T new_x, T new_y) {
+  x_ = new_x;
+  y_ = new_y;
+}
+
+template<typename T>
+constexpr void point<T>::set_x(T new_x) {
+  x_ = new_x;
+}
+
+template<typename T>
+constexpr void point<T>::set_y(T new_y) {
+  y_ = new_y;
 }
 
 
 template<typename T>
 constexpr point<T>& operator+=(point<T>& lhs, const point<T>& rhs) {
-  lhs.x += rhs.x;
-  lhs.y += rhs.y;
+  lhs.set(lhs.x() + rhs.x(), lhs.y() + rhs.y());
   return lhs;
 }
 
 template<typename T>
 constexpr point<T> operator+(const point<T>& lhs, const point<T>& rhs) {
-  return { lhs.x + rhs.x, lhs.y + rhs.y };
+  return { lhs.x() + rhs.x(), lhs.y() + rhs.y() };
 }
 
 
@@ -61,30 +76,30 @@ template<typename T>
 constexpr point<T>& operator-=(point<T>& lhs, const point<T>& rhs) {
   lhs.x -= rhs.x;
   lhs.y -= rhs.y;
+  lhs.set(lhs.x() - rhs.x(), lhs.y() - rhs.y());
   return lhs;
 }
 
 template<typename T>
 constexpr point<T> operator-(const point<T>& lhs, const point<T>& rhs) {
-  return { lhs.x - rhs.x, lhs.y - rhs.y };
+  return { lhs.x() - rhs.x(), lhs.y() - rhs.y() };
 }
 
 template<typename T>
 constexpr point<T> operator-(const point<T>& pt) {
-  return { -pt.x, -pt.y };
+  return { -pt.x(), -pt.y() };
 }
 
 
 template<typename T, typename U>
 constexpr point<T>& operator*=(point<T>& lhs, U value) {
-  lhs.x = static_cast<T>(lhs.x * value);
-  lhs.y = static_cast<T>(lhs.y * value);
+  lhs.set(static_cast<T>(lhs.x() * value), static_cast<T>(lhs.y() * value));
   return lhs;
 }
 
 template<typename T, typename U>
 constexpr point<T> operator*(const point<T>& lhs, U value) {
-  return { static_cast<T>(lhs.x * value), static_cast<T>(lhs.y * value) };
+  return { static_cast<T>(lhs.x() * value), static_cast<T>(lhs.y() * value) };
 }
 
 template<typename T, typename U>
@@ -95,20 +110,19 @@ constexpr point<T> operator*(U value, const point<T>& rhs) {
 
 template<typename T, typename U>
 constexpr point<T>& operator/=(point<T>& lhs, U value) {
-  lhs.x = static_cast<T>(lhs.x / value);
-  lhs.y = static_cast<T>(lhs.y / value);
+  lhs.set(static_cast<T>(lhs.x() / value), static_cast<T>(lhs.y() / value));
   return lhs;
 }
 
 template<typename T, typename U>
 constexpr point<T> operator/(const point<T>& lhs, U value) {
-  return { static_cast<T>(lhs.x / value), static_cast<T>(lhs.y / value) };
+  return { static_cast<T>(lhs.x() / value), static_cast<T>(lhs.y() / value) };
 }
 
 
 template<typename T>
 constexpr bool operator==(const point<T>& lhs, const point<T>& rhs) {
-  return lhs.x == rhs.x && lhs.y == rhs.y;
+  return lhs.x() == rhs.x() && lhs.y() == rhs.y();
 }
 
 template<typename T>
@@ -122,7 +136,7 @@ using pointi = point<int>;
 
 
 constexpr float dot(const pointf& lhs, const pointf& rhs) {
-  return lhs.x * rhs.x + lhs.y * rhs.y;
+  return lhs.x() * rhs.x() + lhs.y() * rhs.y();
 }
 
 constexpr float mag_squared(const pointf& pt) {

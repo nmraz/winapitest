@@ -11,7 +11,7 @@ float mag(const pointf& pt) {
 }
 
 float angle(const pointf& pt) {
-  float raw_angle = std::atan2(pt.y, pt.x);
+  float raw_angle = std::atan2(pt.y(), pt.x());
   return raw_angle < 0.f ? raw_angle + two_pi<float> : raw_angle;
 }
 
