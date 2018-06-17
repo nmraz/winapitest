@@ -27,11 +27,11 @@ public:
   constexpr rect(const rect<U>& other);
 
 
-  constexpr T x() const { return origin_.x; }
-  constexpr void set_x(T x) { origin_.x = x; }
+  constexpr T x() const { return origin_.x(); }
+  constexpr void set_x(T x) { origin_.set_x(x); }
 
-  constexpr T y() const { return origin_.y; }
-  constexpr void set_y(T y) { origin_.y = y; }
+  constexpr T y() const { return origin_.y(); }
+  constexpr void set_y(T y) { origin_.set_y(y); }
 
   constexpr T width() const { return size_.width(); }
   constexpr void set_width(T new_width) { size_.set_width(new_width); }
@@ -116,7 +116,7 @@ constexpr void rect<T>::set_bounds(T top, T left, T bottom, T right) {
 
 template<typename T>
 constexpr bool rect<T>::contains(const point<T>& pt) const {
-  return x() <= pt.x && pt.x < right() && y() <= pt.y && pt.y < bottom();
+  return x() <= pt.x() && pt.x() < right() && y() <= pt.y() && pt.y() < bottom();
 }
 
 
