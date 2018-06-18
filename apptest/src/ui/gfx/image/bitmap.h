@@ -24,6 +24,8 @@ public:
   base::span<const std::byte> pixels() const { return pixels_; }
 
 private:
+  bitmap(const bitmap_info& info, const sizei& size, base::span<const std::byte> data);
+
   std::vector<std::byte> pixels_;
   sizei pixel_size_;
   bitmap_info info_;
