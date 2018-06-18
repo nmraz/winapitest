@@ -18,13 +18,14 @@ public:
   const bitmap_info& info() const { return info_; }
 
   sizef size() const;
-  sizei pixel_size() const;
+  sizei pixel_size() const { return pixel_size_; }
   int pitch() const;
 
   base::span<const std::byte> pixels() const { return pixels_; }
 
 private:
   std::vector<std::byte> pixels_;
+  sizei pixel_size_;
   bitmap_info info_;
 };
 
