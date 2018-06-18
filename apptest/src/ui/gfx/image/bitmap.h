@@ -4,6 +4,7 @@
 #include "ui/gfx/geom/size.h"
 #include "ui/gfx/image/bitmap_info.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/resource/resource_key.h"
 #include <cstddef>
 #include <memory>
 #include <vector>
@@ -23,12 +24,16 @@ public:
 
   base::span<const std::byte> pixels() const { return pixels_; }
 
+  impl::d2d_image_ptr d2d_image(impl::device_impl* dev) const override;
+
 private:
   bitmap(const bitmap_info& info, const sizei& size, base::span<const std::byte> data);
 
   std::vector<std::byte> pixels_;
   sizei pixel_size_;
   bitmap_info info_;
+
+  mutable resource_key key_;
 };
 
 }  // namespace gfx
