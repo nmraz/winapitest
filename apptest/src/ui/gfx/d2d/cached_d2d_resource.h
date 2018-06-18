@@ -6,8 +6,18 @@
 namespace gfx::impl {
 
 template<typename T>
-struct cached_d2d_resource : cached_resource {
-  base::win::com_ptr<T> resource;
+class cached_d2d_resource : public cached_resource {
+public:
+  using resource_ptr = base::win::com_ptr<T>;
+
+  cached_d2d_resource(resource_version ver, resource_ptr res)
+    : cached_resource(ver)
+    , resource_(std::move(res)) {}
+
+  resource_ptr resource() const { return resource_; }
+
+private:
+  const resource_ptr resource_;
 };
 
 }  // namespace gfx::impl
