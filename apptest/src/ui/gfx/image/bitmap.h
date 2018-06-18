@@ -3,6 +3,7 @@
 #include "base/span.h"
 #include "ui/gfx/geom/size.h"
 #include "ui/gfx/image/bitmap_info.h"
+#include "ui/gfx/image/bitmap_lock.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/resource/resource_key.h"
 #include <cstddef>
@@ -23,17 +24,24 @@ public:
   int pitch() const;
 
   base::span<const std::byte> pixels() const { return pixels_; }
+  
+  bitmap_lock lock();
+  bool is_locked() const { return lock_count_ > 0; }
 
   impl::d2d_image_ptr d2d_image(impl::device_impl* dev) const override;
 
 private:
+  friend class bitmap_lock;
+
   bitmap(const bitmap_info& info, const sizei& size, base::span<const std::byte> data);
+  void unlock();
 
   std::vector<std::byte> pixels_;
   sizei pixel_size_;
   bitmap_info info_;
 
   mutable resource_key key_;
+  int lock_count_ = 0;
 };
 
 }  // namespace gfx

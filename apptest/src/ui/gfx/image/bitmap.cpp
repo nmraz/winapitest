@@ -25,7 +25,15 @@ int bitmap::pitch() const {
 }
 
 
+bitmap_lock bitmap::lock() {
+  lock_count_++;
+  return { *this };
+}
+
+
 impl::d2d_image_ptr bitmap::d2d_image(impl::device_impl* dev) const {
+  ASSERT(!is_locked()) << "Cannot draw locked bitmap";
+
   return dev->cache().find_or_create(&key_, [&] {
     auto d2d_bitmap = dev->create_bitmap(info(), pixel_size(), D2D1_BITMAP_OPTIONS_NONE, pixels());
     return std::make_unique<impl::cached_d2d_resource<ID2D1Image>>(key_.version(), std::move(d2d_bitmap));
@@ -40,6 +48,15 @@ bitmap::bitmap(const bitmap_info& info, const sizei& size, base::span<const std:
   , pixel_size_(size)
   , info_(info) {
   ASSERT(data.size() % size.height() == 0) << "Invalid bitmap height";
+}
+
+
+void bitmap::unlock() {
+  lock_count_--;
+  ASSERT(lock_count_ >= 0) << "Unexpected call to unlock";
+  if (!is_locked()) {
+    key_.invalidate();  // pixels may have been modified, invalidate cache entry
+  }
 }
 
 }  // namespace gfx
