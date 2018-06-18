@@ -98,6 +98,41 @@ void write_chanels(void* pixel, pixel_format fmt, float r, float g, float b, flo
   std::memcpy(pixel, &packed_pixel, sizeof(std::uint32_t));
 }
 
+
+void to_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
+  switch (amode) {
+  case gfx::alpha_mode::premul:
+    if (a) {
+      r /= a;
+      g /= a;
+      b /= a;
+    }
+    break;
+  case gfx::alpha_mode::unpremul:
+    break;  // nothing to do
+  case gfx::alpha_mode::opaque:
+    a = 1;  // ignore existing alpha
+  default:
+    NOTREACHED() << "Unknown alpha mode";
+  }
+}
+
+void from_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
+  switch (amode) {
+  case gfx::alpha_mode::premul:
+    r *= a;
+    g *= a;
+    b *= a;
+    break;
+  case gfx::alpha_mode::unpremul:
+    break;  // nothing to do
+  case gfx::alpha_mode::opaque:
+    a = 0;  // any value is legal, alpha is ignored
+  default:
+    NOTREACHED() << "Unknown alpha mode";
+  }
+}
+
 }  // namespace
 
 }  // namespace gfx
