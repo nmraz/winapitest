@@ -1,4 +1,4 @@
-#include "pixel_helpers.h"
+#include "pixel_format.h"
 
 #include "base/assert.h"
 #include <cstdint>
