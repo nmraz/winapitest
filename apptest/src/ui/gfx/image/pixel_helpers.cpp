@@ -74,6 +74,28 @@ void read_channels(const void* pixel, pixel_format fmt, float& r, float& g, floa
   b = to_float(b8);
   a = to_float(a8);
 }
+
+void write_chanels(void* pixel, pixel_format fmt, float r, float g, float b, float a) {
+  auto r8 = from_float<std::uint8_t>(r);
+  auto g8 = from_float<std::uint8_t>(g);
+  auto b8 = from_float<std::uint8_t>(b);
+  auto a8 = from_float<std::uint8_t>(a);
+
+  std::uint32_t packed_pixel;
+
+  switch (fmt) {
+  case gfx::pixel_format::rgba8888:
+    packed_pixel = pack<std::uint32_t, 8, 8, 8, 8>(r8, g8, b8, a8);
+    break;
+  case gfx::pixel_format::bgra8888:
+    packed_pixel = pack<std::uint32_t, 8, 8, 8, 8>(b8, g8, r8, a8);
+    break;
+  default:
+    NOTREACHED() << "Unknown pixel format";
+  }
+
+  // casting here could violate strict aliasing, use memcpy instead
+  std::memcpy(pixel, &packed_pixel, sizeof(std::uint32_t));
 }
 
 }  // namespace
