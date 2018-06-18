@@ -107,6 +107,22 @@ void from_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
 }  // namespace
 
 
+int bytes_per_pixel(pixel_format fmt) {
+  switch (fmt) {
+  case gfx::pixel_format::rgba8888:
+  case gfx::pixel_format::bgra8888:
+    return sizeof(std::uint32_t);
+  default:
+    NOTREACHED() << "Unknown pixel format";
+  }
+  return 0;
+}
+
+int pixel_offset(int x, int y, int pitch, pixel_format fmt) {
+  return y * pitch + x * bytes_per_pixel(fmt);
+}
+
+
 color read_pixel(const void* pixel, pixel_format fmt, alpha_mode amode) {
   float r, g, b, a;
   read_channels(pixel, fmt, r, g, b, a);

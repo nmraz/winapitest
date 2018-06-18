@@ -18,6 +18,9 @@ enum class alpha_mode {
   opaque = D2D1_ALPHA_MODE_IGNORE
 };
 
+int bytes_per_pixel(pixel_format fmt);
+int pixel_offset(int x, int y, int pitch, pixel_format fmt);
+
 color read_pixel(const void* pixel, pixel_format fmt, alpha_mode amode);
 void write_pixel(void* pixel, const color& col, pixel_format fmt, alpha_mode amode);
 
