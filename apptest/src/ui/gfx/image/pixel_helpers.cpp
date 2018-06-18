@@ -136,14 +136,14 @@ void from_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
 }  // namespace
 
 
-color read_color(const void* pixel, pixel_format fmt, alpha_mode amode) {
+color read_pixel(const void* pixel, pixel_format fmt, alpha_mode amode) {
   float r, g, b, a;
   read_channels(pixel, fmt, r, g, b, a);
   to_unpremul(amode, r, g, b, a);
   return { r, g, b, a };
 }
 
-void write_color(void* pixel, const color& col, pixel_format fmt, alpha_mode amode) {
+void write_pixel(void* pixel, const color& col, pixel_format fmt, alpha_mode amode) {
   float r = col.r();
   float g = col.g();
   float b = col.b();

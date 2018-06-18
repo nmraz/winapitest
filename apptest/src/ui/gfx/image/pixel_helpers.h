@@ -5,7 +5,7 @@
 
 namespace gfx {
 
-color read_color(const void* pixel, pixel_format fmt, alpha_mode amode);
-void write_color(void* pixel, const color& col, pixel_format fmt, alpha_mode amode);
+color read_pixel(const void* pixel, pixel_format fmt, alpha_mode amode);
+void write_pixel(void* pixel, const color& col, pixel_format fmt, alpha_mode amode);
 
 }  // namespace gfx
