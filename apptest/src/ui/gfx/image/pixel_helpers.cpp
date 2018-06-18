@@ -42,14 +42,14 @@ P pack(U... unpacked) {
 }
 
 
-template<std::size_t Bits>
-float to_float(unsigned int val) {
-  return static_cast<float>(val) / max_val<unsigned int>(Bits);
+template<typename T, std::size_t Bits = sizeof(T) * CHAR_BIT>
+float to_float(T val) {
+  return static_cast<float>(val) / max_val<T>(Bits);
 }
 
-template<std::size_t Bits>
-unsigned int from_float(float val) {
-  return static_cast<unsigned int>(val * max_val<unsigned int>(Bits));
+template<typename T, std::size_t Bits = sizeof(T) * CHAR_BIT>
+T from_float(float val) {
+  return static_cast<T>(val * max_val<T>(Bits));
 }
 
 
@@ -69,10 +69,11 @@ void read_channels(const void* pixel, pixel_format fmt, float& r, float& g, floa
     NOTREACHED() << "Unknown pixel format";
   }
 
-  r = to_float<8>(r8);
-  g = to_float<8>(g8);
-  b = to_float<8>(b8);
-  a = to_float<8>(a8);
+  r = to_float(r8);
+  g = to_float(g8);
+  b = to_float(b8);
+  a = to_float(a8);
+}
 }
 
 }  // namespace
