@@ -1,5 +1,6 @@
 #include "bitmap.h"
 
+#include "base/assert.h"
 #include "ui/gfx/d2d/cached_d2d_resource.h"
 #include "ui/gfx/device_impl.h"
 #include "ui/gfx/util.h"
@@ -38,6 +39,7 @@ bitmap::bitmap(const bitmap_info& info, const sizei& size, base::span<const std:
   : pixels_(data.begin(), data.end())
   , pixel_size_(size)
   , info_(info) {
+  ASSERT(data.size() % size.height() == 0) << "Invalid bitmap height";
 }
 
 }  // namespace gfx
