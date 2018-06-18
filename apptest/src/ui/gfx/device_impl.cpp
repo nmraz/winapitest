@@ -41,7 +41,7 @@ d2d_bitmap_ptr device_impl::create_bitmap(const bitmap_info& info, const sizei& 
     info.dpix(),
     info.dpiy()
   );
-  auto pitch = data.empty() ? 0 : static_cast<UINT32>(data.size() / size.height());
+  int pitch = compute_pitch(static_cast<int>(data.size()), size.height(), info.format());
 
   d2d_bitmap_ptr bitmap;
   base::win::throw_if_failed(
