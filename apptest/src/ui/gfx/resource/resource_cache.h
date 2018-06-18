@@ -56,7 +56,7 @@ auto resource_cache::find_or_create(resource_key* key, F&& factory) {
     return static_cast<res_type*>(res);
   }
 
-  auto res_holder = std::forward<F>(f)();
+  auto res_holder = std::forward<F>(factory)();
   res_type* res = res_holder.get();
 
   do_add(key, std::move(res_holder));
