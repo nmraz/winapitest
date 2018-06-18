@@ -4,6 +4,10 @@
 
 namespace gfx {
 
+bitmap_lock::~bitmap_lock() {
+  bmp_.unlock();
+}
+
 const bitmap_info& bitmap_lock::info() const {
   return bmp_.info();
 }
@@ -19,6 +23,22 @@ sizei bitmap_lock::pixel_size() const {
 
 int bitmap_lock::pitch() const {
   return bmp_.pitch();
+}
+
+
+base::span<std::byte> bitmap_lock::pixels() {
+  return bmp_.pixels_;
+}
+
+base::span<const std::byte> bitmap_lock::pixels() const {
+  return bmp_.pixels_;
+}
+
+
+// PRIVATE
+
+bitmap_lock::bitmap_lock(bitmap& bmp)
+  : bmp_(bmp) {
 }
 
 }  // namespace gfx

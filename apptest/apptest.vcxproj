@@ -199,6 +199,7 @@
     <ClCompile Include="src\ui\gfx\d2d\factories.cpp" />
     <ClCompile Include="src\ui\gfx\geom\path.cpp" />
     <ClCompile Include="src\ui\gfx\image\bitmap.cpp" />
+    <ClCompile Include="src\ui\gfx\image\bitmap_lock.cpp" />
     <ClCompile Include="src\ui\gfx\image\mapped_texture.cpp" />
     <ClCompile Include="src\ui\gfx\pixel_format.cpp" />
     <ClCompile Include="src\ui\gfx\image\texture.cpp" />
@@ -256,6 +257,7 @@
     <ClInclude Include="src\ui\gfx\color.h" />
     <ClInclude Include="src\ui\gfx\image\bitmap.h" />
     <ClInclude Include="src\ui\gfx\image\bitmap_info.h" />
+    <ClInclude Include="src\ui\gfx\image\bitmap_lock.h" />
     <ClInclude Include="src\ui\gfx\image\mapped_texture.h" />
     <ClInclude Include="src\ui\gfx\pixel_format.h" />
     <ClInclude Include="src\ui\gfx\image\texture.h" />
