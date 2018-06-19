@@ -14,8 +14,15 @@ namespace gfx {
 
 class bitmap : public image {
 public:
+  std::unique_ptr<bitmap> create(const bitmap_info& info, const sizei& size);
   std::unique_ptr<bitmap> create(const bitmap_info& info, const sizei& size,
     base::span<const std::byte> data);
+  
+  template<typename Bmp>
+  std::unique_ptr<bitmap> create(const Bmp& bmp) {
+    return create(bmp.info(), bmp.pixel_size(), bmp.pixels());
+  }
+
 
   const bitmap_info& info() const { return info_; }
 
@@ -33,7 +40,7 @@ public:
 private:
   friend class bitmap_lock;
 
-  bitmap(const bitmap_info& info, const sizei& size, base::span<const std::byte> data);
+  bitmap(const bitmap_info& info, const sizei& size, std::vector<std::byte> pixels);
   void unlock();
 
   std::vector<std::byte> pixels_;

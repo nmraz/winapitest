@@ -7,9 +7,14 @@
 
 namespace gfx {
 
+std::unique_ptr<bitmap> bitmap::create(const bitmap_info& info, const sizei& size) {
+  return std::unique_ptr<bitmap>(new bitmap(info, size,
+    std::vector<std::byte>(size.width() * size.height())));
+}
+
 std::unique_ptr<bitmap> bitmap::create(const bitmap_info& info, const sizei& size,
   base::span<const std::byte> data) {
-  return std::unique_ptr<bitmap>(new bitmap(info, size, data));
+  return std::unique_ptr<bitmap>(new bitmap(info, size, { data.begin(), data.end() }));
 }
 
 
@@ -43,11 +48,11 @@ impl::d2d_image_ptr bitmap::d2d_image(impl::device_impl* dev) const {
 
 // PRIVATE
 
-bitmap::bitmap(const bitmap_info& info, const sizei& size, base::span<const std::byte> data)
-  : pixels_(data.begin(), data.end())
+bitmap::bitmap(const bitmap_info& info, const sizei& size, std::vector<std::byte> pixels)
+  : pixels_(std::move(pixels))
   , pixel_size_(size)
   , info_(info) {
-  ASSERT(data.size() % size.height() == 0) << "Invalid bitmap height";
+  ASSERT(pixels.size() % size.height() == 0) << "Invalid bitmap height";
 }
 
 
