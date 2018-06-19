@@ -3,6 +3,7 @@
 #include "base/assert.h"
 #include "ui/gfx/d2d/cached_d2d_resource.h"
 #include "ui/gfx/device_impl.h"
+#include "ui/gfx/image/bitmap_util.h"
 #include "ui/gfx/util.h"
 
 namespace gfx {

@@ -19,8 +19,6 @@ enum class alpha_mode {
 };
 
 int bytes_per_pixel(pixel_format fmt);
-int compute_pitch(int total_size, int height, pixel_format fmt);
-int pixel_offset(int x, int y, int pitch, pixel_format fmt);
 
 color read_pixel(const void* pixel, pixel_format fmt, alpha_mode amode);
 void write_pixel(void* pixel, const color& col, pixel_format fmt, alpha_mode amode);

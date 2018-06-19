@@ -3,6 +3,7 @@
 #include "base/assert.h"
 #include "base/win/last_error.h"
 #include "ui/gfx/d2d/convs.h"
+#include "ui/gfx/image/bitmap_util.h"
 
 namespace gfx {
 
