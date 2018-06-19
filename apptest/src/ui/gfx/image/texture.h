@@ -16,6 +16,12 @@ public:
     const sizei& size, base::span<const std::byte> data);
   static std::unique_ptr<texture> create(device::ptr dev, impl::d2d_bitmap_ptr d2d_bitmap);
 
+  template<typename Bmp>
+  static std::unique_ptr<texture> create(device::ptr dev, const Bmp& bmp) {
+    return create(std::move(dev), bmp.info(), bmp.pixel_size(), bmp.pixels());
+  }
+
+
   const bitmap_info& info() const { return info_; }
 
   sizef size() const;
