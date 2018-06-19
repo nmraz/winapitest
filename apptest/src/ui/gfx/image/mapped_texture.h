@@ -21,7 +21,6 @@ class mapped_texture : public base::non_copyable {
   int pitch() const { return mapped_.pitch; }
 
   base::span<const std::byte> pixels() const;
-  color pixel_at(const pointi& pt) const;
 
 private:
   friend class texture;
