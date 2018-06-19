@@ -14,12 +14,12 @@ namespace gfx {
 
 class bitmap : public image {
 public:
-  std::unique_ptr<bitmap> create(const bitmap_info& info, const sizei& size);
-  std::unique_ptr<bitmap> create(const bitmap_info& info, const sizei& size,
+  static std::unique_ptr<bitmap> create(const bitmap_info& info, const sizei& size);
+  static std::unique_ptr<bitmap> create(const bitmap_info& info, const sizei& size,
     base::span<const std::byte> data);
   
   template<typename Bmp>
-  std::unique_ptr<bitmap> create(const Bmp& bmp) {
+  static std::unique_ptr<bitmap> create(const Bmp& bmp) {
     return create(bmp.info(), bmp.pixel_size(), bmp.pixels());
   }
 
