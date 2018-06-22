@@ -100,7 +100,7 @@ void from_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
   case gfx::alpha_mode::unpremul:
     break;  // nothing to do
   case gfx::alpha_mode::opaque:
-    a = 0;  // any value is legal, alpha is ignored
+    a = 1;  // any value is legal, alpha is ignored
     break;
   default:
     NOTREACHED() << "Unknown alpha mode";
