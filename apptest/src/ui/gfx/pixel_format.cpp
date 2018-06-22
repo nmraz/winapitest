@@ -33,6 +33,7 @@ void read_channels(const void* pixel, pixel_format fmt, float& r, float& g, floa
     g8 = *pixel8++;
     r8 = *pixel8++;
     a8 = *pixel8++;
+    break;
   default:
     NOTREACHED() << "Unknown pixel format";
   }
@@ -83,6 +84,7 @@ void to_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
     break;  // nothing to do
   case gfx::alpha_mode::opaque:
     a = 1;  // ignore existing alpha
+    break;
   default:
     NOTREACHED() << "Unknown alpha mode";
   }
@@ -99,6 +101,7 @@ void from_unpremul(alpha_mode amode, float& r, float& g, float& b, float& a) {
     break;  // nothing to do
   case gfx::alpha_mode::opaque:
     a = 0;  // any value is legal, alpha is ignored
+    break;
   default:
     NOTREACHED() << "Unknown alpha mode";
   }
