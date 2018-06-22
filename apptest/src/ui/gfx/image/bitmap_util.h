@@ -19,7 +19,7 @@ color pixel_at(const Bmp& bmp, const pointi& pt) {
 }
 
 template<typename Bmp>
-void set_pixel_at(const Bmp& bmp, const pointi& pt, const color& col) {
+void set_pixel_at(Bmp& bmp, const pointi& pt, const color& col) {
   ASSERT(pt.x() < bmp.pixel_size().width() && pt.y() < bmp.pixel_size().height()) << "Point out of range";
 
   int offset = pixel_offset(pt.x(), pt.y(), bmp.pitch(), bmp.info().format());
