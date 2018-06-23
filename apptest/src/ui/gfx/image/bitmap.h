@@ -47,7 +47,7 @@ private:
   sizei pixel_size_;
   bitmap_info info_;
 
-  mutable resource_key key_;
+  resource_key key_;
   int lock_count_ = 0;
 };
 

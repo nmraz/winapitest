@@ -21,15 +21,15 @@ resource_key::~resource_key() {
 
 // PRIVATE
 
-void resource_key::add_owning_cache(resource_cache* h) {
+void resource_key::add_owning_cache(resource_cache* cache) const {
   std::lock_guard hold(owning_cache_lock_);
-  owning_caches_.push_back(h);
+  owning_caches_.push_back(cache);
 }
 
-void resource_key::remove_owning_cache(resource_cache* h) {
+void resource_key::remove_owning_cache(resource_cache* cache) const {
   std::lock_guard hold(owning_cache_lock_);
   owning_caches_.erase(
-    std::remove(owning_caches_.begin(), owning_caches_.end(), h),
+    std::remove(owning_caches_.begin(), owning_caches_.end(), cache),
     owning_caches_.end()
   );
 }

@@ -21,13 +21,13 @@ public:
 private:
   friend class resource_cache;
 
-  void add_owning_cache(resource_cache* cache);
-  void remove_owning_cache(resource_cache* cache);
+  void add_owning_cache(resource_cache* cache) const;
+  void remove_owning_cache(resource_cache* cache) const;
 
   resource_version ver_{ 0 };
 
-  std::vector<resource_cache*> owning_caches_;
-  std::mutex owning_cache_lock_;  // protects owning_caches_
+  mutable std::vector<resource_cache*> owning_caches_;
+  mutable std::mutex owning_cache_lock_;  // protects owning_caches_
 };
 
 }  // namespace gfx
