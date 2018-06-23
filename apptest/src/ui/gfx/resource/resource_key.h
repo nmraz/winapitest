@@ -14,9 +14,7 @@ public:
   ~resource_key();
 
   resource_version version() const { return ver_; }
-  void invalidate() {
-    ver_ = static_cast<resource_version>(static_cast<unsigned int>(ver_) + 1);
-  }
+  void invalidate();
 
 private:
   friend class resource_cache;

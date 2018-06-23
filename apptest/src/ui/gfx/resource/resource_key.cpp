@@ -2,6 +2,7 @@
 
 #include "ui/gfx/resource/resource_cache.h"
 #include <algorithm>
+#include <type_traits>
 
 namespace gfx {
 
@@ -16,6 +17,12 @@ resource_key::~resource_key() {
   for (resource_cache* cache : tmp_owning_caches) {
     cache->remove(this);
   }
+}
+
+void resource_key::invalidate() {
+  using resource_version_und_t = std::underlying_type_t<resource_version>;
+
+  ver_ = static_cast<resource_version>(static_cast<resource_version_und_t>(ver_) + 1);
 }
 
 
