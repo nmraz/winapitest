@@ -49,11 +49,11 @@ void resource_cache::purge_invalid() {
 
 void resource_cache::do_add(resource_key* key, std::unique_ptr<cached_resource> res) {
   entries_.insert_or_assign(key, std::move(res));
-  key->add_holder(this);
+  key->add_owning_cache(this);
 }
 
 resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
-  it->first->remove_holder(this);
+  it->first->remove_owning_cache(this);
   return entries_.erase(it);
 }
 

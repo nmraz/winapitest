@@ -1,32 +1,36 @@
 #include "resource_key.h"
 
+#include "ui/gfx/resource/resource_cache.h"
 #include <algorithm>
 
 namespace gfx {
 
 resource_key::~resource_key() {
-  // ignore changes to holders_ from now on
-  std::vector<holder*> tmp_holders;
+  // ignore changes to owning_caches_ from now on
+  std::vector<resource_cache*> tmp_owning_caches;
   {
-    std::lock_guard hold(holder_lock_);
-    tmp_holders.swap(holders_);
+    std::lock_guard hold(owning_cache_lock_);
+    tmp_owning_caches.swap(owning_caches_);
   }
 
-  for (holder* h : tmp_holders) {
-    h->key_destroyed(this);
+  for (resource_cache* cache : tmp_owning_caches) {
+    cache->remove(this);
   }
 }
 
-void resource_key::add_holder(holder* h) {
-  std::lock_guard hold(holder_lock_);
-  holders_.push_back(h);
+
+// PRIVATE
+
+void resource_key::add_owning_cache(resource_cache* h) {
+  std::lock_guard hold(owning_cache_lock_);
+  owning_caches_.push_back(h);
 }
 
-void resource_key::remove_holder(holder* h) {
-  std::lock_guard hold(holder_lock_);
-  holders_.erase(
-    std::remove(holders_.begin(), holders_.end(), h),
-    holders_.end()
+void resource_key::remove_owning_cache(resource_cache* h) {
+  std::lock_guard hold(owning_cache_lock_);
+  owning_caches_.erase(
+    std::remove(owning_caches_.begin(), owning_caches_.end(), h),
+    owning_caches_.end()
   );
 }
 

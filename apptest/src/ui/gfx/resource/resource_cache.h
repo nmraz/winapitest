@@ -9,7 +9,7 @@
 
 namespace gfx {
 
-class resource_cache : private resource_key::holder {
+class resource_cache {
 public:
   ~resource_cache() { clear(); }
 
@@ -32,8 +32,6 @@ private:
   void do_add(resource_key* key, std::unique_ptr<cached_resource> res);
   entry_iter do_remove(entry_iter it);
   cached_resource* do_find(resource_key* key);
-
-  void key_destroyed(resource_key* key) override { remove(key); }
 
   entry_map entries_;
   std::mutex lock_;

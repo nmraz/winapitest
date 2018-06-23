@@ -7,12 +7,10 @@
 
 namespace gfx {
 
+class resource_cache;
+
 class resource_key : public base::non_copy_movable {
 public:
-  struct holder {
-    virtual void key_destroyed(resource_key* res) = 0;
-  };
-
   ~resource_key();
 
   resource_version version() const { return ver_; }
@@ -20,14 +18,16 @@ public:
     ver_ = static_cast<resource_version>(static_cast<unsigned int>(ver_) + 1);
   }
 
-  void add_holder(holder* h);
-  void remove_holder(holder* h);
-
 private:
+  friend class resource_cache;
+
+  void add_owning_cache(resource_cache* cache);
+  void remove_owning_cache(resource_cache* cache);
+
   resource_version ver_{ 0 };
 
-  std::vector<holder*> holders_;
-  std::mutex holder_lock_;  // protects holders_
+  std::vector<resource_cache*> owning_caches_;
+  std::mutex owning_cache_lock_;  // protects owning_caches_
 };
 
 }  // namespace gfx
