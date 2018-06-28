@@ -3,6 +3,7 @@
 #include "base/assert.h"
 #include "ui/gfx/geom/point.h"
 #include "ui/gfx/matrix.h"
+#include <optional>
 
 namespace gfx::transform {
 
@@ -70,14 +71,14 @@ constexpr inline bool is_invertible(const mat33f& tform) {
   return determinant(tform) != 0.f;
 }
 
-constexpr bool try_invert(mat33f& tform) {
+constexpr std::optional<mat33f> try_invert(const mat33f& tform) {
   float det = determinant(tform);
   if (!det) {
-    return false;
+    return std::nullopt;
   }
 
   double inv_det = 1.0 / det;
-  tform = {
+  return mat33f{
     static_cast<float>(tform(1, 1) * inv_det),
     static_cast<float>(-tform(0, 1) * inv_det),
     0.f,
@@ -88,12 +89,12 @@ constexpr bool try_invert(mat33f& tform) {
     static_cast<float>((tform(0, 1) * tform(2, 0) - tform(0, 0) * tform(2, 1)) * inv_det),
     1.f
   };
-  return true;
 }
 
-constexpr void invert(mat33f& tform) {
-  [[maybe_unused]] bool inverted = try_invert(tform);
+constexpr mat33f invert(const mat33f& tform) {
+  auto inverted = try_invert(tform);
   ASSERT(inverted) << "Transform not invertible";
+  return *inverted;
 }
 
 
