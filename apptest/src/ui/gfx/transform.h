@@ -7,10 +7,10 @@
 
 namespace gfx::transform {
 
-// For consistency with Direct2D, points are considered row vectors
-// and are postmultiplied by the transforms themeselves. This also
-// provides a more intuitive syntax, where `A * B` means "first apply
-// A, followed by B".
+// For consistency with Direct2D (and contrary to mathematical convention),
+// points are considered row vectors and are postmultiplied by the transforms themeselves.
+// This also means that composition is "backwards" - `t * s` means first apply `t`, followed
+// by `s`.
 
 constexpr inline mat33f identity() {
   return {
