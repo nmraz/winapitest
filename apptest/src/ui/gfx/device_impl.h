@@ -7,8 +7,19 @@
 #include "ui/gfx/image/bitmap_info.h"
 #include "ui/gfx/resource/resource_cache.h"
 #include <cstddef>
+#include <memory>
 
 namespace gfx::impl {
+
+class device_impl;
+
+struct leased_dc_deleter {
+  void operator()(d2d_dc_ptr::element_type* dc);
+  device_impl* dev;
+};
+
+using leased_dc = std::unique_ptr<d2d_dc_ptr::element_type, leased_dc_deleter>;
+
 
 class device_impl : public device {
 public:
@@ -20,6 +31,8 @@ public:
   const d2d_device_ptr& d2d_device() { return d2d_device_; }
 
   d2d_dc_ptr create_dc();
+  leased_dc lease_dc();
+  
   d2d_bitmap_ptr create_bitmap(const bitmap_info& info, const sizei& size, 
     D2D1_BITMAP_OPTIONS opts = D2D1_BITMAP_OPTIONS_NONE, base::span<const std::byte> data = {});
 
