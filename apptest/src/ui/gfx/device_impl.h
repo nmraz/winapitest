@@ -8,14 +8,20 @@
 #include "ui/gfx/resource/resource_cache.h"
 #include <cstddef>
 #include <memory>
+#include <mutex>
+#include <vector>
 
 namespace gfx::impl {
 
-class device_impl;
-
-struct leased_dc_deleter {
+class leased_dc_deleter {
+public:
   void operator()(d2d_dc_ptr::element_type* dc);
-  device_impl* dev;
+
+private:
+  friend class device_impl;
+
+  leased_dc_deleter(device_impl* dev) : dev_(dev) {}
+  device_impl* dev_;
 };
 
 using leased_dc = std::unique_ptr<d2d_dc_ptr::element_type, leased_dc_deleter>;
@@ -40,10 +46,17 @@ public:
   resource_cache& cache() { return cache_; }
 
 private:
+  friend class leased_dc_deleter;
+
+  void return_dc(d2d_dc_ptr dc);
+
   d3d_device_ptr d3d_device_;
   d2d_device_ptr d2d_device_;
 
   d2d_dc_ptr resource_dc_;
+
+  std::vector<d2d_dc_ptr> dc_pool_;
+  std::mutex dc_pool_lock_;
 
   resource_cache cache_;
 };

@@ -4,8 +4,14 @@
 #include "ui/gfx/d2d/convs.h"
 #include "ui/gfx/d2d/factories.h"
 #include "ui/gfx/image/bitmap_util.h"
+#include <thread>
 
 namespace gfx::impl {
+
+void leased_dc_deleter::operator()(d2d_dc_ptr::element_type* dc) {
+  dev_->return_dc(d2d_dc_ptr(dc));
+}
+
 
 device_impl::device_impl(impl::d3d_device_ptr d3d_device)
   : d3d_device_(std::move(d3d_device)) {
@@ -30,6 +36,19 @@ d2d_dc_ptr device_impl::create_dc() {
   );
   return dc;
 }
+
+leased_dc device_impl::lease_dc() {
+  {
+    std::lock_guard hold(dc_pool_lock_);
+    if (!dc_pool_.empty()) {
+      auto dc = std::move(dc_pool_.back());
+      dc_pool_.pop_back();
+      return leased_dc(dc.detatch(), { this });
+    }
+  }
+  return leased_dc(create_dc().detatch(), { this });
+}
+
 
 d2d_bitmap_ptr device_impl::create_bitmap(const bitmap_info& info, const sizei& size,
   D2D1_BITMAP_OPTIONS opts, base::span<const std::byte> data) {
@@ -56,6 +75,18 @@ d2d_bitmap_ptr device_impl::create_bitmap(const bitmap_info& info, const sizei& 
     "Failed to create bitmap"
   );
   return bitmap;
+}
+
+
+// PRIVATE
+
+void device_impl::return_dc(d2d_dc_ptr dc) {
+  static const auto max_pool_size = std::max(std::thread::hardware_concurrency(), 1u);
+
+  std::lock_guard hold(dc_pool_lock_);
+  if (dc_pool_.size() < max_pool_size) {
+    dc_pool_.push_back(std::move(dc));
+  }
 }
 
 }  // namespace gfx::impl
