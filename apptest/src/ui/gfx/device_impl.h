@@ -42,7 +42,6 @@ public:
   d2d_bitmap_ptr create_bitmap(const bitmap_info& info, const sizei& size, 
     D2D1_BITMAP_OPTIONS opts = D2D1_BITMAP_OPTIONS_NONE, base::span<const std::byte> data = {});
 
-  const d2d_dc_ptr& resource_dc() { return resource_dc_; }
   resource_cache& cache() { return cache_; }
 
 private:
@@ -52,8 +51,6 @@ private:
 
   d3d_device_ptr d3d_device_;
   d2d_device_ptr d2d_device_;
-
-  d2d_dc_ptr resource_dc_;
 
   std::vector<d2d_dc_ptr> dc_pool_;
   std::mutex dc_pool_lock_;

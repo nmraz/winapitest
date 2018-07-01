@@ -20,7 +20,6 @@ device_impl::device_impl(impl::d3d_device_ptr d3d_device)
     get_d2d_factory()->CreateDevice(dxgi_device.get(), d2d_device_.addr()),
     "Failed to create Direct2D device"
   );
-  resource_dc_ = create_dc();
 }
 
 bool device_impl::is_lost() const {
