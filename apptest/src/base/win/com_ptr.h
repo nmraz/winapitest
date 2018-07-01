@@ -32,6 +32,7 @@ public:
   com_ptr& operator=(com_ptr rhs) noexcept;
 
   T* get() const { return ptr_; }
+  T* detatch() { return std::exchange(ptr_, nullptr); }
   void swap(com_ptr& other) noexcept;
   void release();
 
