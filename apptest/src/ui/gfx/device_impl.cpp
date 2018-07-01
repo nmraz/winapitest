@@ -65,7 +65,7 @@ d2d_bitmap_ptr device_impl::create_bitmap(const bitmap_info& info, const sizei& 
 
   d2d_bitmap_ptr bitmap;
   base::win::throw_if_failed(
-    resource_dc()->CreateBitmap(
+    lease_dc()->CreateBitmap(
       size_to_d2d_size(size),
       data.data(),
       pitch,
