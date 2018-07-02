@@ -64,7 +64,7 @@ void thread::named_run(loop_factory factory, std::string name) {
 
 
 void thread::set_task_runner(loop_task_runner::ptr runner) {
-  std::lock_guard hold(runner_lock_);
+  std::scoped_lock hold(runner_lock_);
   runner_ = std::move(runner);
   runner_cv_.notify_all();
 }

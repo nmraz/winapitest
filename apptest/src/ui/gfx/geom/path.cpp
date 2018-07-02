@@ -174,7 +174,7 @@ path_d2d_sink::path_d2d_sink(path* p)
 path::path(const path& rhs)
   : verbs_(rhs.verbs_)
   , fill_mode_(rhs.fill_mode_) {
-  std::lock_guard hold(rhs.d2d_geom_lock_);
+  std::scoped_lock hold(rhs.d2d_geom_lock_);
   d2d_geom_ = rhs.d2d_geom_;
 }
 
@@ -493,7 +493,7 @@ bool path::stroke_contains(const pointf& pt, float stroke_width, const stroke_st
 
 
 const impl::d2d_path_geom_ptr& path::d2d_geom() const {
-  std::lock_guard hold(d2d_geom_lock_);
+  std::scoped_lock hold(d2d_geom_lock_);
 
   if (!d2d_geom_) {
     d2d_geom_ = create_path_geom();

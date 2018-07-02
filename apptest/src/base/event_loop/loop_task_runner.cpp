@@ -42,14 +42,14 @@ loop_task_runner::ptr loop_task_runner::current() {
 void loop_task_runner::do_post_task(task&& tsk) {
   bool was_empty;
   {
-    std::lock_guard hold(task_lock_);
+    std::scoped_lock hold(task_lock_);
 
     was_empty = task_queue_.empty();
     task_queue_.push(std::move(tsk));
   }
 
   if (was_empty) {
-    std::lock_guard hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
+    std::scoped_lock hold_loop(loop_lock_);  // current_loop_ mustn't change until after wake_up
     if (current_loop_) {
       current_loop_->wake_up();
     }
@@ -111,14 +111,14 @@ std::optional<task::run_time_type> loop_task_runner::get_next_run_time() const {
 
 void loop_task_runner::swap_queues() {
   if (current_tasks_.empty()) {
-    std::lock_guard hold(task_lock_);
+    std::scoped_lock hold(task_lock_);
     task_queue_.swap(current_tasks_);
   }
 }
 
 
 void loop_task_runner::set_loop(event_loop* loop) {
-  std::lock_guard hold(loop_lock_);
+  std::scoped_lock hold(loop_lock_);
   current_loop_ = loop;
 }
 

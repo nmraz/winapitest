@@ -67,7 +67,7 @@ void stroke_style::set_dash_offset(float offset) {
 
 
 const impl::d2d_stroke_style_ptr& stroke_style::d2d_stroke_style() const {
-  std::lock_guard hold(d2d_stroke_style_lock_);
+  std::scoped_lock hold(d2d_stroke_style_lock_);
 
   if (!d2d_stroke_style_) {
     D2D1_DASH_STYLE dash_style = dash_pattern().empty() ?

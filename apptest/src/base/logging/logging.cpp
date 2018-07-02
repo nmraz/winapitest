@@ -48,7 +48,7 @@ message::message(level log_level, const char* file, int line) {
 message::~message() {
   stream_ << '\n';
   {
-    std::lock_guard hold(logging_lock);
+    std::scoped_lock hold(logging_lock);
     logging_sink->write(stream_.str().c_str());
   }
 }

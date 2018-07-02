@@ -40,7 +40,7 @@ private:
 
 template<typename Res>
 Res* resource_cache::find(const resource_key* key) {
-  std::lock_guard hold(lock_);
+  std::scoped_lock hold(lock_);
   return static_cast<Res*>(do_find(key));
 }
 
@@ -48,7 +48,7 @@ template<typename F>
 auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   using res_type = typename std::invoke_result_t<F>::element_type;
   
-  std::lock_guard hold(lock_);
+  std::scoped_lock hold(lock_);
 
   if (cached_resource* res = do_find(key)) {
     return static_cast<res_type*>(res);

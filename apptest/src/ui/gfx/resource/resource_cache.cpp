@@ -10,12 +10,12 @@ bool is_valid(const resource_key* key, const cached_resource* res) {
 }  // namespace
 
 void resource_cache::add(const resource_key* key, std::unique_ptr<cached_resource> res) {
-  std::lock_guard hold(lock_);
+  std::scoped_lock hold(lock_);
   do_add(key, std::move(res));
 }
 
 void resource_cache::remove(const resource_key* key) {
-  std::lock_guard hold(lock_);
+  std::scoped_lock hold(lock_);
 
   auto it = entries_.find(key);
   if (it != entries_.end()) {
@@ -25,12 +25,12 @@ void resource_cache::remove(const resource_key* key) {
 
 
 void resource_cache::clear() {
-  std::lock_guard hold(lock_);
+  std::scoped_lock hold(lock_);
   for (auto it = entries_.begin(); it != entries_.end(); it = do_remove(it)) {}
 }
 
 void resource_cache::purge_invalid() {
-  std::lock_guard hold(lock_);
+  std::scoped_lock hold(lock_);
 
   auto it = entries_.begin();
   while (it != entries_.end()) {

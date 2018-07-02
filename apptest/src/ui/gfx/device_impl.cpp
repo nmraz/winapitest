@@ -38,7 +38,7 @@ d2d_dc_ptr device_impl::create_dc() {
 
 leased_dc device_impl::lease_dc() {
   {
-    std::lock_guard hold(dc_pool_lock_);
+    std::scoped_lock hold(dc_pool_lock_);
     if (!dc_pool_.empty()) {
       auto dc = std::move(dc_pool_.back());
       dc_pool_.pop_back();
@@ -82,7 +82,7 @@ d2d_bitmap_ptr device_impl::create_bitmap(const bitmap_info& info, const sizei& 
 void device_impl::return_dc(d2d_dc_ptr dc) {
   static const auto max_pool_size = std::max(std::thread::hardware_concurrency(), 1u);
 
-  std::lock_guard hold(dc_pool_lock_);
+  std::scoped_lock hold(dc_pool_lock_);
   if (dc_pool_.size() < max_pool_size) {
     dc_pool_.push_back(std::move(dc));
   }
