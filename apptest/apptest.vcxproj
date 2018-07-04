@@ -247,6 +247,7 @@
     <ClInclude Include="src\base\win\scoped_co_init.h" />
     <ClInclude Include="src\base\win\scoped_handle.h" />
     <ClInclude Include="src\ui\gfx\animation\reversible_animation.h" />
+    <ClInclude Include="src\ui\gfx\brush\brush.h" />
     <ClInclude Include="src\ui\gfx\d2d\cached_d2d_resource.h" />
     <ClInclude Include="src\ui\gfx\d2d\resource_types.h" />
     <ClInclude Include="src\ui\gfx\device.h" />
