@@ -18,6 +18,13 @@ std::unique_ptr<image_brush> image_brush::create() {
   return std::unique_ptr<image_brush>(new image_brush());
 }
 
+std::unique_ptr<image_brush> image_brush::create(const image& img, const rectf& src_rect) {
+  auto brush = create();
+  brush->set_img(&img);
+  brush->set_src_rect(src_rect);
+  return brush;
+}
+
 
 // PRIVATE
 

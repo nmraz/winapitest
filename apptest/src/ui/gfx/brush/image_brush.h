@@ -17,6 +17,11 @@ public:
   };
 
   static std::unique_ptr<image_brush> create();
+  static std::unique_ptr<image_brush> create(const image& img, const rectf& src_rect);
+  template<typename Img>
+  static std::unique_ptr<image_brush> create(const Img& img) {
+    return create(img, rectf({}, img.size()));
+  }
 
   const image* img() const { return img_; }
   void set_img(const image* img) { img_ = img; }
