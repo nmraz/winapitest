@@ -188,6 +188,7 @@
     <ClCompile Include="src\base\win\scoped_handle.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ui\gfx\animation\reversible_animation.cpp" />
+    <ClCompile Include="src\ui\gfx\brush\brush.cpp" />
     <ClCompile Include="src\ui\gfx\device.cpp" />
     <ClCompile Include="src\ui\gfx\device_impl.cpp" />
     <ClCompile Include="src\ui\gfx\geom\point.cpp" />
