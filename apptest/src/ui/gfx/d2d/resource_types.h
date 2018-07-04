@@ -13,5 +13,6 @@ using d2d_dc_ptr = base::win::com_ptr<ID2D1DeviceContext>;
 using d2d_image_ptr = base::win::com_ptr<ID2D1Image>;
 using d2d_bitmap_ptr = base::win::com_ptr<ID2D1Bitmap1>;
 
+using d2d_brush_ptr = base::win::com_ptr<ID2D1Brush>;
 
 }  // namespace gfx::impl
