@@ -1,19 +1,51 @@
 #pragma once
 
 #include "ui/gfx/brush/brush.h"
+#include "ui/gfx/geom/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/resource/resource_key.h"
+#include <d2d1_1.h>
 
 namespace gfx {
 
 class image_brush : public brush {
 public:
-  static std::unique_ptr<image_brush> create(const image* img = nullptr);
+  enum class extend_mode {
+    clamp = D2D1_EXTEND_MODE_CLAMP,
+    repeat = D2D1_EXTEND_MODE_WRAP,
+    mirror = D2D1_EXTEND_MODE_MIRROR
+  };
 
-  const image* img() const;
-  void set_img(const image* img);
+  static std::unique_ptr<image_brush> create();
+
+  const image* img() const { return img_; }
+  void set_img(const image* img) { img_ = img; }
+
+  const rectf& src_rect() const { return src_rect_; }
+  void set_src_rect(const rectf& rc) { src_rect_ = rc; }
+
+  extend_mode extend_mode_x() const { return extend_mode_x_; }
+  void set_extend_mode_x(extend_mode mode) {
+    extend_mode_x_ = mode;
+  }
+
+  extend_mode extend_mode_y() const { return extend_mode_y_; }
+  void set_extend_mode_y(extend_mode mode) {
+    extend_mode_y_ = mode;
+  }
 
 private:
-  const image* img_;
+  image_brush() = default;
+
+  impl::d2d_brush_ptr do_get_d2d_brush(impl::device_impl* dev) const override;
+
+  const image* img_ = nullptr;
+  rectf src_rect_;
+
+  extend_mode extend_mode_x_ = extend_mode::clamp;
+  extend_mode extend_mode_y_ = extend_mode::clamp;
+
+  resource_key key_;
 };
 
 }  // namespace gfx
