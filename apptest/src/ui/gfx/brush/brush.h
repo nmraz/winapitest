@@ -14,6 +14,7 @@ class device_impl;
 
 class brush : public base::non_copy_movable {
 public:
+  brush();
   virtual ~brush() {}
 
   const mat33f& transform() const { return tform_; }
