@@ -40,6 +40,7 @@ impl::d2d_brush_ptr image_brush::do_get_d2d_brush(impl::device_impl* dev) const 
   })->resource();
 
   brush->SetImage(maybe_get_d2d_image(img(), dev).get());
+  brush->SetInterpolationMode(static_cast<D2D1_INTERPOLATION_MODE>(interp_mode()));
 
   auto d2d_src_rect = impl::rect_to_d2d_rect(src_rect());
   brush->SetSourceRectangle(&d2d_src_rect);

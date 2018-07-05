@@ -26,6 +26,11 @@ public:
   const image* img() const { return img_; }
   void set_img(const image* img) { img_ = img; }
 
+  image::interpolation_mode interp_mode() const { return interp_mode_; }
+  void set_interp_mode(image::interpolation_mode mode) {
+    interp_mode_ = mode;
+  }
+
   const rectf& src_rect() const { return src_rect_; }
   void set_src_rect(const rectf& rc) { src_rect_ = rc; }
 
@@ -45,6 +50,7 @@ private:
   impl::d2d_brush_ptr do_get_d2d_brush(impl::device_impl* dev) const override;
 
   const image* img_ = nullptr;
+  image::interpolation_mode interp_mode_ = image::interpolation_mode::linear;
   rectf src_rect_;
 
   extend_mode extend_mode_x_ = extend_mode::clamp;
