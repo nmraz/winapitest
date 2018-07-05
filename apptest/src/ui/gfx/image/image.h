@@ -12,6 +12,15 @@ class device_impl;
 
 
 struct image : base::non_copy_movable {
+  enum class interpolation_mode {
+    nearest_neighbor = D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR,
+    linear = D2D1_INTERPOLATION_MODE_DEFINITION_LINEAR,
+    cubic = D2D1_INTERPOLATION_MODE_CUBIC,
+    multi_sample_linear = D2D1_INTERPOLATION_MODE_MULTI_SAMPLE_LINEAR,
+    anisotropic = D2D1_INTERPOLATION_MODE_ANISOTROPIC,
+    high_quality_cubic = D2D1_INTERPOLATION_MODE_DEFINITION_HIGH_QUALITY_CUBIC
+  };
+
   virtual ~image() {}
   virtual impl::d2d_image_ptr d2d_image(impl::device_impl* device) const = 0;
 };
