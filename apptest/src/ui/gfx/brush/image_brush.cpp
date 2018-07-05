@@ -25,6 +25,10 @@ std::unique_ptr<image_brush> image_brush::create(const image& img, const rectf& 
   return brush;
 }
 
+std::unique_ptr<image_brush> image_brush::create(const image& img) {
+  return create(img, img.bounds());
+}
+
 
 // PRIVATE
 
