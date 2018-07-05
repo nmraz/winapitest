@@ -27,6 +27,8 @@ public:
   const bitmap_info& info() const { return info_; }
 
   sizef size() const;
+  rectf bounds() const override;
+
   sizei pixel_size() const { return pixel_size_; }
   int pitch() const;
 

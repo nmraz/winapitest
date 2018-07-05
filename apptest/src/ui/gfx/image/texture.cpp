@@ -41,6 +41,10 @@ sizef texture::size() const {
   return impl::d2d_size_to_size(d2d_bitmap_->GetSize());
 }
 
+rectf texture::bounds() const {
+  return rectf({}, size());
+}
+
 sizei texture::pixel_size() const {
   return impl::d2d_size_to_size(d2d_bitmap_->GetPixelSize());
 }

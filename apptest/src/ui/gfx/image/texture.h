@@ -25,6 +25,7 @@ public:
   const bitmap_info& info() const { return info_; }
 
   sizef size() const;
+  rectf bounds() const override;
   sizei pixel_size() const;
 
   mapped_texture map() const;

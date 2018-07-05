@@ -26,6 +26,11 @@ sizef bitmap::size() const {
   };
 }
 
+rectf bitmap::bounds() const {
+  return rectf({}, size());
+}
+
+
 int bitmap::pitch() const {
   return compute_pitch(static_cast<int>(pixels().size()), pixel_size().height(), info().format());
 }
