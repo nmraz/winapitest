@@ -8,6 +8,15 @@
 #include <unordered_map>
 
 namespace gfx {
+namespace impl {
+
+struct cached_resource_impl {
+  std::unique_ptr<cached_resource> res;
+  resource_version ver;
+};
+
+}  // namespace impl
+
 
 class resource_cache {
 public:
@@ -26,7 +35,7 @@ public:
   auto find_or_create(const resource_key* key, F&& factory);
 
 private:
-  using entry_map = std::unordered_map<const resource_key*, std::unique_ptr<cached_resource>>;
+  using entry_map = std::unordered_map<const resource_key*, impl::cached_resource_impl>;
   using entry_iter = entry_map::iterator;
 
   void do_add(const resource_key* key, std::unique_ptr<cached_resource> res);

@@ -3,8 +3,8 @@
 namespace gfx {
 namespace {
 
-bool is_valid(const resource_key* key, const cached_resource* res) {
-  return key->version() == res->version();
+bool is_valid(const resource_key* key, const impl::cached_resource_impl& cached) {
+  return key->version() == cached.ver;
 }
 
 }  // namespace
@@ -34,9 +34,9 @@ void resource_cache::purge_invalid() {
 
   auto it = entries_.begin();
   while (it != entries_.end()) {
-    const auto& [key, res] = *it;
+    const auto& [key, cached] = *it;
 
-    if (!is_valid(key, res.get())) {
+    if (!is_valid(key, cached)) {
       it = do_remove(it);
     } else {
       it++;
@@ -48,7 +48,7 @@ void resource_cache::purge_invalid() {
 // PRIVATE
 
 void resource_cache::do_add(const resource_key* key, std::unique_ptr<cached_resource> res) {
-  entries_.insert_or_assign(key, std::move(res));
+  entries_[key] = { std::move(res), key->version() };
   key->add_owning_cache(this);
 }
 
@@ -63,12 +63,12 @@ cached_resource* resource_cache::do_find(const resource_key* key) {
     return nullptr;
   }
 
-  cached_resource* res = it->second.get();
-  if (!is_valid(key, res)) {
+  const impl::cached_resource_impl& cached = it->second;
+  if (!is_valid(key, cached)) {
     do_remove(it);
     return nullptr;
   }
-  return res;
+  return cached.res.get();
 }
 
 }  // namespace gfx
