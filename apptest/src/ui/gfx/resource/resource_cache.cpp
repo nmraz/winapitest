@@ -3,9 +3,7 @@
 namespace gfx {
 namespace {
 
-bool is_valid(const resource_key* key, const impl::cached_resource_impl& cached) {
-  return key->version() == cached.ver;
-}
+
 
 }  // namespace
 
@@ -47,8 +45,13 @@ void resource_cache::purge_invalid() {
 
 // PRIVATE
 
+bool resource_cache::is_valid(const resource_key* key, const impl::cached_resource_impl& cached) {
+  return key->ver_ == cached.ver;
+}
+
+
 void resource_cache::do_add(const resource_key* key, std::unique_ptr<cached_resource> res) {
-  entries_[key] = { std::move(res), key->version() };
+  entries_[key] = { std::move(res), key->ver_ };
   key->add_owning_cache(this);
 }
 

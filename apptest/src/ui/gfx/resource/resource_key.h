@@ -16,7 +16,6 @@ class resource_key : public base::non_copy_movable {
 public:
   ~resource_key();
 
-  resource_version version() const { return ver_; }
   void invalidate();
 
 private:

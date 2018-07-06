@@ -38,6 +38,8 @@ private:
   using entry_map = std::unordered_map<const resource_key*, impl::cached_resource_impl>;
   using entry_iter = entry_map::iterator;
 
+  static bool is_valid(const resource_key* key, const impl::cached_resource_impl& cached);
+
   void do_add(const resource_key* key, std::unique_ptr<cached_resource> res);
   entry_iter do_remove(entry_iter it);
   cached_resource* do_find(const resource_key* key);
