@@ -44,7 +44,11 @@ private:
 
   void do_add(const resource_key* key, std::unique_ptr<cached_resource> res);
   entry_iter do_remove(entry_iter it);
+  
   cached_resource* do_find(const resource_key* key);
+  void do_purge_invalid();
+
+  void invalidate(const resource_key* key);
 
   entry_map entries_;
   std::mutex entry_lock_;  // protects entries_

@@ -29,17 +29,7 @@ void resource_cache::clear() {
 
 void resource_cache::purge_invalid() {
   std::scoped_lock hold(entry_lock_);
-
-  auto it = entries_.begin();
-  while (it != entries_.end()) {
-    const auto& [key, cached] = *it;
-
-    if (!is_valid(key, cached)) {
-      it = do_remove(it);
-    } else {
-      it++;
-    }
-  }
+  do_purge_invalid();
 }
 
 
@@ -60,6 +50,7 @@ resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
   return entries_.erase(it);
 }
 
+
 cached_resource* resource_cache::do_find(const resource_key* key) {
   auto it = entries_.find(key);
   if (it == entries_.end()) {
@@ -72,6 +63,24 @@ cached_resource* resource_cache::do_find(const resource_key* key) {
     return nullptr;
   }
   return cached.res.get();
+}
+
+void resource_cache::do_purge_invalid() {
+  key_list tmp_invalid_keys;
+  {
+    std::scoped_lock hold(invalid_key_lock_);
+    invalid_keys_.swap(tmp_invalid_keys);
+  }
+
+  for (const resource_key* key : tmp_invalid_keys) {
+    entries_.erase(key);
+  }
+}
+
+
+void resource_cache::invalidate(const resource_key* key) {
+  std::scoped_lock hold(invalid_key_lock_);
+  invalid_keys_.push_back(key);
 }
 
 }  // namespace gfx
