@@ -9,6 +9,9 @@ namespace gfx {
 
 class resource_cache;
 
+enum class resource_version : unsigned int {};
+
+
 class resource_key : public base::non_copy_movable {
 public:
   ~resource_key();
