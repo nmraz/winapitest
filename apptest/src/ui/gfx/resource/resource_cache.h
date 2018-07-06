@@ -6,6 +6,7 @@
 #include <mutex>
 #include <type_traits>
 #include <unordered_map>
+#include <vector>
 
 namespace gfx {
 namespace impl {
@@ -35,6 +36,7 @@ public:
   auto find_or_create(const resource_key* key, F&& factory);
 
 private:
+  using key_list = std::vector<const resource_key*>;
   using entry_map = std::unordered_map<const resource_key*, impl::cached_resource_impl>;
   using entry_iter = entry_map::iterator;
 
@@ -46,6 +48,9 @@ private:
 
   entry_map entries_;
   std::mutex entry_lock_;  // protects entries_
+
+  key_list invalid_keys_;
+  std::mutex invalid_key_lock_;  // protects invalid_keys_
 };
 
 
