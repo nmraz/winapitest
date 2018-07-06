@@ -10,9 +10,8 @@ class cached_d2d_resource : public cached_resource {
 public:
   using resource_ptr = base::win::com_ptr<T>;
 
-  cached_d2d_resource(resource_version ver, resource_ptr res)
-    : cached_resource(ver)
-    , resource_(std::move(res)) {}
+  cached_d2d_resource(resource_ptr res)
+    : resource_(std::move(res)) {}
 
   resource_ptr resource() const { return resource_; }
 

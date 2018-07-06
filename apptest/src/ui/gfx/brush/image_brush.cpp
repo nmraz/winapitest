@@ -38,7 +38,6 @@ impl::d2d_brush_ptr image_brush::do_get_d2d_brush(impl::device_impl* dev) const 
     dev->lease_dc()->CreateImageBrush(nullptr, D2D1::ImageBrushProperties({}), brush.addr());
     
     return std::make_unique<impl::cached_d2d_resource<ID2D1ImageBrush>>(
-      key_.version(),
       std::move(brush)
     );
   })->resource();
