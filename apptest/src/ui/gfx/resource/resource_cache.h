@@ -9,15 +9,6 @@
 #include <vector>
 
 namespace gfx {
-namespace impl {
-
-struct cached_resource_impl {
-  std::unique_ptr<cached_resource> res;
-  resource_version ver;
-};
-
-}  // namespace impl
-
 
 class resource_cache {
 public:
@@ -37,10 +28,8 @@ public:
 
 private:
   using key_list = std::vector<const resource_key*>;
-  using entry_map = std::unordered_map<const resource_key*, impl::cached_resource_impl>;
+  using entry_map = std::unordered_map<const resource_key*, std::unique_ptr<cached_resource>>;
   using entry_iter = entry_map::iterator;
-
-  static bool is_valid(const resource_key* key, const impl::cached_resource_impl& cached);
 
   void do_add(const resource_key* key, std::unique_ptr<cached_resource> res);
   entry_iter do_remove(entry_iter it);
@@ -61,6 +50,8 @@ private:
 template<typename Res>
 Res* resource_cache::find(const resource_key* key) {
   std::scoped_lock hold(entry_lock_);
+  do_purge_invalid();
+
   return static_cast<Res*>(do_find(key));
 }
 
@@ -69,6 +60,7 @@ auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   using res_type = typename std::invoke_result_t<F>::element_type;
   
   std::scoped_lock hold(entry_lock_);
+  do_purge_invalid();
 
   if (cached_resource* res = do_find(key)) {
     return static_cast<res_type*>(res);
