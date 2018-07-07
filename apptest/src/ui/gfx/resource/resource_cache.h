@@ -74,7 +74,10 @@ auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   auto res_holder = std::forward<F>(factory)();
   auto* res = res_holder.get();
 
-  add(key, std::move(res_holder));
+  {
+    std::scoped_lock hold_entries(entry_lock_);
+    do_add(key, std::move(res_holder));
+  }
   return res;
 }
 
