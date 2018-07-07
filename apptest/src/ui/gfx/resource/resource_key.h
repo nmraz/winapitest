@@ -3,6 +3,7 @@
 #include "base/non_copyable.h"
 #include "ui/gfx/resource/cached_resource.h"
 #include <mutex>
+#include <shared_mutex>
 #include <vector>
 
 namespace gfx {
@@ -23,6 +24,8 @@ private:
 
   mutable std::vector<resource_cache*> owning_caches_;
   mutable std::mutex owning_cache_lock_;  // protects owning_caches_
+
+  mutable std::shared_mutex resource_lock_;  // synchronizes resource creation/access
 };
 
 }  // namespace gfx

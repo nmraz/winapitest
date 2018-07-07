@@ -47,6 +47,8 @@ resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
 
 
 cached_resource* resource_cache::do_find(const resource_key* key) {
+  do_purge_invalid();
+
   auto it = entries_.find(key);
   if (it == entries_.end()) {
     return nullptr;

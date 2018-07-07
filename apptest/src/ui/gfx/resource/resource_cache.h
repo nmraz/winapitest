@@ -4,6 +4,7 @@
 #include "ui/gfx/resource/resource_key.h"
 #include <memory>
 #include <mutex>
+#include <shared_mutex>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -51,8 +52,8 @@ private:
 
 template<typename Res>
 Res* resource_cache::find(const resource_key* key) {
-  std::scoped_lock hold(entry_lock_);
-  do_purge_invalid();
+  std::shared_lock hold_key(key->resource_lock_);
+  std::scoped_lock hold_entries(entry_lock_);
 
   return static_cast<Res*>(do_find(key));
 }
@@ -61,17 +62,19 @@ template<typename F>
 auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   using res_type = typename std::invoke_result_t<F>::element_type;
   
-  std::scoped_lock hold(entry_lock_);
-  do_purge_invalid();
+  std::scoped_lock hold_key(key->resource_lock_);
 
-  if (cached_resource* res = do_find(key)) {
-    return static_cast<res_type*>(res);
+  {
+    std::scoped_lock hold_entries(entry_lock_);
+    if (cached_resource* res = do_find(key)) {
+      return static_cast<res_type*>(res);
+    }
   }
 
   auto res_holder = std::forward<F>(factory)();
-  res_type* res = res_holder.get();
+  auto* res = res_holder.get();
 
-  do_add(key, std::move(res_holder));
+  add(key, std::move(res_holder));
   return res;
 }
 
