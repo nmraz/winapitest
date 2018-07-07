@@ -1,5 +1,7 @@
 #include "resource_cache.h"
 
+#include "base/assert.h"
+
 namespace gfx {
 
 void resource_cache::add(const resource_key* key, std::unique_ptr<cached_resource> res) {
@@ -39,6 +41,8 @@ void resource_cache::purge_invalid() {
 // PRIVATE
 
 void resource_cache::do_add(const resource_key* key, std::unique_ptr<cached_resource> res) {
+  ASSERT(entries_.find(key) == entries_.end()) << "Adding key twice";
+
   entries_.emplace(key, std::move(res));
   key->add_owning_cache(this);
 }
