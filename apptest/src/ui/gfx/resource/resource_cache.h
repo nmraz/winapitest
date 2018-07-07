@@ -27,6 +27,8 @@ public:
   auto find_or_create(const resource_key* key, F&& factory);
 
 private:
+  friend class resource_key;
+
   using key_list = std::vector<const resource_key*>;
   using entry_map = std::unordered_map<const resource_key*, std::unique_ptr<cached_resource>>;
   using entry_iter = entry_map::iterator;

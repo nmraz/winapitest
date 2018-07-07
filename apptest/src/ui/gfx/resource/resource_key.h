@@ -9,9 +9,6 @@ namespace gfx {
 
 class resource_cache;
 
-enum class resource_version : unsigned int {};
-
-
 class resource_key : public base::non_copy_movable {
 public:
   ~resource_key();
@@ -23,8 +20,6 @@ private:
 
   void add_owning_cache(resource_cache* cache) const;
   void remove_owning_cache(resource_cache* cache) const;
-
-  resource_version ver_{ 0 };
 
   mutable std::vector<resource_cache*> owning_caches_;
   mutable std::mutex owning_cache_lock_;  // protects owning_caches_
