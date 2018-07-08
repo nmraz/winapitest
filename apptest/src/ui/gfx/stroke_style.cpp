@@ -67,8 +67,6 @@ void stroke_style::set_dash_offset(float offset) {
 
 
 const impl::d2d_stroke_style_ptr& stroke_style::d2d_stroke_style() const {
-  std::scoped_lock hold(d2d_stroke_style_lock_);
-
   if (!d2d_stroke_style_) {
     D2D1_DASH_STYLE dash_style = dash_pattern().empty() ?
       D2D1_DASH_STYLE_SOLID : D2D1_DASH_STYLE_CUSTOM;
@@ -87,14 +85,18 @@ const impl::d2d_stroke_style_ptr& stroke_style::d2d_stroke_style() const {
       dash_pattern()
     );
   }
-  return d2d_stroke_style_;  // guaranteed not to change until a non-const operation is performed
+  return d2d_stroke_style_;
+}
+
+void stroke_style::make_thread_safe() const {
+  d2d_stroke_style();  // force creation of cached Direct2D stroke style
 }
 
 
 // PRIVATE
 
 void stroke_style::mark_dirty() {
-  d2d_stroke_style_ = nullptr;  // no lock - safety is only guaranteed on const operations
+  d2d_stroke_style_ = nullptr;
 }
 
 }  // namespace gfx

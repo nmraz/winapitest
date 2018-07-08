@@ -77,6 +77,7 @@ public:
   
 
   const impl::d2d_stroke_style_ptr& d2d_stroke_style() const;
+  void make_thread_safe() const;
 
 private:
   void mark_dirty();
@@ -94,7 +95,6 @@ private:
   float dash_offset_ = 0;
 
   mutable impl::d2d_stroke_style_ptr d2d_stroke_style_;
-  mutable std::mutex d2d_stroke_style_lock_;  // protects d2d_stroke_style_ in const situations
 };
 
 }  // namespace gfx

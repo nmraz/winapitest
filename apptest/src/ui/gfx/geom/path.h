@@ -159,12 +159,6 @@ public:
   using reverse_iterator = verb_list::reverse_iterator;
   using const_reverse_iterator = verb_list::const_reverse_iterator;
 
-  path() = default;
-  path(const path& rhs);
-  path(path&& rhs) noexcept;
-
-  path& operator=(path rhs);
-
   iterator begin() { return verbs().begin(); }
   const_iterator begin() const { return verbs().begin(); }
   const_iterator cbegin() const { return verbs().cbegin(); }
@@ -251,6 +245,8 @@ public:
   impl::d2d_geom_sink_ptr d2d_sink();
 
   void mark_dirty();
+  void make_thread_safe() const;
+
   void stream_to(ID2D1GeometrySink* sink) const;
 
 private:
@@ -261,7 +257,6 @@ private:
   fill_mode fill_mode_ = fill_mode::winding;
 
   mutable impl::d2d_path_geom_ptr d2d_geom_;
-  mutable std::mutex d2d_geom_lock_;  // protects d2d_geom_ in const situations
 };
 
 

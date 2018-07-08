@@ -171,25 +171,6 @@ path_d2d_sink::path_d2d_sink(path* p)
 }  // namespace
 
 
-path::path(const path& rhs)
-  : verbs_(rhs.verbs_)
-  , fill_mode_(rhs.fill_mode_) {
-  std::scoped_lock hold(rhs.d2d_geom_lock_);
-  d2d_geom_ = rhs.d2d_geom_;
-}
-
-path::path(path&& rhs) noexcept
-  : verbs_(std::move(rhs.verbs_))
-  , fill_mode_(rhs.fill_mode_)
-  , d2d_geom_(std::move(rhs.d2d_geom_)) {  // no lock - safety is only guaranteed on const operations
-}
-
-path& path::operator=(path rhs) {
-  rhs.swap(*this);
-  return *this;
-}
-
-
 path_verb& path::operator[](std::size_t idx) {
   ASSERT(idx < size()) << "Out of bounds access";
   return verbs()[idx];
@@ -493,15 +474,13 @@ bool path::stroke_contains(const pointf& pt, float stroke_width, const stroke_st
 
 
 const impl::d2d_path_geom_ptr& path::d2d_geom() const {
-  std::scoped_lock hold(d2d_geom_lock_);
-
   if (!d2d_geom_) {
     d2d_geom_ = create_path_geom();
     impl::d2d_geom_sink_ptr sink;
     base::win::throw_if_failed(d2d_geom_->Open(sink.addr()), "Failed to open path sink");
     stream_to(sink.get());
   }
-  return d2d_geom_;  // will not be mutated again until a non-const operation is performed
+  return d2d_geom_;
 }
 
 impl::d2d_geom_sink_ptr path::d2d_sink() {
@@ -510,8 +489,13 @@ impl::d2d_geom_sink_ptr path::d2d_sink() {
 
 
 void path::mark_dirty() {
-  d2d_geom_ = nullptr;  // no lock - safety is only guaranteed on const operations
+  d2d_geom_ = nullptr;
 }
+
+void path::make_thread_safe() const {
+  d2d_geom();  // force creation of cached Direct2D geometry
+}
+
 
 void path::stream_to(ID2D1GeometrySink* sink) const {
   struct streaming_visitor {
