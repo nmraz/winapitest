@@ -67,6 +67,7 @@ class span {
 public:
   using index_type = std::ptrdiff_t;
   using element_type = T;
+  using value_type = std::remove_cv_t<T>;
   using pointer = T*;
   using reference = T&;
   using iterator = T*;
