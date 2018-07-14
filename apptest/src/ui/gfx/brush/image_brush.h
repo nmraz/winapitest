@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ui/gfx/brush/brush.h"
+#include "ui/gfx/brush/extend_mode.h"
 #include "ui/gfx/geom/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/resource/resource_key.h"
@@ -11,12 +12,6 @@ namespace gfx {
 
 class image_brush : public brush {
 public:
-  enum class extend_mode {
-    clamp = D2D1_EXTEND_MODE_CLAMP,
-    repeat = D2D1_EXTEND_MODE_WRAP,
-    mirror = D2D1_EXTEND_MODE_MIRROR
-  };
-
   static std::unique_ptr<image_brush> create();
   static std::unique_ptr<image_brush> create(const image& img, const rectf& src_rect);
   static std::unique_ptr<image_brush> create(const image& img);

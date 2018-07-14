@@ -374,6 +374,9 @@
     <ClInclude Include="src\ui\gfx\brush\image_brush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ui\gfx\brush\extend_mode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="apptest.exe.manifest" />
