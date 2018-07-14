@@ -5,6 +5,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/resource/resource_key.h"
 #include <d2d1_1.h>
+#include <memory>
 
 namespace gfx {
 
