@@ -43,11 +43,6 @@ void resource_cache::add(const resource_key* key, std::unique_ptr<cached_resourc
   key->add_owning_cache(this);
 }
 
-resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
-  it->first->remove_owning_cache(this);
-  return entries_.erase(it);
-}
-
 
 cached_resource* resource_cache::find(const resource_key* key) {
   std::scoped_lock hold(entry_lock_);
@@ -58,6 +53,12 @@ cached_resource* resource_cache::find(const resource_key* key) {
     return nullptr;
   }
   return it->second.get();
+}
+
+
+resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
+  it->first->remove_owning_cache(this);
+  return entries_.erase(it);
 }
 
 void resource_cache::do_purge_invalid() {
