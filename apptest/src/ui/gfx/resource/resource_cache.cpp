@@ -22,7 +22,7 @@ void resource_cache::clear() {
   do_purge_invalid();
   
   for (auto it = entries_.begin(); it != entries_.end();) {
-    std::scoped_lock hold(it->first->lock_);
+    std::scoped_lock hold_key(it->first->lock_);
     it = do_remove(it);
   }
 }
