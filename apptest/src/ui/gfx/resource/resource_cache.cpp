@@ -4,16 +4,6 @@
 
 namespace gfx {
 
-void resource_cache::add(const resource_key* key, std::unique_ptr<cached_resource> res) {
-  // We don't need exclusive access here, as we just want exclusion from `find_or_create`
-  // which locks in exclusive mode anyway.
-  std::shared_lock hold_key(key->resource_lock_);
-  std::scoped_lock hold_entries(entry_lock_);
-  
-  do_purge_invalid();
-  do_add(key, std::move(res));
-}
-
 void resource_cache::remove(const resource_key* key) {
   std::scoped_lock hold(entry_lock_);
   do_purge_invalid();

@@ -15,17 +15,12 @@ class resource_cache {
 public:
   ~resource_cache() { clear(); }
 
-  void add(const resource_key* key, std::unique_ptr<cached_resource> res);
+  template<typename F>
+  auto find_or_create(const resource_key* key, F&& factory);
   void remove(const resource_key* key);
 
   void clear();
   void purge_invalid();
-
-  template<typename Res>
-  Res* find(const resource_key* key);
-
-  template<typename F>
-  auto find_or_create(const resource_key* key, F&& factory);
 
 private:
   friend class resource_key;
@@ -49,14 +44,6 @@ private:
   std::mutex invalid_key_lock_;  // protects invalid_keys_
 };
 
-
-template<typename Res>
-Res* resource_cache::find(const resource_key* key) {
-  std::shared_lock hold_key(key->resource_lock_);
-  std::scoped_lock hold_entries(entry_lock_);
-
-  return static_cast<Res*>(do_find(key));
-}
 
 template<typename F>
 auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
