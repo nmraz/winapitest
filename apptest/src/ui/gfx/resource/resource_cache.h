@@ -52,14 +52,14 @@ auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   // Use double-checked locking - safe here as exclusive locks always exclude shared ones.
 
   {
-    std::shared_lock hold_key(key->resource_lock_);
+    std::shared_lock hold_key(key->lock_);
     if (cached_resource* res = find(key)) {
       return static_cast<res_type*>(res);
     }
   }
 
   {
-    std::scoped_lock hold_key(key->resource_lock_);
+    std::scoped_lock hold_key(key->lock_);
 
     if (cached_resource* res = find(key)) {
       return static_cast<res_type*>(res);

@@ -5,9 +5,9 @@
 namespace gfx {
 
 void resource_cache::remove(const resource_key* key) {
-  // Don't be tempted to lock `key->resource_lock_` later as an optimization - deadlock
+  // Don't be tempted to lock `key->lock_` later as an optimization - deadlock
   // could result due to different locking order compared with `find_or_create`.
-  std::scoped_lock hold(entry_lock_, key->resource_lock_);
+  std::scoped_lock hold(entry_lock_, key->lock_);
   do_purge_invalid();
 
   auto it = entries_.find(key);
@@ -21,7 +21,10 @@ void resource_cache::clear() {
   std::scoped_lock hold(entry_lock_);
   do_purge_invalid();
   
-  for (auto it = entries_.begin(); it != entries_.end(); it = do_remove(it)) {}
+  for (auto it = entries_.begin(); it != entries_.end();) {
+    std::scoped_lock hold(it->first->lock_);
+    it = do_remove(it);
+  }
 }
 
 void resource_cache::purge_invalid() {

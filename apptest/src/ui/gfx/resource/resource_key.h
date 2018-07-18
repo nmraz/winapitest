@@ -23,9 +23,7 @@ private:
   void remove_owning_cache(resource_cache* cache) const;
 
   mutable std::vector<resource_cache*> owning_caches_;
-  mutable std::mutex owning_cache_lock_;  // protects owning_caches_
-
-  mutable std::shared_mutex resource_lock_;  // synchronizes resource creation/access
+  mutable std::shared_mutex lock_;  // protects owning_caches_, synchronizes resource creation/access
 };
 
 }  // namespace gfx
