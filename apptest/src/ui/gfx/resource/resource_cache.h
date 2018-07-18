@@ -49,17 +49,28 @@ template<typename F>
 auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   using res_type = typename std::invoke_result_t<F>::element_type;
   
-  std::scoped_lock hold_key(key->resource_lock_);
+  // Use double-checked locking - safe here as exclusive locks always exclude shared ones.
 
-  if (cached_resource* res = find(key)) {
-    return static_cast<res_type*>(res);
+  {
+    std::shared_lock hold_key(key->resource_lock_);
+    if (cached_resource* res = find(key)) {
+      return static_cast<res_type*>(res);
+    }
   }
 
-  auto res_holder = std::forward<F>(factory)();
-  auto* res = res_holder.get();
+  {
+    std::scoped_lock hold_key(key->resource_lock_);
 
-  add(key, std::move(res_holder));
-  return res;
+    if (cached_resource* res = find(key)) {
+      return static_cast<res_type*>(res);
+    }
+
+    auto res_holder = std::forward<F>(factory)();
+    auto* res = res_holder.get();
+
+    add(key, std::move(res_holder));
+    return res;
+  }
 }
 
 }  // namespace gfx
