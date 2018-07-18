@@ -30,7 +30,8 @@ void resource_cache::purge_invalid() {
 
 // PRIVATE
 
-void resource_cache::do_add(const resource_key* key, std::unique_ptr<cached_resource> res) {
+void resource_cache::add(const resource_key* key, std::unique_ptr<cached_resource> res) {
+  std::scoped_lock hold(entry_lock_);
   ASSERT(entries_.find(key) == entries_.end()) << "Adding key twice";
 
   entries_.emplace(key, std::move(res));
@@ -43,7 +44,8 @@ resource_cache::entry_iter resource_cache::do_remove(entry_iter it) {
 }
 
 
-cached_resource* resource_cache::do_find(const resource_key* key) {
+cached_resource* resource_cache::find(const resource_key* key) {
+  std::scoped_lock hold(entry_lock_);
   do_purge_invalid();
 
   auto it = entries_.find(key);

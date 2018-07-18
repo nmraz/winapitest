@@ -29,10 +29,10 @@ private:
   using entry_map = std::unordered_map<const resource_key*, std::unique_ptr<cached_resource>>;
   using entry_iter = entry_map::iterator;
 
-  void do_add(const resource_key* key, std::unique_ptr<cached_resource> res);
-  entry_iter do_remove(entry_iter it);
+  void add(const resource_key* key, std::unique_ptr<cached_resource> res);
+  cached_resource* find(const resource_key* key);
   
-  cached_resource* do_find(const resource_key* key);
+  entry_iter do_remove(entry_iter it);
   void do_purge_invalid();
 
   void invalidate(const resource_key* key);
@@ -51,20 +51,14 @@ auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
   
   std::scoped_lock hold_key(key->resource_lock_);
 
-  {
-    std::scoped_lock hold_entries(entry_lock_);
-    if (cached_resource* res = do_find(key)) {
-      return static_cast<res_type*>(res);
-    }
+  if (cached_resource* res = find(key)) {
+    return static_cast<res_type*>(res);
   }
 
   auto res_holder = std::forward<F>(factory)();
   auto* res = res_holder.get();
 
-  {
-    std::scoped_lock hold_entries(entry_lock_);
-    do_add(key, std::move(res_holder));
-  }
+  add(key, std::move(res_holder));
   return res;
 }
 
