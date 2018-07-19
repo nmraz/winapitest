@@ -33,7 +33,7 @@ std::unique_ptr<image_brush> image_brush::create(const image& img) {
 // PRIVATE
 
 impl::d2d_brush_ptr image_brush::do_get_d2d_brush(impl::device_impl* dev) const {
-  auto brush = dev->cache().find_or_create(&key_, [&] {
+  auto brush = dev->cache().find_or_create(key_, [&] {
     base::win::com_ptr<ID2D1ImageBrush> brush;
     dev->lease_dc()->CreateImageBrush(nullptr, D2D1::ImageBrushProperties({}), brush.addr());
     

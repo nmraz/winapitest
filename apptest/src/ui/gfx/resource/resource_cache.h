@@ -16,8 +16,8 @@ public:
   ~resource_cache() { clear(); }
 
   template<typename F>
-  auto find_or_create(const resource_key* key, F&& factory);
-  void remove(const resource_key* key);
+  auto find_or_create(const resource_key& key, F&& factory);
+  void remove(const resource_key& key);
 
   void clear();
   void purge_invalid();
@@ -29,8 +29,8 @@ private:
   using entry_map = std::unordered_map<const resource_key*, std::unique_ptr<cached_resource>>;
   using entry_iter = entry_map::iterator;
 
-  void add(const resource_key* key, std::unique_ptr<cached_resource> res);
-  cached_resource* find(const resource_key* key);
+  void add(const resource_key& key, std::unique_ptr<cached_resource> res);
+  cached_resource* find(const resource_key& key);
   
   entry_iter do_remove(entry_iter it);
   void do_purge_invalid();
@@ -46,20 +46,20 @@ private:
 
 
 template<typename F>
-auto resource_cache::find_or_create(const resource_key* key, F&& factory) {
+auto resource_cache::find_or_create(const resource_key& key, F&& factory) {
   using res_type = typename std::invoke_result_t<F>::element_type;
   
   // Use double-checked locking - safe here as exclusive locks always exclude shared ones.
 
   {
-    std::shared_lock hold_key(key->lock_);
+    std::shared_lock hold_key(key.lock_);
     if (cached_resource* res = find(key)) {
       return static_cast<res_type*>(res);
     }
   }
 
   {
-    std::scoped_lock hold_key(key->lock_);
+    std::scoped_lock hold_key(key.lock_);
 
     if (cached_resource* res = find(key)) {
       return static_cast<res_type*>(res);

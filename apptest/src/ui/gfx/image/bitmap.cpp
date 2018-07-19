@@ -45,7 +45,7 @@ bitmap_lock bitmap::lock() {
 impl::d2d_image_ptr bitmap::d2d_image(impl::device_impl* dev) const {
   ASSERT(!is_locked()) << "Cannot draw locked bitmap";
 
-  return dev->cache().find_or_create(&key_, [&] {
+  return dev->cache().find_or_create(key_, [&] {
     auto d2d_bitmap = dev->create_bitmap(info(), pixel_size(), D2D1_BITMAP_OPTIONS_NONE, pixels());
     return std::make_unique<impl::cached_d2d_resource<ID2D1Image>>(std::move(d2d_bitmap));
   })->resource();

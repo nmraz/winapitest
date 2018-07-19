@@ -4,13 +4,13 @@
 
 namespace gfx {
 
-void resource_cache::remove(const resource_key* key) {
+void resource_cache::remove(const resource_key& key) {
   // Don't be tempted to lock `key->lock_` later as an optimization - deadlock
   // could result due to different locking order compared with `find_or_create`.
-  std::scoped_lock hold(entry_lock_, key->lock_);
+  std::scoped_lock hold(entry_lock_, key.lock_);
   do_purge_invalid();
 
-  auto it = entries_.find(key);
+  auto it = entries_.find(&key);
   if (it != entries_.end()) {
     do_remove(it);
   }
@@ -35,20 +35,20 @@ void resource_cache::purge_invalid() {
 
 // PRIVATE
 
-void resource_cache::add(const resource_key* key, std::unique_ptr<cached_resource> res) {
+void resource_cache::add(const resource_key& key, std::unique_ptr<cached_resource> res) {
   std::scoped_lock hold(entry_lock_);
-  ASSERT(entries_.find(key) == entries_.end()) << "Adding key twice";
+  ASSERT(entries_.find(&key) == entries_.end()) << "Adding key twice";
 
-  entries_.emplace(key, std::move(res));
-  key->add_owning_cache(this);
+  entries_.emplace(&key, std::move(res));
+  key.add_owning_cache(this);
 }
 
 
-cached_resource* resource_cache::find(const resource_key* key) {
+cached_resource* resource_cache::find(const resource_key& key) {
   std::scoped_lock hold(entry_lock_);
   do_purge_invalid();
 
-  auto it = entries_.find(key);
+  auto it = entries_.find(&key);
   if (it == entries_.end()) {
     return nullptr;
   }
