@@ -16,7 +16,7 @@ HRESULT query_interface(T* obj, REFIID iid, void** out) {
     return S_OK;
   }
 
-  if constexpr (sizeof...(Bases)) {
+  if constexpr (sizeof...(Bases) > 0) {
     return query_interface<Bases...>(obj, iid, out);
   } else {
     *out = nullptr;
